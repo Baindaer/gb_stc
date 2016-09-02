@@ -1,0 +1,102 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block title_head %}
+  Reporte de capitas
+{% endblock %}
+{% block title_body %}
+  REPORTE CAPITACION
+{% endblock %}
+{% block body %}
+  <div class="form-consulta">
+    <form id="form_consulta" action="{% url 'stc:reporte_capitas' %}" method="post">
+      {% csrf_token %}
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="float:left; margin-left:50px">
+        <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
+          {% for each in empresas %}
+            {% if pre_empresa == each.nombre %}
+              <option selected>
+            {% else %} 
+              <option>
+            {% endif %}
+            {{each.nombre}}</option>
+          {% endfor %}  
+        </select>
+        <label class="mdl-textfield__label" for="empresa">Empresa</label>
+      </div>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="float:left; margin-left:50px">
+        <select class="mdl-textfield__input" id="convenio" name="convenio" required> 
+          {% for each in convenios %}
+            {% if pre_convenio == each.nombre %}
+              <option selected>
+            {% else %} 
+              <option>
+            {% endif %}
+            {{each.nombre}}</option>
+          {% endfor %}  
+        </select>
+        <label class="mdl-textfield__label" for="convenio">Empresa</label>
+      </div>
+      <br>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:220px; float:left; margin-left:50px">
+            <input class="mdl-textfield__input" type="month" id="mes_reporte" name="mes_reporte" />
+            <label class="mdl-textfield__label" for="mes_reporte">Mes de reporte</label>
+          </div>
+      <div class="boton-reporte-capitas">
+      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="buscar">Generar</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+{% block body2 %}
+  <div class="demo-container mdl-grid" style="margin-top: 0vh">
+    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
+    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
+      {% if reporte_capitas %}
+        <table class="mdl-data-table mdl-js-data-table full-table" name="dash" id="dash" style="width:100%">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
+              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
+              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">RADICADO</th>
+              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">SERVICIO</th>
+              <th class="head-table" style="color:#ffffff">VALOR</th>
+            </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+              <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+              <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+              <td class="foot-table"><b>TOTAL<b></td>
+              <td class="foot-table"><b>{{ total_capitas|intcomma }}<b></td>
+            </tr>
+          </tfoot>
+          <tbody>
+            {% for reg in reporte_capitas %}
+              <tr onclick="getRow(this)">
+                <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ reg.servicio }}</td>
+                <td>{{ reg.valor_factura|intcomma }}</td>
+              </tr>
+            {% endfor %}       
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </div>
+  <form id="consultar" name="consultar" action="{% url 'stc:consulta' %}" method="post" visible="false">
+  {% csrf_token %}
+    <input id="factura" name="factura"/>
+  </form>
+{% endblock %}
+{% block script %}
+  <script type="text/javascript" src="{% static 'stc/reporte_capitas.js' %}"></script>
+  {% if pre_mes_reporte %}
+    <script>
+      document.getElementById("mes_reporte").value = "{{ pre_mes_reporte }}";
+    </script>
+  {% endif %}
+{% endblock %} 

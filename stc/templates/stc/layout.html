@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" class="mdl-js">
+  {% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.blue-light_green.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'stc/style.css' %}" />
+    <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
+    <link rel='shortcut icon' type='image/x-icon' href="{% static 'stc/images/icoGB.ico' %}" />
+    <title>{% block tittle_head %}{% endblock %}</title>
+  </head>
+  <body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">{% block title_body %}{% endblock %}</span>
+          <div class="mdl-layout-spacer"></div>
+          <nav class="mdl-navigation">
+            <a class="mdl-navigation__link" href="{% url 'stc:inicio' %}">INICIO</a>
+            {% if not request.user.is_authenticated %}
+              <a class="mdl-navigation__link" href="{% url 'stc:login' %}">INICIAR SESION</a>
+            {% else %}
+              <a class="mdl-navigation__link" href="{% url 'stc:logout' %}">CERRAR SESION</a>
+            {% endif %}
+          </nav>
+          <form action="{% url 'stc:consulta' %}" method="POST">
+            {% csrf_token %}
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+              <label class="mdl-button mdl-js-button mdl-button--icon" for="search-expandable">
+                <i class="material-icons">search</i>
+              </label>
+              <div class="mdl-textfield__expandable-holder">
+                <input class="mdl-textfield__input" type="text" id="search-expandable" name="factura"/>
+                <label class="mdl-textfield__label" for="search-expandable">Search text</label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </header>
+    <div class="mdl-layout__drawer">
+      <span class="mdl-layout-title">Módulos STC</span>
+      <nav class="mdl-navigation">
+        <a class="mdl-navigation__link" href="{% url 'stc:inicio' %}">Inicio</a>
+        <a class="mdl-navigation__link" href="{% url 'stc:radicacion' %}">Radicación y custodia</a>
+        <a class="mdl-navigation__link" href="#">Glosas y recobros</a>
+        <a class="mdl-navigation__link" href="#">Devoluciones</a>
+        <a class="mdl-navigation__link" href="#">CRM</a>
+        <a class="mdl-navigation__link" href="{% url 'stc:consulta' %}">Consultas</a>
+        <a class="mdl-navigation__link" href="{% url 'stc:reportes' %}">Reportes</a>
+      </nav>
+    </div>
+    <main class="mdl-layout__content">
+      <div class="page-content">
+        <div class="demo-ribbon">
+        </div>
+        <br>
+        <br>
+        <div class="demo-container mdl-grid">
+          <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
+          <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
+            <div style="padding:5%">
+              <div>
+                <br>
+                <img src="{% static 'stc/images/logoGB.png' %}" style="max-width:350px">
+              </div>
+              <br>
+              {% block body %}
+              {% endblock %}
+            </div>
+          </div>
+        </div>
+        <div>
+          {% block body2 %}
+          {% endblock %}
+        </div>
+        <br>
+        <br>
+        <br>
+        <footer class="mdl-mini-footer">
+          <div class="mdl-mini-footer">
+            <div class="mdl-logo">Grupo empresarial GestionarBienestar</div>
+            <ul class="mdl-mini-footer--link-list">
+              <li><a href="#">Soporte</a></li>
+              <li><a href="#">Licencia</a></li>
+            </ul>
+          </div>
+        </footer>
+      </div>
+    </main>
+    {% for each_message in messages %}
+      <center>
+        <div class="messages-{{ each_message.tags }} mdl-button mdl-js-button">
+          {{ each_message.message }}
+        </div>
+      </center>
+    {% endfor %}
+    </div> 
+    <script type="text/javascript" src="{% static 'stc/javascript.js' %}"></script> 
+    {% block script %}
+    {% endblock %}
+  </body>
+</html>
