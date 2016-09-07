@@ -82,7 +82,7 @@ def radicacion(request):
         servicio = request.POST['servicio']
         mes_servicio = request.POST['mes_servicio']
         ref_unidad = empresa + factura[:2].upper()
-        fecha_registro = timezone.now().strftime('%Y-%m-%d')
+        fecha_registro = timezone.now()
         #Validando datos de traidos del formulario
         try:
             convenio_id = Convenio.objects.get(nombre=convenio).nit
@@ -342,7 +342,7 @@ def exp_rad_general(request):
     #Asignando nombre de archivo
     response['Content-Disposition'] = 'attachment; filename="radicacion.csv"'
     #Consultando base de datos
-    data = Radicacion.objects.all()
+    data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
     #Creando el archivo csv con el tipo de delimitador ; para ser leido por excel
     writer = csv.writer(response, delimiter=';')
     #Escribiendo archivo, el proceso puede tardar varios segundos
