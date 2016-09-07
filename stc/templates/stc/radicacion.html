@@ -8,7 +8,7 @@
   RADICACION Y CUSTODIA {% if pre_empresa %} {{ pre_empresa }} {% endif %}
 {% endblock %}
 {% block body %}
-   <div>
+  <div>
     {% if not request.user.is_authenticated %} 
       <center><h4>Por favor inicie sesión para acceder a los modulos del sistema</h4></center>
     {% else %}
@@ -36,7 +36,7 @@
             <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required/>
             <datalist name="lstConvenio" id="lstConvenio"> 
               {% for each in convenios %}
-                <option>{{ each.nombre }}</option>>
+                <option>{{ each.nombre }}</option>
               {% endfor %}
             </datalist>
             <label class="mdl-textfield__label" for="convenio">Convenio</label>
@@ -49,7 +49,7 @@
             <input class="mdl-textfield__input" type="number" id="valor_factura" name="valor_factura" required/>
             <label class="mdl-textfield__label" for="valor_factura">Valor factura</label>
           </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100px;">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:90px;">
             <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="tipo_contrato">
               <input type="checkbox" id="tipo_contrato" name="tipo_contrato" value="1" class="mdl-switch__input" />
               <span class="mdl-switch__label"><b>Capita</b></span>
@@ -59,7 +59,7 @@
             <input class="mdl-textfield__input" type="text" id="servicio" name="servicio" list="lstServicio" />
             <datalist name="lstServicio" id="lstServicio"> 
               {% for each in servicios %}
-                <option>{{ each.descripcion }}</option>>
+                <option>{{ each.descripcion }}</option>
               {% endfor %}
             </datalist>
             <label class="mdl-textfield__label" for="servicio">Servicio</label>
@@ -69,11 +69,8 @@
             <label class="mdl-textfield__label" for="mes_servicio">Mes prestación del servicio</label>
           </div>
           <br><br>
-          <div>
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="registrar">Registrar</button>
-              <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" href="{% url 'stc:gestion_radicacion' %}" style="margin-left: 20px">Gestionar</a>
-            </form>
-          </div>
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="registrar">Registrar</button>
+          <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" href="{% url 'stc:gestion_radicacion' %}" style="margin-left: 20px">Gestionar</a>
         </form>
       </center> 
     {% endif %}

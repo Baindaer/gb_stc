@@ -1,0 +1,19 @@
+<html>
+{% load humanize %}
+  <body>
+    A continuacion un resumen:
+    <table>
+      <tr style="background-color: black; color:white">
+        <th>campo 1</th>
+        <th>campo 2</th>
+      </tr>
+      {% for reg in data %}
+      <tr>
+        <td>{{reg.factura}}</td>
+        <td>{{reg.valor_factura|intcomma}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+
+</html>

@@ -53,7 +53,7 @@ class Radicacion(models.Model):
     tipo_contrato = models.BooleanField(default=False)
     servicio = models.ForeignKey(Servicio, null=True)
     mes_servicio = models.CharField(max_length=7, null=True)
-    user = models.ForeignKey(User)
+    usuario = models.ForeignKey(User)
     fecha_registro = models.DateTimeField(null=True)
     def __str__(self):
         return self.factura
@@ -62,3 +62,42 @@ class Radicacion(models.Model):
             return "CAPITA"
         else:
             return "EVENTO"
+
+class Causal(models.Model):
+    id = models.IntegerField(primary_key=True)
+    descripcion = models.CharField(max_length=200)
+    codigo = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=100)
+    grupo = models.CharField(max_length=100)
+    def __str__(self):
+        return self.codigo
+
+class EstadoDV(models.Model):
+    descripcion = models.CharField(max_length=50)
+    def __str__(self):
+        return self.descripcion
+
+class Gestor(models.Model):
+    nombre = models.CharField(max_length=100)
+    email = models.EmailField()
+    def __str__(self):
+        return self.nombre
+
+class Devolucion(models.Model):
+    factura = models.CharField(max_length=20)
+    empresa = models.ForeignKey(Empresa)
+    unidad = models.ForeignKey(Unidad)
+    convenio = models.ForeignKey(Convenio)
+    fecha_devolucion = models.CharField(max_length=10)
+    valor_factura = models.IntegerField()
+    causal = models.ForeignKey(Causal)
+    detalle = models.CharField(max_length=250)
+    gestor = models.ForeignKey(Gestor)
+    fecha_remitido = models.CharField(max_length=10, null=True)
+    fecha_registro = models.CharField(max_length=10, null=True)
+    gestion = models.CharField(max_length=250)
+    fecha_gestion = models.CharField(max_length=10, null=True)
+    estado = models.ForeignKey(EstadoDV)
+    usuario = models.ForeignKey(User)
+    def __str__(self):
+        return self.factura + "@" + self.fecha_devolucion

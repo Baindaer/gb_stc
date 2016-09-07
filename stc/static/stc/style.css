@@ -105,7 +105,7 @@
 }
 
 .tabla-consulta{
-  margin:-40px 0px 40px 7%;
+  margin:-40px 0px 40px 3%;
   max-width: 400px;
   float: left;
 }
@@ -114,4 +114,17 @@
   margin:20px;
   margin-left:130px;
   float: left;
+}
+
+.div-tittle{
+  background-color: #8BC34A;
+  color: #fff;
+}
+
+.oculto{
+  display:none;
+}
+
+.botones-dev {
+ margin-top:30px;
 }

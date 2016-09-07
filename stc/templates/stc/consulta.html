@@ -42,7 +42,7 @@
           </tr>
           <tr>
             <td class="mdl-data-table__cell--non-numeric"><b>USUARIO</b></td>
-            <td>{{ each.user.first_name }}</td>
+            <td>{{ each.usuario.first_name }}</td>
           </tr>
         </tbody>
       </table>
@@ -58,6 +58,7 @@
           <thead>
             <tr>
               <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
+              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">EMPRESA</th>
               <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
               <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">RADICADO</th>
               <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONTRATO</th>
@@ -68,6 +69,7 @@
             {% for reg in consulta_factura %}
               <tr>
                 <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
                 <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
                 <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
                 <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
@@ -79,4 +81,64 @@
       {% endif %}
     </div>
   </div>
+  {% if consulta_devolucion %}
+  <div class="demo-container mdl-grid" style="margin-top: 0vh">
+    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
+    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
+      <center><h4>DEVOLUCIONES</h4></center>
+    </div>
+  </div>
+  <div class="demo-container mdl-grid" style="margin-top: 0vh">
+    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
+    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
+      <table class="mdl-data-table mdl-js-data-table full-table" name="dash_devoluciones" id="dash_devoluciones" style="width:100%;">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">ID</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">EMPRESA</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FECHA DEV</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">ESTADO</th>
+            <th class="head-table" style="color:#ffffff">VALOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in consulta_devolucion %}
+            <tr onclick="mostrarDetalle(this)">
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+              <td>{{ reg.valor_factura|intcomma }}</td>
+            </tr>
+          {% endfor %}        
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <table id="datos_ocultos" class="oculto">
+  {% for reg in consulta_devolucion %}
+    <tr>
+      <th>{{ reg.detalle }}</th>
+      <th>{{ reg.gestion }}</th>
+    </tr>
+
+  {% endfor %}
+  <dialog class="mdl-dialog" style="width: 600px" id="dialogo">
+    <div class="mdl-dialog__content">
+      <p id="dialog-content">
+        Allowing us to collect data will let us get you the information you want faster.
+      </p>
+    </div>
+   <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button close" onclick="dialog.close()">Cerrar</button>
+    </div>
+  </dialog>
+  {% endif %}
+{% endblock %}
+{% block script %}
+  <script type="text/javascript" src="{% static 'stc/consulta.js' %}"></script> 
 {% endblock %}

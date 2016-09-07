@@ -1,0 +1,118 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block title_head %}
+  Devoluciones
+{% endblock %}
+{% block title_body %}
+  DEVOLUCIONES
+{% endblock %}
+{% block body %}
+  <div>
+    {% if not request.user.is_authenticated %} 
+      <center><h4>Por favor inicie sesión para acceder a los modulos del sistema</h4></center>
+    {% else %}
+      <center>
+        <form class="form-radicacion" id="formRadicacion" action="{% url 'stc:devoluciones' %}" method="post">
+          {% csrf_token %}
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px" onchange="getData()">
+            <input class="mdl-textfield__input" type="text" id="factura" name="factura" autofocus required />
+            <label class="mdl-textfield__label" for="factura" required>Factura</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
+              {% for each in empresas %}
+                {% if pre_empresa == each.nombre %}
+                  <option selected>{{each.nombre}}</option>
+                {% else %} 
+                  <option>{{each.nombre}}</option>
+                {% endif %}
+              {% endfor %}  
+            </select>
+            <label class="mdl-textfield__label" for="empresa">Empresa</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px">
+            <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required />
+            <datalist name="lstConvenio" id="lstConvenio"> 
+              {% for each in convenios %}
+                <option>{{ each.nombre }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="convenio">Convenio</label>
+          </div>
+          <br>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:30px;width:175px">
+            <input class="mdl-textfield__input" type="date" id="fecha_devolucion" name="fecha_devolucion" required/>
+            <label class="mdl-textfield__label" for="fecha_devolucion">Fecha de devolución</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:120px; margin-right:30px">
+            <input class="mdl-textfield__input" type="number" id="valor_factura" name="valor_factura" required/>
+            <label class="mdl-textfield__label" for="valor_factura">Valor factura</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:190px; margin-right:0px">
+            <input class="mdl-textfield__input" type="text" id="causal" name="causal" list="lstCausales" />
+            <datalist name="lstCausales" id="lstCausales"> 
+              {% for each in causales %}
+                <option>{{ each.codigo }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="causal">Causal</label>
+          </div>
+          <br>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px; ">
+            <textarea class="mdl-textfield__input" type="text" rows= "2" id="detalle" name="detalle" ></textarea>
+            <label class="mdl-textfield__label" for="detalle">Detalle</label>
+          </div><br>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:250px; margin-right:60px">
+            <input class="mdl-textfield__input" type="text" id="gestor" name="gestor" list="lstGestores" />
+            <datalist name="lstGestores" id="lstGestores"> 
+              {% for each in gestores %}
+                <option>{{ each.nombre }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="gestor">Gestor</label>
+          </div>
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="registrar">Registrar</button>
+          <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" href="{% url 'stc:gestion_devoluciones' %}" style="margin-left: 20px">Gestionar</a>
+        </form>
+      </center> 
+    {% endif %}
+  </div>
+{% endblock %}
+{% block body2 %}
+  <div class="demo-container mdl-grid" style="margin-top: 0vh">
+    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
+    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
+      <table class="mdl-data-table mdl-js-data-table full-table" style="width:100%">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">ID</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">EMPRESA</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FECHA DEV</th>
+            <th class="head-table" style="color:#ffffff">VALOR</th>
+            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">ESTADO</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in last_registros %}
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
+              <td>{{ reg.valor_factura|intcomma }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+            </tr>
+          {% endfor %}        
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script type="text/javascript" src="{% static 'stc/devoluciones.js' %}"></script> 
+{% endblock %}
+

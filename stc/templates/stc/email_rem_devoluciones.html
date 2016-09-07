@@ -1,0 +1,69 @@
+<html>
+  {% load humanize %}
+  {% load i18n %}
+  <body style="max-width: 800px">
+    <span style="font-family: Serif; font-size: 14px">
+    {% language 'es' %}
+      <img src="https://dl.dropboxusercontent.com/u/49997815/GestionarBienestar/logoGB.png" style="max-width:350px">
+      <br><br>
+      <p>Floridablanca, {{ fecha.day }} de {{ fecha|date:'F' }} de {{ fecha.year }}</p>
+      <br><br><br>
+      <p>
+        Cordial saludo,
+      </p>
+      <br>
+      <p>
+        De acuerdo a los procesos establecidos dentro de la institución, me permito informar sobre las devoluciones detalladas en el anexo para su respectiva gestión.
+      </p>
+      <p>
+        Se solicita que por favor una vez revisadas se informe al departamento si las facturas fueron reemplazadas, anuladas o radicadas nuevamente.
+      </p>
+      <br>
+      <table style="box-shadow: 0px 1px 2px 1px #888888; border-spacing:1px; font-size: 10px ">
+        <tr style="background-color: #E0E0E0; border-bottom: 1px solid #ddd">
+          <th style="padding:5px;">Factura</th>
+          <th style="padding:5px;">Unidad</th>
+          <th style="padding:5px;">Convenio</th>
+          <th style="padding:5px;">Codigo</th>
+          <th style="padding:5px; max-width:300px">Detalle</th>
+          <th style="padding:5px; text-align: right">Valor</th>
+        </tr>
+        {% for each in pendientes %}
+          <tr>
+            <td style="border-bottom: 1px solid #ddd; padding:10px">{{each.factura}}</td>
+            <td style="border-bottom: 1px solid #ddd; padding:10px">{{each.unidad.id}}</td>
+            <td style="border-bottom: 1px solid #ddd; padding:10px">{{each.convenio.nombre}}</td>
+            <td style="border-bottom: 1px solid #ddd; padding:10px">{{each.causal.codigo}}</td>
+            <td style="border-bottom: 1px solid #ddd; padding:10px">{{each.detalle}}</td>
+            <td style="border-bottom: 1px solid #ddd; padding:10px; text-align: right">{{each.valor_factura|intcomma}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+      <br><br>
+      <p>
+        Sin otro particular,      
+      </p>
+      <br><br><br>
+      <div style="float:left">
+        <p>
+          <b>Zary Juliana Cárdenas<br></b>
+          Departamento de cartera<br>
+          Grupo empresarial GestionarBienestar
+        </p>
+      </div>
+      <div style="float:left;margin-left:150px">
+        <p>
+        <b>{{gestor}}<br></b>
+        Recibe
+        </p>
+      </div>
+      <br><br><br><br><br><br>
+      <p>
+      <div>
+        <small>Este documento es autogenerado y enviado por correo electronico por el aplicativo de control de trazabilidad documental del departamento de cartera.</small>
+      </div>
+      </p>
+    {% endlanguage %}
+    </span>
+  </body>
+</html>
