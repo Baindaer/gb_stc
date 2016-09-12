@@ -1,0 +1,71 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block titulo_page %}
+  Devoluciones
+{% endblock %}
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:devoluciones' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  ELIMINAR REGISTROS
+{% endblock %}
+{% block body %}
+  <form action="{% url 'stc:dev_gestion' %}" method="post">
+    {% csrf_token %}
+    <div class="mdl-grid content-rad-gest">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell-head mdl-cell mdl-cell--12-col">
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--6-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:180px" onclick="limpiarInput('factura')">
+            <input class="mdl-textfield__input" type="text" id="factura" name="factura" required />
+            <label class="mdl-textfield__label" for="factura" required>Factura</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--6-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:150px">
+            <input class="mdl-textfield__input" type="text" id="id_registro" name="id_registro" readonly="readonly" />
+            <label class="mdl-textfield__label" for="id_registro" required>ID Registro</label>
+          </div>
+        </div>
+        <div class="cell-button mdl-cell mdl-cell--12-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="margin-right:30px" name="submit" value="buscar">Buscar</button>
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="eliminar">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash" name="dash">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">ID</th>
+            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
+            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric">FECHA DEV</th>
+            <th>VALOR</th>
+            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+          </tr>
+        </thead>
+        {% for reg in last_registros %}
+            <tr onclick="getRow(this)">
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
+              <td>{{ reg.valor_factura|intcomma }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+            </tr>
+          {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'stc/dev_gestion.js' %}"></script> 
+{% endblock %}

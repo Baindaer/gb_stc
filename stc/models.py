@@ -62,6 +62,11 @@ class Radicacion(models.Model):
             return "CAPITA"
         else:
             return "EVENTO"
+    def tiene_dev(self):
+        if Devolucion.objects.filter(factura=self.factura):
+            return "SI"
+        else:
+            return "NO"
 
 class Causal(models.Model):
     id = models.IntegerField(primary_key=True)

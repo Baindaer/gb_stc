@@ -1,13 +1,221 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
-{% block title_head %}
-  Consulta de factura
+{% block titulo_page %}
+  Consulta
 {% endblock %}
-{% block title_body %}
-  CONSULTA DE FACTURA
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:inicio' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  CONSULTA
 {% endblock %}
 {% block body %}
+  <form action="{% url 'stc:consulta' %}" method="post">
+    {% csrf_token %}
+    <div class="mdl-grid content-rad-gest">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell-head mdl-cell mdl-cell--12-col">
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--8-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:180px" onclick="limpiarInput('factura')">
+            <input class="mdl-textfield__input" type="text" id="factura" name="factura" required />
+            <label class="mdl-textfield__label" for="factura" required>Factura</label>
+          </div>
+        </div>
+        <div class="cell-button mdl-cell mdl-cell--4-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" style="margin-right:30px" name="submit" value="buscar">Buscar</button>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-grid content-consulta">
+      {% for reg in consulta_factura %}
+        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--7-col mdl-grid">
+          <div class="cell-form mdl-cell mdl-cell--12-col">
+            <h5><i class="icon-nav icon-consulta material-icons">dashboard</i> General</h5>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Numero:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.factura }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Empresa:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.empresa.nombre }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Unidad:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.unidad.nombre }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Convenio:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.convenio.nombre }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Valor:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.valor_factura|intcomma }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Contrato:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.contrato_tipo }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Servicio:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.servicio.descripcion }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--3-col">
+            <b>Mes servicio:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--9-col">
+            {{ reg.mes_servicio }}
+          </div>
+        </div>
+        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--5-col mdl-grid">
+          <div class="cell-form mdl-cell mdl-cell--12-col">
+            <h5><i class="icon-nav icon-consulta material-icons">input</i> Radicación</h5>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--5-col">
+            <b>Fecha radicado:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--7-col">
+            {{ reg.fecha_radicacion }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--5-col">
+            <b>Usuario:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--7-col">
+            {{ reg.usuario.first_name }}
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--5-col">
+            <b>Fecha de registro:</b>
+          </div>
+          <div class="cell-form mdl-cell mdl-cell--7-col">
+            {{ reg.fecha_registro.date }}
+          </div>
+        </div>
+      {% endfor %}
+      {% if consulta_glosa %}
+        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+          <div class="cell-form mdl-cell mdl-cell--12-col">
+            <h5><i class="icon-nav icon-consulta material-icons">update</i> Glosas</h5>
+          </div>
+        </div>
+      {% endif %}
+      {% if consulta_devolucion %}
+        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+          <div class="cell-form mdl-cell mdl-cell--12-col">
+            <h5><i class="icon-nav icon-consulta material-icons">autorenew</i> Devoluciones</h5>
+          </div>
+          {% for reg in consulta_devolucion %}
+            <div class="mdl-cell mdl-cell--12-col mdl-grid">
+              <div class="mdl-cell mdl-cell--6-col mdl-grid">
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>ID:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.id }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Fecha devolucion:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.fecha_devolucion }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Estado:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.estado.descripcion }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Causal:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.causal.id }} - {{ reg.causal.descripcion }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Detalle:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.detalle }}
+                </div>
+              </div>
+              <div class="mdl-cell mdl-cell--6-col mdl-grid">
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Gestor:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.gestor.nombre }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Fecha remision:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.fecha_remitido }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Gestion:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.gestion }}
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--4-col">
+                  <b>Fecha gestión:</b>
+                </div>
+                <div class="cell-form mdl-cell mdl-cell--8-col">
+                  {{ reg.fecha_gestion }}
+                </div>
+              </div>
+              <div class="mdl-cell mdl-cell--12-col mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                  <hr>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </form>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+
+
   <div class="form-consulta">
       <form id="form_consulta" action="{% url 'stc:consulta' %}" method="post">
         {% csrf_token %}
@@ -48,8 +256,8 @@
       </table>
     {% endfor %}
   </div>
-{% endblock %}
-{% block body2 %}
+
+
   <div class="demo-container mdl-grid" style="margin-top: 0vh">
     <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
     <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
@@ -138,7 +346,8 @@
     </div>
   </dialog>
   {% endif %}
-{% endblock %}
-{% block script %}
+
   <script type="text/javascript" src="{% static 'stc/consulta.js' %}"></script> 
-{% endblock %}
+
+
+-->

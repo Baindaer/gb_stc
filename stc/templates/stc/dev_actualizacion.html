@@ -1,13 +1,138 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
-{% block title_head %}
-  Actualizacion de devoluciones
+{% block titulo_page %}
+  Devoluciones
 {% endblock %}
-{% block title_body %}
-  ACTUALIZACION DE DEVOLUCIONES
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:devoluciones' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  ACTUALIZAR
+{% endblock %}
+{% block acciones %}
 {% endblock %}
 {% block body %}
+  <form action="{% url 'stc:dev_actualizacion' %}" method="post">
+    {% csrf_token %}
+    <div class="mdl-grid content-form-agregar">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell-head-form mdl-cell mdl-cell--4-col">
+          <h5><img src="{% static 'stc/images/logoGB.png' %}" class="logo-form"></h5>
+        </div>
+        <div class="cell-head-form mdl-cell mdl-cell--8-col">
+          <h5><b>Formato de actualización de devoluciones</b></h5>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--6-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:210px; width:150px" onclick="limpiarInput('factura')">
+            <input class="mdl-textfield__input" type="text" id="factura" name="factura" />
+            <label class="mdl-textfield__label" for="factura" required>Factura</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--6-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:100px">
+            <input class="mdl-textfield__input" type="text" id="id_registro" name="id_registro" readonly="readonly" />
+            <label class="mdl-textfield__label" for="id_registro" required>ID Registro</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--6-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="estado" name="estado" required> 
+              {% for each in estados %}
+                  <option>{{each.descripcion}}</option>
+              {% endfor %}  
+            </select>
+            <label class="mdl-textfield__label" for="estado">Estado</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--6-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:20px;width:175px">
+            <input class="mdl-textfield__input" type="date" id="fecha_gestion" name="fecha_gestion" required/>
+            <label class="mdl-textfield__label" for="fecha_gestion">Fecha de gestión</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px; ">
+            <textarea class="mdl-textfield__input" type="text" rows= "2" id="gestion" name="gestion" ></textarea>
+            <label class="mdl-textfield__label" for="gestion">Gestión</label>
+          </div>
+        </div>
+        <div class="cell-button mdl-cell mdl-cell--12-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" name="submit" value="buscar" style="margin-right: 30px">Buscar</button>
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="actualizar" name="submit">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash" name="dash">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">ID</th>
+            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
+            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric">FECHA DEV</th>
+            <th>VALOR</th>
+            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+          </tr>
+        </thead>
+        {% for reg in last_registros %}
+            <tr onclick="getRow(this)">
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
+              <td>{{ reg.valor_factura|intcomma }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+            </tr>
+          {% endfor %}  
+      </table>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'stc/dev_actualizacion.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div>
     <center>
       <form class="form-radicacion" id="formRadicacion" action="{% url 'stc:dev_actualizacion' %}" method="post">
@@ -48,8 +173,7 @@
       </form>
     </center> 
   </div>
-{% endblock %}
-{% block body2 %}
+
   <div class="demo-container mdl-grid" style="margin-top: 0vh">
     <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
     <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
@@ -81,7 +205,5 @@
       </table>
     </div>
   </div>
-{% endblock %}
-{% block script %}
+
   <script type="text/javascript" src="{% static 'stc/dev_actualizacion.js' %}"></script> 
-{% endblock %}

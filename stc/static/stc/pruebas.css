@@ -1,0 +1,63 @@
+html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+.drawer{
+  display: flex;
+}
+
+.drawer-header{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  height: 120px;
+}
+.avatar{
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+.avatar-dropdown{
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+.mdl-menu__item {
+  display: flex;
+  align-items: center;
+}
+.material-icons{
+  font-size: 24px;
+}
+.icon-nav{
+  margin-right: 10px;
+}
+.navigation{
+  flex-grow: 1;
+}
+.content{
+  max-width: 1080px;
+}
+.cell{
+  padding:30px;
+}
+.messages-success {
+    background-color: #263238; 
+    color:#fff;
+}
+.messages-error {
+    background-color: #F44336; 
+    color:#fff;
+}
+.messages-warning {
+    background-color: #FF9800; 
+    color:#fff;    
+}
+
+#icon-lock{
+  font-size: 18px;
+  margin-right: 3px;
+}

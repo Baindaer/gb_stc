@@ -1,27 +1,41 @@
 {% extends "stc/layout.html" %}
-{% block title_head %}
-Iniciar sesion
+{% load static %}
+{% load humanize %}
+{% block titulo_page %}
+  Iniciar Sesión
 {% endblock %}
-{% block title_body %}
+{% block titulo_body %}
   INICIAR SESION
 {% endblock %}
 {% block body %}
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
-  <center>
-    <h4>Iniciar Sesión</h4>
-    <form action="." method="post">
-      {% csrf_token %}
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type="text" id="username" name="username" />
-        <label class="mdl-textfield__label" for="username">Usuario</label>
+  <form action="." method="post">
+    {% csrf_token %}
+    <div class="mdl-grid login-content">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell mdl-cell mdl-cell--12-col">
+          <h4>Acceder para continuar</h4>
+        </div>
+        <div class="cell mdl-cell mdl-cell--12-col">
+          <img src="{% static 'stc/images/icoGB.ico' %}" class="avatar-big">
+        </div>
+        <div class="cell-login mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield">
+            <input class="mdl-textfield__input" type="text" id="username" name="username" style="width:100%;" readonly onfocus="this.removeAttribute('readonly');" autofocus/>
+            <label class="mdl-textfield__label" for="username">Usuario</label>
+          </div>
+        </div>
+        <div class="cell-login mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield">
+            <input class="mdl-textfield__input" type=password id="password" name="password" style="width:100%;" readonly onfocus="this.removeAttribute('readonly');"/>
+            <label class="mdl-textfield__label" for="password">Contraseña</label>
+          </div>
+        </div>
+        <div class="cell-login mdl-cell mdl-cell--12-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" style="width:100%;" value="login">Iniciar Sesión</button> 
+        </div>
       </div>
-      <br>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-        <input class="mdl-textfield__input" type=password id="password" name="password" />
-        <label class="mdl-textfield__label" for="password">Contraseña</label>
-      </div>
-      <br><br>
-      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="login">Iniciar Sesión</button>  
-    </form>
-  </center>
+    </div>
+  </form>
 {% endblock %}
+
+<img src="{% static 'stc/images/icoGB.ico' %}" class="avatar">

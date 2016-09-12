@@ -20,7 +20,6 @@ from django.utils.html import strip_tags
 from .models import *
 
 
-
 def inicio(request):
     #Definiendo index de la pagina
     return render(request, 'stc/inicio.html',)
@@ -51,6 +50,18 @@ def logout(request):
     return HttpResponseRedirect(reverse('stc:inicio'))
 
 def radicacion(request):
+    #Definiendo modulo de radicacion; iniciando por validar si existe una sesion activa
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    #Cargando variables de contexto iniciales
+    last_registros = Radicacion.objects.order_by('-fecha_registro')[:40]
+    context = {
+        'last_registros':last_registros, 
+        }
+    return render(request, 'stc/radicacion.html', context)
+
+def rad_agregar(request):
     #Definiendo modulo de radicacion; iniciando por validar si existe una sesion activa
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -88,17 +99,17 @@ def radicacion(request):
             convenio_id = Convenio.objects.get(nombre=convenio).nit
         except:
             messages.error(request, 'Convenio no existente')
-            return render(request, 'stc/radicacion.html', context)
+            return render(request, 'stc/rad_agregar.html', context)
         try:
             unidad_id = RefUnidad.objects.get(referencia=ref_unidad).unidad_id
         except:
             messages.error(request, 'Unidad no existente para la combinacion de empresa y prefijo')
-            return render(request, 'stc/radicacion.html', context)
+            return render(request, 'stc/rad_agregar.html', context)
         try:
             servicio_id=Servicio.objects.get(descripcion=servicio).id
         except:
             messages.error(request, 'Servicio no existente')
-            return render(request, 'stc/radicacion.html', context)
+            return render(request, 'stc/rad_agregar.html', context)
         #Registro en la base de datos
         registro = Radicacion(
                 factura=factura, 
@@ -119,12 +130,12 @@ def radicacion(request):
         context['pre_convenio'] = convenio
         context['pre_fecha_radicacion'] = fecha_radicacion
         messages.success(request, 'Factura ' + factura + ' registrada')
-        return render(request, 'stc/radicacion.html', context)
+        return render(request, 'stc/rad_agregar.html', context)
     else:
         #Haciendo render con el contexto cargado
-        return render(request, 'stc/radicacion.html', context)
+        return render(request, 'stc/rad_agregar.html', context)
 
-def gestion_radicacion(request):
+def rad_gestion(request):
     #Validando sesion
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -144,7 +155,7 @@ def gestion_radicacion(request):
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
-            return render(request, 'stc/gestion_radicacion.html',context)
+            return render(request, 'stc/rad_gestion.html',context)
         if request.POST['submit'] == 'eliminar':
             #Eliminando registro
             try:
@@ -154,9 +165,9 @@ def gestion_radicacion(request):
                 context['last_registros'] = last_registros
             except:
                 messages.error(request, 'Factura no encontrada')
-            return render(request, 'stc/gestion_radicacion.html',context)
+            return render(request, 'stc/rad_gestion.html',context)
     else:
-        return render(request, 'stc/gestion_radicacion.html',context)
+        return render(request, 'stc/rad_gestion.html',context)
 
 def consulta(request):
     #Definiendo vista de consulta de factura
@@ -182,7 +193,7 @@ def consulta(request):
 def reportes(request):
     return render(request, 'stc/reportes.html')
 
-def reporte_capitas(request):
+def rep_capitas(request):
     if not request.user.is_authenticated:
         #Validando sesion
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -201,22 +212,62 @@ def reporte_capitas(request):
         empresa_id = Empresa.objects.get(nombre=empresa).id,
         convenio_id = Convenio.objects.get(nombre=convenio).nit
         reporte_capitas = Radicacion.objects.filter(tipo_contrato='1', empresa=empresa_id, convenio=convenio_id, fecha_radicacion__startswith=mes_reporte )
-        total_capitas = 0
-        for each in reporte_capitas:
-            total_capitas = total_capitas + each.valor_factura
-        context['reporte_capitas'] = reporte_capitas
-        context['total_capitas'] = total_capitas
+        val_dev = Devolucion.objects.filter(empresa=empresa_id, convenio=convenio_id)
         context['pre_empresa'] = empresa
         context['pre_convenio'] = convenio
         context['pre_mes_reporte'] = mes_reporte
-        if reporte_capitas:
+        if request.POST['submit'] == 'generar':
+            if reporte_capitas:
                 messages.success(request, 'Reporte generado con exito')
-        else:
-            messages.error(request, 'Información no encontrada')
-        return render(request, 'stc/reporte_capitas.html',context)
-    return render(request, 'stc/reporte_capitas.html',context)
+            else:
+                messages.error(request, 'Información no encontrada')
+                return render(request, 'stc/rep_capitas.html',context)
+            total_capitas = 0
+            for each in reporte_capitas:
+                total_capitas = total_capitas + each.valor_factura
+            context['reporte_capitas'] = reporte_capitas
+            context['val_dev'] = val_dev
+            context['total_capitas'] = total_capitas
+            return render(request, 'stc/rep_capitas.html',context)
+        if request.POST['submit'] == 'exportar':
+            if reporte_capitas:
+                response = HttpResponse(content_type='text/csv')
+                #Asignando nombre de archivo
+                response['Content-Disposition'] = 'attachment; filename="reporte_capitas.csv"'
+                #Creando el archivo csv con el tipo de delimitador ; para ser leido por excel
+                writer = csv.writer(response, delimiter=';')
+                #Escribiendo archivo, el proceso puede tardar varios segundos
+                writer.writerow(['Factura', 'Convenio', 'Radicado', 'Servicio', 'Tiene_Dev', 'Valor'])
+                for each in reporte_capitas:
+                    writer.writerow([each.factura, each.convenio.nombre, each.fecha_radicacion, each.servicio.descripcion, each.tiene_dev(), each.valor_factura])
+                return response
+            else:
+                messages.error(request, 'Información no encontrada')
+                return render(request, 'stc/rep_capitas.html',context)
+    return render(request, 'stc/rep_capitas.html',context)
 
 def devoluciones(request):
+    #Validando sesion
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    last_registros = Devolucion.objects.order_by('-id')[:40]
+    empresas = Empresa.objects.all()
+    convenios = Convenio.objects.all()
+    causales = Causal.objects.all()
+    gestores = Gestor.objects.all()
+    radicacion = Radicacion.objects.all()
+    context = {
+        'last_registros':last_registros,
+        'empresas':empresas,
+        'convenios':convenios,
+        'causales':causales,
+        'gestores':gestores,
+        'radicacion':radicacion,
+        }
+    return render(request, 'stc/devoluciones.html',context)
+
+def dev_agregar(request):
     #Validando sesion
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -251,22 +302,22 @@ def devoluciones(request):
             convenio_id = Convenio.objects.get(nombre=convenio).nit
         except:
             messages.error(request, 'Convenio no existente')
-            return render(request, 'stc/devoluciones.html', context)
+            return render(request, 'stc/dev_agregar.html', context)
         try:
             unidad_id = RefUnidad.objects.get(referencia=ref_unidad).unidad_id
         except:
             messages.error(request, 'Unidad no existente para la combinacion de empresa y prefijo')
-            return render(request, 'stc/devoluciones.html', context)
+            return render(request, 'stc/dev_agregar.html', context)
         try:
             gestor_id=Gestor.objects.get(nombre=gestor).id
         except:
             messages.error(request, 'Gestor no existente')
-            return render(request, 'stc/devoluciones.html', context)
+            return render(request, 'stc/dev_agregar.html', context)
         try:
             causal_id = Causal.objects.get(codigo=causal).id
         except:
             messages.error(request, 'Unidad no existente para la combinacion de empresa y prefijo')
-            return render(request, 'stc/devoluciones.html', context)
+            return render(request, 'stc/dev_agregar.html', context)
         #Registro en la base de datos 
         registro = Devolucion(
                 factura=factura, 
@@ -284,10 +335,10 @@ def devoluciones(request):
                 )
         registro.save()
         messages.success(request, 'Devolución de la factura ' + factura + ' registrada')
-        return render(request, 'stc/devoluciones.html',context)
-    return render(request, 'stc/devoluciones.html',context)
+        return render(request, 'stc/dev_agregar.html',context)
+    return render(request, 'stc/dev_agregar.html',context)
 
-def gestion_devoluciones(request):
+def dev_gestion(request):
     #Validando sesion
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -308,7 +359,7 @@ def gestion_devoluciones(request):
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
-            return render(request, 'stc/gestion_devoluciones.html',context)
+            return render(request, 'stc/dev_gestion.html',context)
         if request.POST['submit'] == 'eliminar':
             #Eliminando registro
             try:
@@ -317,10 +368,10 @@ def gestion_devoluciones(request):
                 last_registros = Devolucion.objects.order_by('-id')[:50]
                 context['last_registros'] = last_registros
             except:
-                messages.error(request, 'Factura no encontrada')
-            return render(request, 'stc/gestion_devoluciones.html',context)
+                messages.error(request, 'Factura no encontrada, por favor seleccione el registro a eliminar')
+            return render(request, 'stc/dev_gestion.html',context)
     else:
-        return render(request, 'stc/gestion_devoluciones.html',context)
+        return render(request, 'stc/dev_gestion.html',context)
 
 def exportar(request):
     response = HttpResponse(content_type='text/csv')
@@ -352,21 +403,12 @@ def exp_rad_general(request):
     return response
 
 def pruebas(request):
-    subject, from_email, to = 'Hi', 'notificaciones.carteragb@gmail.com', 'jctorres.gestionarbienestar@gmail.com'
-    data = Radicacion.objects.filter(tipo_contrato='1', empresa="GB")
-    context = {
-        'data':data, 
-        }
-    html_content = render_to_string('stc/pruebas.html', context) # ...
-    text_content = strip_tags(html_content) # this strips the html, so people will have the text as well.
+    context={}
+    messages.success(request, 'probando 1,2,3')
+    print (messages)
+    return render(request, 'stc/pruebas.html',context)
 
-    # create the email, and attach the HTML version as well.
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
-    return HttpResponse("listo?")
-
-def remision_devoluciones(request):
+def dev_remision(request):
     #Validando sesion
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -383,7 +425,7 @@ def remision_devoluciones(request):
                 gestor_id = Gestor.objects.get(nombre=gestor).id
             except:
                 messages.error(request, 'Gestor no existente')
-                return render(request, 'stc/remision_devoluciones.html', context)
+                return render(request, 'stc/dev_remision.html', context)
             pendientes = Devolucion.objects.filter(gestor_id=gestor_id, estado="1").order_by('-id')
             context['pendientes'] = pendientes
             context['gestor'] = gestor
@@ -391,7 +433,7 @@ def remision_devoluciones(request):
                 messages.success(request, 'Devoluciones pendientes mostradas')
             else:
                 messages.error(request, 'El gestor no tiene devoluciones para remitir')
-            return render(request, 'stc/remision_devoluciones.html',context)
+            return render(request, 'stc/dev_remision.html',context)
         if request.POST['submit'] == 'remitir':
             #Realizando filtro de consulta
             gestor = request.POST['gestor']
@@ -399,7 +441,7 @@ def remision_devoluciones(request):
                 gestor_id = Gestor.objects.get(nombre=gestor).id
             except:
                 messages.error(request, 'Gestor no existente')
-                return render(request, 'stc/remision_devoluciones.html', context)
+                return render(request, 'stc/dev_remision.html', context)
             pendientes = Devolucion.objects.filter(gestor_id=gestor_id, estado="1").order_by('-id')
             gestor_id= Gestor.objects.get(nombre=gestor)
             if pendientes:
@@ -410,7 +452,7 @@ def remision_devoluciones(request):
                 context['pendientes'] = pendientes
                 context['gestor'] = gestor
                 subject, from_email, to = 'Notificación de devolución', 'notificaciones.carteragb@gmail.com', gestor_id.email
-                html_content = render_to_string('stc/email_rem_devoluciones.html', context) # ...
+                html_content = render_to_string('stc/dev_rem_email.html', context) # ...
                 text_content = strip_tags(html_content) # this strips the html, so people will have the text as well.
                 # create the email, and attach the HTML version as well.
                 msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
@@ -422,11 +464,11 @@ def remision_devoluciones(request):
                     mod.estado_id = "2"
                     mod.fecha_remitido = fecha_remitido
                     mod.save() 
-                return render(request, 'stc/email_rem_devoluciones.html',context)           
+                return render(request, 'stc/dev_rem_email.html',context)           
             else:
                 messages.error(request, 'El gestor no tiene devoluciones para remitir')
-            return render(request, 'stc/remision_devoluciones.html',context)
-    return render(request, 'stc/remision_devoluciones.html',context)
+            return render(request, 'stc/dev_remision.html',context)
+    return render(request, 'stc/dev_remision.html',context)
 
 def dev_actualizacion(request):
     #Validando sesion
@@ -434,8 +476,10 @@ def dev_actualizacion(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     last_registros = Devolucion.objects.order_by('-id')[:50]
+    estados = EstadoDV.objects.all()
     context = {
         'last_registros':last_registros, 
+        'estados':estados,
         }
     if request.method == 'POST':
         factura = request.POST['factura'].upper()

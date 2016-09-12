@@ -1,93 +1,12 @@
 {% extends "stc/layout.html" %}
-{% block title_head %}
+{% load static %}
+{% load humanize %}
+{% block titulo_page %}
 Sistema de trazabilidad de cartera
 {% endblock %}
-{% block title_body %}
-  SISTEMA DE TRAZABILIDAD DE CARTERA
+{% block titulo_body %}
+  STC
 {% endblock %}
 {% block body %}
-  {% if not request.user.is_authenticated %} 
-    <center><h4>Por favor inicie sesión para acceder a los modulos del sistema</h4></center>
-  {% else %}
-    <div class="mod-list">
-      <ul class="demo-list-three mdl-list">
-        <a href="{% url 'stc:radicacion' %}" class="link-modulos">
-          <li class="mdl-list__item mdl-list__item--three-line mdl-button mdl-js-button mdl-js-ripple-effect" style="text-align: left">
-            <span class="mdl-list__item-primary-content" >
-            <i class="material-icons mdl-list__item-avatar">check_circle</i>
-            <span>Radicación</span>
-            <span class="mdl-list__item-text-body">
-              Registro de radicación de facturas, actualizacion y custodia de documentos.
-            </span>
-            </span>
-            <span class="mdl-list__item-secondary-content"></span>
-          </li>
-        </a>
-        <a href="#" class="link-modulos">
-          <li class="mdl-list__item mdl-list__item--three-line mdl-button mdl-js-button mdl-js-ripple-effect" style="text-align: left">
-            <span class="mdl-list__item-primary-content">
-            <i class="material-icons mdl-list__item-avatar">history</i>
-            <span>Glosas y recobros</span>
-            <span class="mdl-list__item-text-body">
-              Registro y control de glosas y recobros.
-            </span>
-            </span>
-            <span class="mdl-list__item-secondary-content"></span>
-          </li>
-        </a>
-        <a href="{% url 'stc:consulta' %}" class="link-modulos">
-          <li class="mdl-list__item mdl-list__item--three-line mdl-button mdl-js-button mdl-js-ripple-effect" style="text-align: left">
-            <span class="mdl-list__item-primary-content">
-            <i class="material-icons mdl-list__item-avatar">search</i>
-            <span>Consultas</span>
-            <span class="mdl-list__item-text-body">
-              Consulta de trazabilidad de facturas
-            </span>
-            </span>
-            <span class="mdl-list__item-secondary-content"></span>
-          </li>
-        </a>
-      </ul>
-    </div>
-    <div class="mod-list">
-      <ul class="demo-list-three mdl-list">
-        <a href="{% url 'stc:devoluciones' %}" class="link-modulos">
-          <li class="mdl-list__item mdl-list__item--three-line mdl-button mdl-js-button mdl-js-ripple-effect" style="text-align: left">
-            <span class="mdl-list__item-primary-content">
-            <i class="material-icons mdl-list__item-avatar">cached</i>
-            <span>Devoluciones</span>
-            <span class="mdl-list__item-text-body">
-              Registro y gestión automatizada de devoluciones. 
-            </span>
-            </span>
-            <span class="mdl-list__item-secondary-content"></span>
-          </li>
-        </a>
-        <a href="#" class="link-modulos">
-          <li class="mdl-list__item mdl-list__item--three-line mdl-button mdl-js-button mdl-js-ripple-effect" style="text-align: left">
-            <span class="mdl-list__item-primary-content">
-            <i class="material-icons mdl-list__item-avatar">history</i>
-            <span>CRM</span>
-            <span class="mdl-list__item-text-body">
-              Gestion de relacion de clientes.
-            </span>
-            </span>
-            <span class="mdl-list__item-secondary-content"></span>
-          </li>
-        </a>
-        <a href="{% url 'stc:reportes' %}" class="link-modulos">
-          <li class="mdl-list__item mdl-list__item--three-line mdl-button mdl-js-button mdl-js-ripple-effect" style="text-align: left">
-            <span class="mdl-list__item-primary-content">
-            <i class="material-icons mdl-list__item-avatar">timeline</i>
-            <span>Reportes</span>
-            <span class="mdl-list__item-text-body">
-              Generación de reportes, resumenes e informes predeterminados.
-            </span>
-            </span>
-            <span class="mdl-list__item-secondary-content"></span>
-          </li>
-        </a>
-      </ul>
-    </div>
-  {% endif %}
+ 
 {% endblock %}

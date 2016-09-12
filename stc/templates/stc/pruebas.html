@@ -1,19 +1,94 @@
-<html>
-{% load humanize %}
-  <body>
-    A continuacion un resumen:
-    <table>
-      <tr style="background-color: black; color:white">
-        <th>campo 1</th>
-        <th>campo 2</th>
-      </tr>
-      {% for reg in data %}
-      <tr>
-        <td>{{reg.factura}}</td>
-        <td>{{reg.valor_factura|intcomma}}</td>
-      </tr>
+<!doctype html>
+<html lang="en" class="mdl-js">
+  {% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>{% block header %}{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'stc/images/icoGB.ico' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.blue-light_green.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'stc/pruebas.css' %}" />
+  </head>
+ <body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">{% block tittle %}{% endblock %}</span>
+          <div class="mdl-layout-spacer"></div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+            <label class="mdl-button mdl-js-button mdl-button--icon" for="factura">
+              <i class="material-icons">search</i>
+            </label>
+            <form action="{% url 'stc:consulta' %}" method="POST">
+              {% csrf_token %}
+              <div class="mdl-textfield__expandable-holder">
+                <input class="mdl-textfield__input" type="text" name="factura" id="factura">
+                <label class="mdl-textfield__label" for="factura"></label>
+              </div>
+            </form>
+          </div>
+          <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
+            <i class="material-icons">more_vert</i>
+          </button>
+          <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
+            <li class="mdl-menu__item">Acerca de</li>
+            <li class="mdl-menu__item">Soporte</li>
+            <li class="mdl-menu__item">Licencia</li>
+          </ul>
+        </div>
+      </header>
+      <div class="drawer mdl-layout__drawer ">
+        <header class="drawer-header mdl-color--blue-grey-50">
+          <img src="{% static 'stc/images/icoGB.ico' %}" class="avatar">
+          <div class="avatar-dropdown">
+            {% if not request.user.is_authenticated %}
+              <a class="mdl-navigation__link" href="{% url 'stc:login' %}"><span>Iniciar sesión</span></a>
+            {% else %}
+              <span>{{ request.user.first_name }}</span>
+              <div class="mdl-layout-spacer"></div>
+              <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+                <i class="material-icons" role="presentation">arrow_drop_down</i>
+                <span class="visuallyhidden">Cuenta</span>
+              </button>
+              <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
+                <li class="mdl-menu__item"><a class="mdl-navigation__link" href="{% url 'stc:logout' %}"><span>Cerrar sesión</span></a></li>
+                <li class="mdl-menu__item"><i class="material-icons" id="icon-lock">lock_outline</i>Cambiar contraseña</li>
+              </ul>
+            {% endif %}
+          </div>
+        </header>
+        <nav class="navigation mdl-navigation">
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">home</i>Inicio</a>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">input</i>Radicacion</a>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">autorenew</i>Devoluciones</a>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">update</i>Glosas</a>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">work</i>CRM</a>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">search</i>Consultas</a>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">timeline</i>Reportes</a>
+          <a class="mdl-navigation__link" href="/admin"><i class="icon-nav material-icons" role="presentation">settings</i>Administrar</a>
+          <div class="mdl-layout-spacer"></div>
+          <a class="mdl-navigation__link" href=""><i class="icon-nav material-icons" role="presentation">help_outline</i>Acerca de</a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-grid content">
+          {% block body %}
+          {% endblock %}
+        </div>
+      </main>
+      {% for each_message in messages %}
+        <center class="mdl-color--grey-100">
+          <div class="messages-{{ each_message.tags }} mdl-button mdl-js-button">
+            {{ each_message.message }}
+          </div>
+        </center>
       {% endfor %}
-    </table>
+    </div>
+    <script src="https://code.getmdl.io/1.2.0/material.min.js"></script>
+    <script src="{% static 'stc/layout.js' %}"></script> 
   </body>
-
 </html>

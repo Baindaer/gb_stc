@@ -1,0 +1,108 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block titulo_page %}
+  Reportes
+{% endblock %}
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:reportes' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  CAPITAS
+{% endblock %}
+{% block body %}
+  <form action="{% url 'stc:rep_capitas' %}" method="post">
+    {% csrf_token %}
+    <div class="mdl-grid content-rad-gest">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
+              {% for each in empresas %}
+                {% if pre_empresa == each.nombre %}
+                  <option selected>{{each.nombre}}</option>
+                {% else %} 
+                  <option>{{each.nombre}}</option>
+                {% endif %}
+              {% endfor %}  
+            </select>
+            <label class="mdl-textfield__label" for="empresa">Empresa</label>
+          </div>
+        </div>
+        <div class="cell mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" onclick="limpiarInput('convenio')">
+            <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required/>
+            <datalist name="lstConvenio" id="lstConvenio"> 
+              {% for each in convenios %}
+                <option value="{{ each.nombre }}">{{ each.nombre }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="convenio">Convenio</label>
+          </div>
+        </div>
+        <div class="cell mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="month" id="mes_reporte" name="mes_reporte" />
+            <label class="mdl-textfield__label" for="mes_reporte">Mes de reporte</label>
+          </div>
+        </div>
+        <div class="cell-button mdl-cell mdl-cell--12-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="generar">Generar</button>
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" name="submit" value="exportar" style="margin-left:30px">Exportar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <form id="consultar" name="consultar" action="{% url 'stc:consulta' %}" method="post" visible="false">
+    {% csrf_token %}
+    <input id="factura" name="factura"/>
+  </form>
+  {% if reporte_capitas %}
+    <div class="mdl-grid content">
+      <div class="mdl-cell mdl-cell--12-col mdl-grid">
+        <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" name="dash" id="dash">
+          <thead>
+              <tr>
+                <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+                <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
+                <th class="mdl-data-table__cell--non-numeric">RADICADO</th>
+                <th class="mdl-data-table__cell--non-numeric">SERVICIO</th>
+                <th class="mdl-data-table__cell--non-numeric">DEV</th>
+                <th>VALOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for reg in reporte_capitas %}
+                <tr onclick="getRow(this)">
+                  <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+                  <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
+                  <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
+                  <td class="mdl-data-table__cell--non-numeric">{{ reg.servicio }}</td>
+                  <td class="mdl-data-table__cell--non-numeric">{{ reg.tiene_dev }}</td>
+                  <td>{{ reg.valor_factura|intcomma }}</td>
+                </tr>
+              {% endfor %}       
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
+                <td class="foot-table"><b>TOTAL<b></td>
+                <td class="foot-table"><b>{{ total_capitas|intcomma }}<b></td>
+              </tr>
+            </tfoot>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'stc/rep_capitas.js' %}"></script>
+  {% if pre_mes_reporte %}
+    <script>
+      document.getElementById("mes_reporte").value = "{{ pre_mes_reporte }}";
+    </script>
+  {% endif %}
+{% endblock %} 

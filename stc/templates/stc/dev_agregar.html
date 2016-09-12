@@ -1,0 +1,140 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block titulo_page %}
+  Devoluciones
+{% endblock %}
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:devoluciones' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  AGREGAR REGISTRO
+{% endblock %}
+{% block acciones %}
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:dev_gestion' %}">
+    <i class="material-icons">delete</i>
+  </a>
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:dev_actualizacion' %}">
+    <i class="material-icons">sync</i>
+  </a>
+{% endblock %}
+{% block body %}
+  <form action="{% url 'stc:dev_agregar' %}" method="post">
+    {% csrf_token %}
+    <div class="mdl-grid content-form-agregar">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell-head-form mdl-cell mdl-cell--4-col">
+          <h5><img src="{% static 'stc/images/logoGB.png' %}" class="logo-form"></h5>
+        </div>
+        <div class="cell-head-form mdl-cell mdl-cell--8-col">
+          <h5><b>Formato de registro de devoluciones</b></h5>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--5-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px" onchange="getData()">
+            <input class="mdl-textfield__input" type="text" id="factura" name="factura" autofocus required />
+            <label class="mdl-textfield__label" for="factura" required>Factura</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--7-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
+              {% for each in empresas %}
+                {% if pre_empresa == each.nombre %}
+                  <option selected>{{each.nombre}}</option>
+                {% else %} 
+                  <option>{{each.nombre}}</option>
+                {% endif %}
+              {% endfor %}  
+            </select>
+            <label class="mdl-textfield__label" for="empresa">Empresa</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px">
+            <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required />
+            <datalist name="lstConvenio" id="lstConvenio"> 
+              {% for each in convenios %}
+                <option>{{ each.nombre }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="convenio">Convenio</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--4-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:30px;width:175px">
+            <input class="mdl-textfield__input" type="date" id="fecha_devolucion" name="fecha_devolucion" required/>
+            <label class="mdl-textfield__label" for="fecha_devolucion">Fecha de devolución</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--3-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:120px; margin-right:30px">
+            <input class="mdl-textfield__input" type="number" id="valor_factura" name="valor_factura" required/>
+            <label class="mdl-textfield__label" for="valor_factura">Valor factura</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--5-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:190px; margin-right:0px">
+            <input class="mdl-textfield__input" type="text" id="causal" name="causal" list="lstCausales" />
+            <datalist name="lstCausales" id="lstCausales"> 
+              {% for each in causales %}
+                <option>{{ each.codigo }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="causal">Causal</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--12-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px; ">
+            <textarea class="mdl-textfield__input" type="text" rows= "2" id="detalle" name="detalle" ></textarea>
+            <label class="mdl-textfield__label" for="detalle">Detalle</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--8-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:250px; margin-right:60px">
+            <input class="mdl-textfield__input" type="text" id="gestor" name="gestor" list="lstGestores" />
+            <datalist name="lstGestores" id="lstGestores"> 
+              {% for each in gestores %}
+                <option>{{ each.nombre }}</option>
+              {% endfor %}
+            </datalist>
+            <label class="mdl-textfield__label" for="gestor">Gestor</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--4-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="registrar">Registrar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">ID</th>
+            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
+            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric">FECHA DEV</th>
+            <th>VALOR</th>
+            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+          </tr>
+        </thead>
+        {% for reg in last_registros %}
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
+              <td>{{ reg.valor_factura|intcomma }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+            </tr>
+          {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script type="text/javascript" src="{% static 'stc/dev_agregar.js' %}"></script> 
+{% endblock %}

@@ -1,115 +1,50 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
-{% block title_head %}
+{% block titulo_page %}
   Radicación
 {% endblock %}
-{% block title_body %}
-  RADICACION Y CUSTODIA {% if pre_empresa %} {{ pre_empresa }} {% endif %}
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:inicio' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  RADICACION
+{% endblock %}
+{% block acciones %}
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:rad_agregar' %}">
+    <i class="material-icons">add_box</i>
+  </a>
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:rad_gestion' %}">
+    <i class="material-icons">delete</i>
+  </a> 
 {% endblock %}
 {% block body %}
-  <div>
-    {% if not request.user.is_authenticated %} 
-      <center><h4>Por favor inicie sesión para acceder a los modulos del sistema</h4></center>
-    {% else %}
-      <center>
-        <form class="form-radicacion" id="formRadicacion" action="{% url 'stc:radicacion' %}" method=post>
-          {% csrf_token %}
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px">
-            <input class="mdl-textfield__input" type="text" id="factura" name="factura" autofocus required />
-            <label class="mdl-textfield__label" for="factura" required>Factura</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
-              {% for each in empresas %}
-                {% if pre_empresa == each.nombre %}
-                  <option selected>
-                {% else %} 
-                  <option>
-                {% endif %}
-                {{each.nombre}}</option>
-              {% endfor %}  
-            </select>
-            <label class="mdl-textfield__label" for="empresa">Empresa</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px">
-            <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required/>
-            <datalist name="lstConvenio" id="lstConvenio"> 
-              {% for each in convenios %}
-                <option>{{ each.nombre }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="convenio">Convenio</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:75px;width:175px">
-            <input class="mdl-textfield__input" type="date" id="fecha_radicacion" name="fecha_radicacion" required/>
-            <label class="mdl-textfield__label" for="fecha_radicacion">Fecha de radicación</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:150px; margin-right:40px">
-            <input class="mdl-textfield__input" type="number" id="valor_factura" name="valor_factura" required/>
-            <label class="mdl-textfield__label" for="valor_factura">Valor factura</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:90px;">
-            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="tipo_contrato">
-              <input type="checkbox" id="tipo_contrato" name="tipo_contrato" value="1" class="mdl-switch__input" />
-              <span class="mdl-switch__label"><b>Capita</b></span>
-            </label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:280px; margin-right:50px">
-            <input class="mdl-textfield__input" type="text" id="servicio" name="servicio" list="lstServicio" />
-            <datalist name="lstServicio" id="lstServicio"> 
-              {% for each in servicios %}
-                <option>{{ each.descripcion }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="servicio">Servicio</label>
-          </div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:220px;">
-            <input class="mdl-textfield__input" type="month" id="mes_servicio" name="mes_servicio" />
-            <label class="mdl-textfield__label" for="mes_servicio">Mes prestación del servicio</label>
-          </div>
-          <br><br>
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="registrar">Registrar</button>
-          <a class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" href="{% url 'stc:gestion_radicacion' %}" style="margin-left: 20px">Gestionar</a>
-        </form>
-      </center> 
-    {% endif %}
-  </div>
-{% endblock %}
-{% block body2 %}
-  <div class="demo-container mdl-grid" style="margin-top: 0vh">
-    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
-    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
-      <table class="mdl-data-table mdl-js-data-table full-table" style="width:100%">
+  
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
         <thead>
           <tr>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">RADICADO</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONTRATO</th>
-            <th class="head-table" style="color:#ffffff">VALOR</th>
+            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric">UNIDAD</th>
+            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric">RADICADO</th>
+            <th class="mdl-data-table__cell--non-numeric">CONTRATO</th>
+            <th>VALOR</th>
           </tr>
         </thead>
-        <tbody>
-          {% for reg in last_registros %}
+        {% for reg in last_registros %}
             <tr>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.unidad }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
               <td>{{ reg.valor_factura|intcomma }}</td>
             </tr>
-          {% endfor %}        
-        </tbody>
+          {% endfor %}  
       </table>
     </div>
   </div>
-{% endblock %}
-{% block script %}
-  <script type="text/javascript" src="{% static 'stc/radicacion.js' %}"></script> 
-  {% if pre_fecha_radicacion %}
-    <script>
-      document.getElementById("fecha_radicacion").value = "{{ pre_fecha_radicacion }}";
-    </script>
-  {% endif %}
+  <a href="{% url 'stc:rad_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
 {% endblock %}
