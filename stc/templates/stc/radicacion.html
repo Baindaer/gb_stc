@@ -1,6 +1,7 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 {% block titulo_page %}
   Radicación
 {% endblock %}
@@ -19,7 +20,7 @@
   </a> 
 {% endblock %}
 {% block body %}
-  
+{% language 'es' %}
   <div class="mdl-grid content">
     <div class="mdl-cell mdl-cell--12-col mdl-grid">
       <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
@@ -38,7 +39,7 @@
               <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.unidad }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion|date:"Y-m-d" }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
               <td>{{ reg.valor_factura|intcomma }}</td>
             </tr>
@@ -47,4 +48,5 @@
     </div>
   </div>
   <a href="{% url 'stc:rad_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
+{% endlanguage %}
 {% endblock %}

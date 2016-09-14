@@ -1,6 +1,7 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 {% block titulo_page %}
   Devoluciones
 {% endblock %}
@@ -56,7 +57,7 @@
               <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion|date:"Y-m-d" }}</td>
               <td>{{ reg.valor_factura|intcomma }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
             </tr>

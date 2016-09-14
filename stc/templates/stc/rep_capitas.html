@@ -1,6 +1,7 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 {% block titulo_page %}
   Reportes
 {% endblock %}
@@ -11,6 +12,7 @@
   CAPITAS
 {% endblock %}
 {% block body %}
+{% language 'es' %}
   <form action="{% url 'stc:rep_capitas' %}" method="post">
     {% csrf_token %}
     <div class="mdl-grid content-rad-gest">
@@ -76,7 +78,7 @@
                 <tr onclick="getRow(this)">
                   <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
                   <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-                  <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
+                  <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion|date:"Y-m-d" }}</td>
                   <td class="mdl-data-table__cell--non-numeric">{{ reg.servicio }}</td>
                   <td class="mdl-data-table__cell--non-numeric">{{ reg.tiene_dev }}</td>
                   <td>{{ reg.valor_factura|intcomma }}</td>
@@ -97,6 +99,7 @@
       </div>
     </div>
   {% endif %}
+{% endlanguage %}
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'stc/rep_capitas.js' %}"></script>

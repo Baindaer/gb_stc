@@ -1,6 +1,7 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 {% block titulo_page %}
   Consulta
 {% endblock %}
@@ -11,6 +12,7 @@
   CONSULTA
 {% endblock %}
 {% block body %}
+{% language 'es' %}
   <form action="{% url 'stc:consulta' %}" method="post">
     {% csrf_token %}
     <div class="mdl-grid content-rad-gest">
@@ -91,7 +93,7 @@
             <b>Fecha radicado:</b>
           </div>
           <div class="cell-form mdl-cell mdl-cell--7-col">
-            {{ reg.fecha_radicacion }}
+            {{ reg.fecha_radicacion|date:"Y-m-d" }}
           </div>
           <div class="cell-form mdl-cell mdl-cell--5-col">
             <b>Usuario:</b>
@@ -103,7 +105,7 @@
             <b>Fecha de registro:</b>
           </div>
           <div class="cell-form mdl-cell mdl-cell--7-col">
-            {{ reg.fecha_registro.date }}
+            {{ reg.fecha_registro|date:"Y-m-d" }}
           </div>
         </div>
       {% endfor %}
@@ -132,7 +134,7 @@
                   <b>Fecha devolucion:</b>
                 </div>
                 <div class="cell-form mdl-cell mdl-cell--8-col">
-                  {{ reg.fecha_devolucion }}
+                  {{ reg.fecha_devolucion|date:"Y-m-d" }}
                 </div>
                 <div class="cell-form mdl-cell mdl-cell--4-col">
                   <b>Estado:</b>
@@ -164,7 +166,7 @@
                   <b>Fecha remision:</b>
                 </div>
                 <div class="cell-form mdl-cell mdl-cell--8-col">
-                  {{ reg.fecha_remitido }}
+                  {{ reg.fecha_remitido|date:"Y-m-d" }}
                 </div>
                 <div class="cell-form mdl-cell mdl-cell--4-col">
                   <b>Gestion:</b>
@@ -176,7 +178,7 @@
                   <b>Fecha gestión:</b>
                 </div>
                 <div class="cell-form mdl-cell mdl-cell--8-col">
-                  {{ reg.fecha_gestion }}
+                  {{ reg.fecha_gestion|date:"Y-m-d" }}
                 </div>
               </div>
               <div class="mdl-cell mdl-cell--12-col mdl-grid">
@@ -190,8 +192,7 @@
       {% endif %}
     </div>
   </form>
-
-
+{% endlanguage %}
 {% endblock %}
 
 
@@ -211,143 +212,3 @@
 
 
 
-
-
-<!--
-
-
-  <div class="form-consulta">
-      <form id="form_consulta" action="{% url 'stc:consulta' %}" method="post">
-        {% csrf_token %}
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px; float:left" onclick="limpiarInput('factura')">
-          <input class="mdl-textfield__input" type="text" id="factura" name="factura" />
-          <label class="mdl-textfield__label" for="factura" required>Factura</label>
-        </div>
-        <div class="boton-consulta">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="buscar">Buscar</button>
-        </div>
-      </form>
-  </div>
-  <div class="tabla-consulta">
-    {% for each in consulta_factura %}
-      <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-        <tbody>
-          <tr>
-            <td class="mdl-data-table__cell--non-numeric"><b>UNIDAD</b></td>
-            <td>{{ each.unidad.nombre }}</td>
-          </tr>
-          <tr>
-            <td class="mdl-data-table__cell--non-numeric"><b>SERVICIO</b></td>
-            <td>{{ each.servicio }}</td>
-          </tr>
-          <tr>
-            <td class="mdl-data-table__cell--non-numeric"><b>MES DE SERVICIO</b></td>
-            <td>{{ each.mes_servicio }}</td>
-          </tr>
-          <tr>
-            <td class="mdl-data-table__cell--non-numeric"><b>FECHA REGISTRO</b></td>
-            <td>{{ each.fecha_registro|naturalday }}</td>
-          </tr>
-          <tr>
-            <td class="mdl-data-table__cell--non-numeric"><b>USUARIO</b></td>
-            <td>{{ each.usuario.first_name }}</td>
-          </tr>
-        </tbody>
-      </table>
-    {% endfor %}
-  </div>
-
-
-  <div class="demo-container mdl-grid" style="margin-top: 0vh">
-    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
-    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
-      {% if consulta_factura %}
-        <table class="mdl-data-table mdl-js-data-table full-table" name="dash" id="dash" style="width:100%">
-          <thead>
-            <tr>
-              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
-              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">EMPRESA</th>
-              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
-              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">RADICADO</th>
-              <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONTRATO</th>
-              <th class="head-table" style="color:#ffffff">VALOR</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for reg in consulta_factura %}
-              <tr>
-                <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-                <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
-                <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-                <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
-                <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
-                <td>{{ reg.valor_factura|intcomma }}</td>
-              </tr>
-            {% endfor %}        
-          </tbody>
-        </table>
-      {% endif %}
-    </div>
-  </div>
-  {% if consulta_devolucion %}
-  <div class="demo-container mdl-grid" style="margin-top: 0vh">
-    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
-    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
-      <center><h4>DEVOLUCIONES</h4></center>
-    </div>
-  </div>
-  <div class="demo-container mdl-grid" style="margin-top: 0vh">
-    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone" style="width:5%"></div>
-    <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col" style="width:85%">
-      <table class="mdl-data-table mdl-js-data-table full-table" name="dash_devoluciones" id="dash_devoluciones" style="width:100%;">
-        <thead>
-          <tr>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">ID</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">EMPRESA</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">FECHA DEV</th>
-            <th class="mdl-data-table__cell--non-numeric head-table" style="color:#ffffff">ESTADO</th>
-            <th class="head-table" style="color:#ffffff">VALOR</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for reg in consulta_devolucion %}
-            <tr onclick="mostrarDetalle(this)">
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
-              <td>{{ reg.valor_factura|intcomma }}</td>
-            </tr>
-          {% endfor %}        
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <table id="datos_ocultos" class="oculto">
-  {% for reg in consulta_devolucion %}
-    <tr>
-      <th>{{ reg.detalle }}</th>
-      <th>{{ reg.gestion }}</th>
-    </tr>
-
-  {% endfor %}
-  <dialog class="mdl-dialog" style="width: 600px" id="dialogo">
-    <div class="mdl-dialog__content">
-      <p id="dialog-content">
-        Allowing us to collect data will let us get you the information you want faster.
-      </p>
-    </div>
-   <div class="mdl-dialog__actions">
-      <button type="button" class="mdl-button close" onclick="dialog.close()">Cerrar</button>
-    </div>
-  </dialog>
-  {% endif %}
-
-  <script type="text/javascript" src="{% static 'stc/consulta.js' %}"></script> 
-
-
--->

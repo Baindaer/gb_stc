@@ -1,6 +1,7 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 {% block titulo_page %}
   Radicación
 {% endblock %}
@@ -11,6 +12,7 @@
   ELIMINAR REGISTROS
 {% endblock %}
 {% block body %}
+{% language 'es' %}
   <form action="{% url 'stc:rad_gestion' %}" method="post">
     {% csrf_token %}
     <div class="mdl-grid content-rad-gest">
@@ -54,7 +56,7 @@
               <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.unidad }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion|date:"Y-m-d" }}</td>
               <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
               <td>{{ reg.valor_factura|intcomma }}</td>
             </tr>
@@ -62,6 +64,7 @@
       </table>
     </div>
   </div>
+{% endlanguage %}
 {% endblock %}
 
 {% block scripts %}

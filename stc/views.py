@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.db.models import Sum
 from django.contrib import auth, messages
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django import template
@@ -260,22 +261,14 @@ def devoluciones(request):
         return HttpResponseRedirect(reverse('stc:login'))
     last_registros = Devolucion.objects.order_by('-id')[:40]
     fecha = timezone.now()
-    mes_actual = timezone.now().strftime('%Y-%m')
-    data = Devolucion.objects.filter(Q(estado=1) | Q(estado=2))
-    data_mes = Devolucion.objects.filter(fecha_devolucion__startswith=mes_actual)
-    cant_dv_reg = 0
-    vr_dv_reg = 0
-    cant_dv_registradas = 0
-    cant_dv_revision = 0
-    for each in data_mes:
-        cant_dv_reg +=1
-        vr_dv_reg = vr_dv_reg+each.valor_factura 
-    for each in data:
-        if each.estado.id == 1:
-            cant_dv_registradas +=1
-        if each.estado.id == 2:
-            cant_dv_revision +=1
-    vr_dv_reg = vr_dv_reg/1000000
+    mes_actual = fecha.month
+    dev = Devolucion.objects.all()
+    dev_mes = Devolucion.objects.filter(fecha_devolucion__month=mes_actual)
+    cant_dv_reg = dev_mes.count()
+    vr_dv_reg = dev_mes.aggregate(Sum('valor_factura'))['valor_factura__sum']/1000000
+    cant_dv_registradas = dev.filter(estado=1).count()
+    cant_dv_revision = dev.filter(estado=2).count()
+
     context = {
         'last_registros':last_registros,
         'cant_dv_reg':cant_dv_reg,
