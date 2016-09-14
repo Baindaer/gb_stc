@@ -1,6 +1,7 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
+{% load i18n %}
 {% block titulo_page %}
   Devoluciones
 {% endblock %}
@@ -25,9 +26,47 @@
   <li><a class="mdl-menu__item mdl-menu__item--full-bleed-divider" href="{% url 'stc:dev_gestion' %}">Eliminar</a></li>
 {% endblock %}
 {% block body %}
-  
+{% language 'es' %}
   <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+    <div class="cell mdl-cell mdl-color--white mdl-cell--12-col mdl-grid mdl-shadow--2dp">
+      <h4>Resumen {{ fecha|date:'F' }}</h4>
+    </div>
+    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
+      <div class="indicador cell mdl-cell mdl-cell--12-col">
+        {{ cant_dv_reg }}
+      </div>
+      <div class="cell mdl-cell mdl-cell--12-col">
+        Devoluciones registradas
+      </div>
+    </div>
+    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
+      <div class="indicador cell mdl-cell mdl-cell--12-col">
+        {{ vr_dv_reg|intcomma }}M
+      </div>
+      <div class="cell mdl-cell mdl-cell--12-col">
+        Total devoluciones
+      </div>
+    </div>
+    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
+      <div class="indicador cell mdl-cell mdl-cell--12-col">
+        {{ cant_dv_registradas|intcomma }}
+      </div>
+      <div class="cell mdl-cell mdl-cell--12-col">
+        Pendientes por remitir
+      </div>
+    </div>
+    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
+      <div class="indicador cell mdl-cell mdl-cell--12-col">
+        {{ cant_dv_revision|intcomma }}
+      </div>
+      <div class="cell mdl-cell mdl-cell--12-col">
+        Devoluciones en revisión
+      </div>
+    </div>
+  </div>
+
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
       <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
         <thead>
           <tr>
@@ -55,4 +94,5 @@
     </div>
   </div>
   <a href="{% url 'stc:dev_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
+{% endlanguage %}
 {% endblock %}

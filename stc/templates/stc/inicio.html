@@ -8,5 +8,96 @@ Sistema de trazabilidad de cartera
   STC
 {% endblock %}
 {% block body %}
- 
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--4-col mdl-grid">
+      <div class="card-square card-radicacion mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">Radicación</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Registro de radicación y custodia de facturacion radicada.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:radicacion' %}">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col mdl-grid">
+      <div class="card-square card-devoluciones mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">Devoluciones</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Registro y gestión automatizada de devoluciones. 
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:devoluciones' %}">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col mdl-grid">
+      <div class="card-square card-glosas mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">Glosas</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Gestion y seguimiento a glosas y recobros.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col mdl-grid">
+      <div class="card-square card-crm mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">CRM</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Herramienta de seguimiento a gestión con clientes.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" target="_blank" href="https://docs.google.com/spreadsheets/d/1y2SwNubrzlXzwxEyFBl9Ht9C_Bu75bg6tCkroVjMa90/edit#gid=1903171471">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col mdl-grid">
+      <div class="card-square card-consulta mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">Consultas</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Consulta de detallado de movimientos por facturas.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:consulta' %}">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-cell mdl-cell--4-col mdl-grid">
+      <div class="card-square card-reportes mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title mdl-card--expand">
+          <h2 class="mdl-card__title-text">Reportes</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+          Generación de reportes, resumenes e informes predeterminados.
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:reportes' %}">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

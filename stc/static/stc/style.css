@@ -41,6 +41,10 @@ html, body {
 .icon-nav{
   margin-right: 10px;
 }
+.link-modulo{
+  text-decoration: none;
+  color:black;
+}
 .navigation{
   flex-grow: 1;
 }
@@ -49,6 +53,10 @@ html, body {
   margin-top: 10px;
 }
 .content-form-agregar{
+  max-width: 800px;
+  margin-top: 10px;
+}
+.content-inicio{
   max-width: 800px;
   margin-top: 10px;
 }
@@ -138,6 +146,40 @@ html, body {
   color: #fff;
   background:
     url('/static/stc/images/cloud_download.png') top right 10% no-repeat #455A64;
+}
+.card-radicacion > .mdl-card__title {
+  color: #fff;
+  background:
+    url('/static/stc/images/input.png') top right 10% no-repeat #455A64;
+}
+.card-devoluciones > .mdl-card__title {
+  color: #fff;
+  background:
+    url('/static/stc/images/autorenew.png') top right 10% no-repeat #455A64;
+}
+.card-glosas > .mdl-card__title {
+  color: #fff;
+  background:
+    url('/static/stc/images/update.png') top right 10% no-repeat #455A64;
+}
+.card-crm > .mdl-card__title {
+  color: #fff;
+  background:
+    url('/static/stc/images/work.png') top right 10% no-repeat #455A64;
+}
+.card-consulta > .mdl-card__title {
+  color: #fff;
+  background:
+    url('/static/stc/images/search.png') top right 10% no-repeat #455A64;
+}
+.card-reportes > .mdl-card__title {
+  color: #fff;
+  background:
+    url('/static/stc/images/timeline.png') top right 10% no-repeat #455A64;
+}
+.indicador{
+  font-size: 75px;
+  margin-top: 30px;
 }
 
 #icon-lock{

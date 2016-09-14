@@ -106,3 +106,50 @@ class Devolucion(models.Model):
     usuario = models.ForeignKey(User)
     def __str__(self):
         return self.factura + "@" + self.fecha_devolucion
+
+class EstadoGL(models.Model):
+    descripcion = models.CharField(max_length=50)
+    def __str__(self):
+        return self.descripcion
+
+class Glosa(models.Model):
+    factura = models.CharField(max_length=20)
+    empresa = models.ForeignKey(Empresa)
+    unidad = models.ForeignKey(Unidad)
+    convenio = models.ForeignKey(Convenio)
+    fecha_glosa = models.CharField(max_length=10)
+    valor_factura = models.IntegerField()
+    valor_glosa = models.IntegerField()
+    saldo_glosa = models.IntegerField()
+    causal = models.ForeignKey(Causal)
+    fecha_respuesta_lim = models.CharField(max_length=10)
+    detalle = models.CharField(max_length=250)
+    gestor = models.ForeignKey(Gestor)
+    fecha_remitido = models.CharField(max_length=10, null=True)
+    estado = models.ForeignKey(EstadoGL)
+    fecha_ratificacion = models.CharField(max_length=10, null=True)
+    usuario = models.ForeignKey(User)
+    def __str__(self):
+        return self.factura
+    def extemporanea(self):
+        return Radicacion.objects.filter(factura=self.factura).fecha_radicacion
+
+
+
+class Respuesta(models.Model):
+    glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True,)
+    numero = models.IntegerField()
+    fecha_respuesta = models.CharField(max_length=10)
+    gestion = models.CharField(max_length=250)
+    aceptado_ips = models.IntegerField()
+    codigo_respuesta = models.ForeignKey(Causal)
+    referencia = models.CharField(max_length=250, null=True)
+
+class RespuestaRatificacion(models.Model):
+    glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True,)
+    numero = models.IntegerField()
+    fecha_respuesta = models.CharField(max_length=10)
+    gestion = models.CharField(max_length=250)
+    aceptado_ips = models.IntegerField()
+    codigo_respuesta = models.ForeignKey(Causal)
+    referencia = models.CharField(max_length=250, null=True)

@@ -1,7 +1,7 @@
 #importando modulos generales
-import sqlite3
-import os
 import csv
+import os
+import sqlite3
 
 #importando modulos de django
 from django.shortcuts import render
@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.db.models import Q
 
 #importando modulos de aplicacion
 from .models import *
@@ -246,24 +247,42 @@ def rep_capitas(request):
                 return render(request, 'stc/rep_capitas.html',context)
     return render(request, 'stc/rep_capitas.html',context)
 
+def rep_dev_revision(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    pass
+
 def devoluciones(request):
     #Validando sesion
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     last_registros = Devolucion.objects.order_by('-id')[:40]
-    empresas = Empresa.objects.all()
-    convenios = Convenio.objects.all()
-    causales = Causal.objects.all()
-    gestores = Gestor.objects.all()
-    radicacion = Radicacion.objects.all()
+    fecha = timezone.now()
+    mes_actual = timezone.now().strftime('%Y-%m')
+    data = Devolucion.objects.filter(Q(estado=1) | Q(estado=2))
+    data_mes = Devolucion.objects.filter(fecha_devolucion__startswith=mes_actual)
+    cant_dv_reg = 0
+    vr_dv_reg = 0
+    cant_dv_registradas = 0
+    cant_dv_revision = 0
+    for each in data_mes:
+        cant_dv_reg +=1
+        vr_dv_reg = vr_dv_reg+each.valor_factura 
+    for each in data:
+        if each.estado.id == 1:
+            cant_dv_registradas +=1
+        if each.estado.id == 2:
+            cant_dv_revision +=1
+    vr_dv_reg = vr_dv_reg/1000000
     context = {
         'last_registros':last_registros,
-        'empresas':empresas,
-        'convenios':convenios,
-        'causales':causales,
-        'gestores':gestores,
-        'radicacion':radicacion,
+        'cant_dv_reg':cant_dv_reg,
+        'vr_dv_reg': "%.0f" % vr_dv_reg,
+        'fecha':fecha,
+        'cant_dv_registradas':cant_dv_registradas,
+        'cant_dv_revision':cant_dv_revision,
         }
     return render(request, 'stc/devoluciones.html',context)
 
