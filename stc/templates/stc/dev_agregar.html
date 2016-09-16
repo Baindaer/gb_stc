@@ -20,6 +20,7 @@
   </a>
 {% endblock %}
 {% block body %}
+{% language 'es' %}
   <form action="{% url 'stc:dev_agregar' %}" method="post">
     {% csrf_token %}
     <div class="mdl-grid content-form-agregar">
@@ -31,7 +32,7 @@
           <h5><b>Formato de registro de devoluciones</b></h5>
         </div>
         <div class="cell-form mdl-cell mdl-cell--5-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px" onchange="getData()">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px">
             <input class="mdl-textfield__input" type="text" id="factura" name="factura" autofocus required />
             <label class="mdl-textfield__label" for="factura" required>Factura</label>
           </div>
@@ -51,7 +52,7 @@
           </div>
         </div>
         <div class="cell-form mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:550px" onclick="limpiarInput('convenio')">
             <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required />
             <datalist name="lstConvenio" id="lstConvenio"> 
               {% for each in convenios %}
@@ -135,7 +136,9 @@
       </table>
     </div>
   </div>
+{% endlanguage %}
 {% endblock %}
 {% block scripts %}
   <script type="text/javascript" src="{% static 'stc/dev_agregar.js' %}"></script> 
 {% endblock %}
+

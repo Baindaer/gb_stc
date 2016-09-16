@@ -12,6 +12,7 @@
   ELIMINAR REGISTROS
 {% endblock %}
 {% block body %}
+{% language 'es' %}
   <form action="{% url 'stc:dev_gestion' %}" method="post">
     {% csrf_token %}
     <div class="mdl-grid content-rad-gest">
@@ -65,8 +66,8 @@
       </table>
     </div>
   </div>
+{% endlanguage %}
 {% endblock %}
-
 {% block scripts %}
   <script src="{% static 'stc/dev_gestion.js' %}"></script> 
 {% endblock %}

@@ -2,13 +2,16 @@
 import csv
 import os
 import sqlite3
+import json
+from datetime import date, timedelta
+from datetime import datetime
 
 #importando modulos de django
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from django.contrib import auth, messages
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django import template
@@ -23,6 +26,8 @@ from .models import *
 
 
 def inicio(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('stc:login'))
     #Definiendo index de la pagina
     return render(request, 'stc/inicio.html',)
 
@@ -346,6 +351,9 @@ def dev_agregar(request):
                 estado_id = "1",
                 )
         registro.save()
+        #Cargando datos de contexto
+        context['pre_empresa'] = empresa
+        context['pre_convenio'] = convenio
         messages.success(request, 'Devolución de la factura ' + factura + ' registrada')
         return render(request, 'stc/dev_agregar.html',context)
     return render(request, 'stc/dev_agregar.html',context)
@@ -526,3 +534,319 @@ def dev_actualizacion(request):
             return render(request, 'stc/dev_actualizacion.html',context)
     else:
         return render(request, 'stc/dev_actualizacion.html',context)
+
+def glosas(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    last_registros = Glosa.objects.order_by('-id')[:50]
+    context = {
+        'last_registros':last_registros,
+    }
+    return render(request, 'stc/glosas.html',context)
+
+def gl_agregar(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    last_registros = Glosa.objects.order_by('-id')[:50]
+    empresas = Empresa.objects.all()
+    convenios = Convenio.objects.all()
+    causales = Causal.objects.all()
+    gestores = Gestor.objects.all()
+    context={
+        'last_registros':last_registros,
+        'empresas':empresas,
+        'convenios':convenios,
+        'causales':causales,
+        'gestores':gestores,
+    }
+    if request.method == 'POST':
+        factura = request.POST['factura'].upper()
+        empresa = request.POST['empresa']
+        convenio = request.POST['convenio']
+        fecha_glosa = request.POST['fecha_glosa']
+        valor_factura = request.POST['valor_factura']
+        valor_glosa = request.POST['valor_glosa']
+        causal = request.POST['causal']
+        detalle = request.POST['detalle'].upper()
+        gestor = request.POST['gestor']
+        ref_unidad = empresa + factura[:2].upper()
+        fecha_registro = timezone.now()
+        #Validando datos de traidos del formulario
+        try:
+            convenio_id = Convenio.objects.get(nombre=convenio).nit
+        except:
+            messages.error(request, 'Convenio no existente')
+            return render(request, 'stc/gl_agregar.html', context)
+        try:
+            unidad_id = RefUnidad.objects.get(referencia=ref_unidad).unidad_id
+        except:
+            messages.error(request, 'Unidad no existente para la combinacion de empresa y prefijo')
+            return render(request, 'stc/gl_agregar.html', context)
+        try:
+            gestor_id=Gestor.objects.get(nombre=gestor).id
+        except:
+            messages.error(request, 'Gestor no existente')
+            return render(request, 'stc/gl_agregar.html', context)
+        try:
+            causal_id = Causal.objects.get(codigo=causal).id
+        except:
+            messages.error(request, 'Unidad no existente para la combinacion de empresa y prefijo')
+            return render(request, 'stc/gl_agregar.html', context)
+        #Registro en la base de datos 
+        registro = Glosa(
+                factura=factura, 
+                empresa_id=Empresa.objects.get(nombre=empresa).id, 
+                convenio_id=convenio_id,
+                unidad_id=unidad_id, 
+                fecha_glosa=fecha_glosa,
+                #Agregando 20 días habiles a la conversion de fecha_glosa a dato tipo date con strp
+                fecha_max_respuesta = addworkdays(datetime.strptime(fecha_glosa, '%Y-%m-%d').date(),20),
+                valor_factura=valor_factura, 
+                valor_glosa=valor_glosa,
+                saldo_glosa = valor_glosa,
+                fecha_registro=fecha_registro, 
+                usuario_id=request.user.id,
+                causal_id = causal_id,
+                detalle = detalle,
+                gestor_id = gestor_id,
+                estado_id = "1",
+                )
+        registro.save()
+        #Cargando datos de contexto
+        context['pre_empresa'] = empresa
+        context['pre_convenio'] = convenio
+        messages.success(request, 'Glosa de la factura ' + factura + ' registrada')
+        return render(request, 'stc/gl_agregar.html',context)
+    return render(request, 'stc/gl_agregar.html',context)
+
+def gl_gestion(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    last_registros = Glosa.objects.order_by('-id')[:50]
+    context = {
+        'last_registros':last_registros,
+    }
+    if request.method == 'POST':
+        factura = request.POST['factura'].upper()
+        id_registro = request.POST['id_registro']
+        if request.POST['submit'] == 'buscar':
+            #Realizando filtro de consulta
+            last_registros = Glosa.objects.filter(factura__contains=factura).order_by('-id')[:100]
+            context['last_registros'] = last_registros
+            if last_registros:
+                messages.success(request, 'Busqueda realizada')
+            else:
+                messages.error(request, 'Factura no encontrada')
+            return render(request, 'stc/gl_gestion.html',context)
+        if request.POST['submit'] == 'eliminar':
+            #Eliminando registro
+            try:
+                exe = Glosa.objects.get(id=id_registro).delete()
+                messages.success(request, 'Glosa de la factura '+factura+' ha sido eliminada')
+                last_registros = Glosa.objects.order_by('-id')[:50]
+                context['last_registros'] = last_registros
+            except:
+                messages.error(request, 'Factura no encontrada, por favor seleccione el registro a eliminar')
+            return render(request, 'stc/gl_gestion.html',context)
+    else:
+        return render(request, 'stc/gl_gestion.html',context)
+
+def get_factura(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    if request.method == 'POST':
+        factura = request.POST.get('factura').upper()
+        rad = Radicacion.objects.get(factura=factura)
+        empresa = rad.empresa.nombre
+        convenio = rad.convenio.nombre
+        valor_factura = rad.valor_factura
+        servicio = rad.servicio.descripcion
+        fecha_radicacion = rad.fecha_radicacion.strftime('%Y-%m-%d')
+        tipo_contrato = rad.tipo_contrato
+        mes_servicio = rad.mes_servicio
+        data = {
+            'empresa': empresa,
+            'convenio':convenio,
+            'valor_factura':valor_factura,
+            'servicio':servicio,
+            'fecha_radicacion':fecha_radicacion,
+            'tipo_contrato':tipo_contrato,
+            'mes_servicio':mes_servicio,
+        }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    pass
+
+def get_glosa(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    if request.method == 'POST':
+        glosa_id = request.POST.get('glosa_id')
+        gl = Glosa.objects.get(id=glosa_id)
+        valor_glosa = gl.valor_glosa
+        factura = gl.factura
+        extemporaneidad = gl.extemporaneidad()
+        data = {
+            'valor_glosa': valor_glosa,
+            'factura':factura,
+            'extemporaneidad':extemporaneidad,
+        };
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    pass
+
+def get_respuesta(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    if request.method == 'POST':
+        respuesta = request.POST.get('respuesta')
+        resp = Respuesta.objects.filter(numero=respuesta)[:1]
+        for each in resp:
+            gl = Glosa.objects.get(id=each.glosa_id)
+            convenio = gl.convenio.nombre
+            empresa = gl.empresa.nombre
+            fecha_respuesta = each.fecha_respuesta.strftime('%Y-%m-%d')
+            referencia = each.referencia
+        data = {
+            'convenio':convenio,
+            'empresa':empresa,
+            'fecha_respuesta':fecha_respuesta,
+            'referencia':referencia,
+        };
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    pass
+
+def gl_remision(request):
+    #Validando sesion
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    gestores = Gestor.objects.all()
+    context = {
+        'gestores':gestores,
+        }
+    if request.method == 'POST':
+        if request.POST['submit'] == 'buscar':
+            #Realizando filtro de consulta
+            gestor = request.POST['gestor']
+            try:
+                gestor_id = Gestor.objects.get(nombre=gestor).id
+            except:
+                messages.error(request, 'Gestor no existente')
+                return render(request, 'stc/gl_remision.html', context)
+            pendientes = Glosa.objects.filter(gestor_id=gestor_id, estado="1").order_by('-id')
+            context['pendientes'] = pendientes
+            context['gestor'] = gestor
+            if pendientes:
+                messages.success(request, 'Glosas pendientes mostradas')
+            else:
+                messages.error(request, 'El gestor no tiene glosas para remitir')
+            return render(request, 'stc/gl_remision.html',context)
+        if request.POST['submit'] == 'remitir':
+            #Realizando filtro de consulta
+            gestor = request.POST['gestor']
+            try:
+                gestor_id = Gestor.objects.get(nombre=gestor).id
+            except:
+                messages.error(request, 'Gestor no existente')
+                return render(request, 'stc/gl_remision.html', context)
+            pendientes = Glosa.objects.filter(gestor_id=gestor_id, estado="1").order_by('-id')
+            gestor_id= Gestor.objects.get(nombre=gestor)
+            if pendientes:
+                #Realizando realmente la remision luego de las validaciones correspondientes
+                fecha_actual = timezone.now()
+                fecha_remitido = fecha_actual.strftime('%Y-%m-%d')
+                context['fecha'] = fecha_actual
+                context['pendientes'] = pendientes
+                context['gestor'] = gestor
+                subject, from_email, to = 'Notificación de glosa', 'notificaciones.carteragb@gmail.com', gestor_id.email
+                html_content = render_to_string('stc/gl_rem_email.html', context) # ...
+                text_content = strip_tags(html_content) # this strips the html, so people will have the text as well.
+                # create the email, and attach the HTML version as well.
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+                for each in pendientes:
+                    #Actualizando estados
+                    mod = Glosa.objects.get(id=each.id)
+                    mod.estado_id = "2"
+                    mod.fecha_remitido = fecha_remitido
+                    mod.save() 
+                return render(request, 'stc/gl_rem_email.html',context)           
+            else:
+                messages.error(request, 'El gestor no tiene devoluciones para remitir')
+            return render(request, 'stc/gl_remision.html',context)
+    return render(request, 'stc/gl_remision.html',context)
+
+def gl_resp_agregar(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    convenios = Convenio.objects.all()
+    empresas = Empresa.objects.all()
+    respuestas = Respuesta.objects.all()
+    respuesta = respuestas.aggregate(Max('numero'))['numero__max']+1
+    context = {
+        'convenios':convenios,
+        'empresas':empresas,
+        'respuesta':respuesta,
+    }
+    if request.method == 'POST':
+        respuesta = request.POST['respuesta']
+        convenio = request.POST['convenio'].upper()
+        empresa = request.POST['empresa']
+        referencia = request.POST['referencia'].upper()
+        fecha_respuesta = request.POST['fecha_respuesta']
+        empresa_id=Empresa.objects.get(nombre=empresa).id
+        convenio_id=Convenio.objects.get(nombre=convenio).nit
+        if request.POST.get('submit') == 'agregar':
+            glosa_id = request.POST.get('glosa_id')
+            aceptado_ips = request.POST.get('aceptado_ips')
+            gestion = request.POST.get('gestion').upper()
+            fecha_registro = timezone.now()
+            if aceptado_ips == 0:
+                codigo_respuesta = 999
+            elif aceptado_ips == Glosa.objects.get(id=glosa_id).valor_glosa:
+                codigo_respuesta = 997
+            else:
+                codigo_respuesta = 998
+            registro = Respuesta(
+                glosa=Glosa.objects.get(id=glosa_id), 
+                numero=respuesta, 
+                fecha_respuesta=fecha_respuesta,
+                referencia=referencia, 
+                codigo_respuesta_id =codigo_respuesta,
+                gestion=gestion,
+                aceptado_ips=aceptado_ips,
+                fecha_registro=fecha_registro,
+                )
+            registro.save()
+            mod = Glosa.objects.get(id=glosa_id)
+            mod.saldo_glosa = int(mod.valor_glosa) - int(aceptado_ips)
+            mod.estado_id = 3
+            mod.save()
+            data = {
+                'mensaje': 'registrada',
+                'glosa_id': glosa_id,   
+            };
+            return HttpResponse(json.dumps(data), content_type='application/json')
+        if request.POST['submit'] == 'lock':
+            respuestas = Respuesta.objects.filter(numero=respuesta)
+            glosas = Glosa.objects.filter(convenio=convenio_id).filter(empresa=empresa_id).filter(estado=2).order_by('-id')
+            context['glosas'] = glosas
+            context['respuesta'] = respuesta
+            context['respuestas'] = respuestas
+            context['lock'] = True
+            context['pre_convenio'] = convenio
+            context['pre_empresa'] = empresa
+            context['pre_referencia'] = referencia
+            context['pre_fecha_respuesta'] = fecha_respuesta
+            return render(request, 'stc/gl_resp_agregar.html',context)
+        if request.POST['submit'] == 'cerrar':
+            mod = Respuesta.objects.filter(numero=respuesta)
+
+    return render(request, 'stc/gl_resp_agregar.html',context)

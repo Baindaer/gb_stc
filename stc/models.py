@@ -184,6 +184,7 @@ class Respuesta(models.Model):
     codigo_respuesta = models.ForeignKey(Causal)
     referencia = models.CharField(max_length=250, null=True)
     fecha_registro = models.DateField(null=True)
+    cerrado = models.BooleanField(default=False)
 
 class RespuestaRatificacion(models.Model):
     glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True)

@@ -1,0 +1,68 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% block titulo_page %}
+  Glosas
+{% endblock %}
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:inicio' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  GLOSAS
+{% endblock %}
+{% block acciones %}
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_agregar' %}">
+    <i class="material-icons">add_box</i>
+  </a>
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_gestion' %}">
+    <i class="material-icons">delete</i>
+  </a> 
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_remision' %}">
+    <i class="material-icons">forward</i>
+  </a>
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_resp_agregar' %}">
+    <i class="material-icons">reply</i>
+  </a>
+{% endblock %}
+{% block add_menu %}
+  <li><a class="mdl-menu__item" href="gl_agregar">Agregar glosa</a></li>
+  <li><a class="mdl-menu__item" href="gl_gestion">Eliminar</a></li>
+{% endblock %}
+{% block body %}
+{% language 'es' %}
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
+      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">ID</th>
+            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
+            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
+            <th class="mdl-data-table__cell--non-numeric">FECHA GL</th>
+            <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
+            <th>VR GLOSA</th>
+            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+            <th>SALDO GL</th>
+          </tr>
+        </thead>
+        {% for reg in last_registros %}
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_glosa|date:"Y-m-d" }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.extemporaneidad }}</td>
+              <td>{{ reg.valor_glosa|intcomma }}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+              <td>{{ reg.saldo_glosa|intcomma }}</td>
+            </tr>
+          {% endfor %}  
+      </table>
+    </div>
+  </div>
+  <a href="{% url 'stc:gl_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
+{% endlanguage %}
+{% endblock %}

@@ -22,4 +22,12 @@ urlpatterns = [
   url(r'^devoluciones/remision$', views.dev_remision, name='dev_remision'),
   url(r'^devoluciones/actualizacion$', views.dev_actualizacion, name='dev_actualizacion'),
   url(r'^devoluciones/agregar$', views.dev_agregar, name='dev_agregar'),
+  url(r'^glosas/$', views.glosas, name='glosas'),
+  url(r'^glosas/agregar/$', views.gl_agregar, name='gl_agregar'),
+  url(r'^glosas/gestion/$', views.gl_gestion, name='gl_gestion'),
+  url(r'^glosas/remision/$', views.gl_remision, name='gl_remision'),
+  url(r'^glosas/respuesta/agregar$', views.gl_resp_agregar, name='gl_resp_agregar'),
+  url(r'^get/factura/$', views.get_factura, name='get_factura'),
+  url(r'^get/glosa/$', views.get_glosa, name='get_glosa'),
+  url(r'^get/respuesta/$', views.get_respuesta, name='get_respuesta'),
 ]

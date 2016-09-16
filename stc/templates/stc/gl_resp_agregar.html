@@ -1,0 +1,170 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% block titulo_page %}
+  Glosas
+{% endblock %}
+{% block titulo_body %}
+  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:glosas' %}">
+    <i class="material-icons">arrow_back</i>
+  </a>
+  RESPUESTAS
+{% endblock %}
+{% block body %}
+{% language 'es' %}
+  <form action="{% url 'stc:gl_resp_agregar' %}" method="post" id="resp_agregar_form">
+    {% csrf_token %}
+    <div class="mdl-grid content-form-agregar">
+      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+        <div class="cell-head-form mdl-cell mdl-cell--4-col">
+           <h5><img src="{% static 'stc/images/logoGB.png' %}" class="logo-form"></h5>
+        </div>
+        <div class="cell-head-form mdl-cell mdl-cell--5-col">
+          <h5><b>Respuesta a glosas</b></h5>
+        </div>
+        <div class="cell-head-form mdl-cell mdl-cell--3-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100px">
+            <input class="mdl-textfield__input" type="number" id="respuesta" name="respuesta" required value="{{ respuesta }}" {% if lock %} readonly="readonly" {% endif %}/>
+            <label class="mdl-textfield__label" for="respuesta" required>Respuesta</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--5-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
+              {% if pre_empresa %}
+                <option selected>{{pre_empresa}}</option>
+              {% else %} 
+                {% for each in empresas %}
+                  <option>{{each.nombre}}</option>
+                {% endfor %}
+              {% endif %}  
+            </select>
+            <label class="mdl-textfield__label" for="empresa">Empresa</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--5-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="convenio" name="convenio" required> 
+              {% if pre_convenio %}
+                <option selected>{{pre_convenio}}</option>
+              {% else %} 
+                {% for each in convenios %}
+                  <option>{{each.nombre}}</option>
+                {% endfor %}
+              {% endif %}  
+            </select>
+            <label class="mdl-textfield__label" for="convenio">Convenio</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--4-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:30px;width:175px" {% if lock %} readonly="readonly" {% endif %}>
+            <input class="mdl-textfield__input" type="date" id="fecha_respuesta" name="fecha_respuesta" required {% if lock %} value="{{ pre_fecha_respuesta }}" readonly="readonly" {% endif %}/>
+            <label class="mdl-textfield__label" for="fecha_respuesta">Fecha de respuesta</label>
+          </div>
+        </div>
+        <div class="cell-form mdl-cell mdl-cell--8-col">
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:370px">
+            <input class="mdl-textfield__input" type="text" id="referencia" name="referencia" {% if lock %} value="{{ pre_referencia }}" = readonly="readonly" {% endif %}/>
+            <label class="mdl-textfield__label" for="referencia" required>Referencia</label>
+          </div>
+        </div>
+        <div class="cell mdl-cell mdl-cell--12-col">
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="lock" name="submit">Actualizar</button>
+        </div>
+      </div>
+    </div>
+    <div class="mdl-grid content">
+      <div class="mdl-cell mdl-cell--12-col mdl-grid">
+        <table class="full-table mdl-data-table mdl-shadow--2dp">
+          <thead>
+            <tr>
+              <th class="mdl-data-table__cell--non-numeric">ID</th>
+              <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+              <th class="mdl-data-table__cell--non-numeric">VR GLOSA</th>
+              <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
+              <th class="mdl-data-table__cell--non-numeric">ACEPTA IPS</th>
+              <th class="mdl-data-table__cell--non-numeric">GESTION</th>
+            </tr>
+          </thead>
+          <tr>
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="mdl-textfield mdl-js-textfield" style="width:140px">
+                <select class="mdl-textfield__input" id="glosa" name="glosa"> 
+                  {% for each in glosas %}
+                    <option value="{{each.factura}}@{{each.id}}">{{each.factura}}@{{each.id}}</option>
+                  {% endfor %}  
+                </select>
+              </div>
+            </td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="mdl-textfield mdl-js-textfield" style="width:100px">
+                <input class="mdl-textfield__input" type="text" id="factura" name="factura" readonly="readonly" />
+                <label class="mdl-textfield__label" for="factura" required></label>
+              </div>
+            </td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="mdl-textfield mdl-js-textfield" style="width:80px">
+                <input class="mdl-textfield__input" type="number" id="valor_glosa" name="valor_glosa" readonly="readonly" />
+                <label class="mdl-textfield__label" for="valor_glosa" required></label>
+              </div>
+            </td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="mdl-textfield mdl-js-textfield" style="width:50px">
+                <input class="mdl-textfield__input" type="text" id="extemporaneidad" name="extemporaneidad" readonly="readonly" />
+                <label class="mdl-textfield__label" for="extemporaneidad" required></label>
+              </div>
+            </td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="mdl-textfield mdl-js-textfield" style="width:80px">
+                <input class="mdl-textfield__input" type="number" id="aceptado_ips" name="aceptado_ips" />
+                <label class="mdl-textfield__label" for="aceptado_ips" required></label>
+              </div>
+            </td>
+            <td class="mdl-data-table__cell--non-numeric">
+              <div class="mdl-textfield mdl-js-textfield" style="width:300px">
+                <textarea class="mdl-textfield__input" type="text" rows= "1" id="gestion" name="gestion" ></textarea>
+                <label class="mdl-textfield__label" for="gestion"></label>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </form>
+  {% if respuestas %}
+  <div class="mdl-grid content">
+    <div class="mdl-cell mdl-cell--12-col mdl-grid">
+      <table class="full-table mdl-data-table mdl-shadow--2dp"  id="dash">
+        <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">ID</th>
+            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
+            <th>VR GLOSA</th>
+            <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
+            <th>ACEPTA IPS</th>
+            <th class="mdl-data-table__cell--non-numeric">GESTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for each in respuestas %}
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{{each.glosa.id}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{each.glosa.factura}}</td>
+              <td>{{each.glosa.valor_glosa}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{each.glosa.extemporaneidad}}</td>
+              <td>{{each.aceptado_ips}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{each.gestion}}</td>
+            </tr>
+          {% endfor %}
+        <tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  <button id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp" name="submit" value="agregar"><i class="material-icons">send</i></button>
+{% endlanguage %}
+{% endblock %}
+{% block scripts %}
+  <script type="text/javascript" src="{% static 'stc/gl_resp_agregar.js' %}"></script> 
+{% endblock %}
