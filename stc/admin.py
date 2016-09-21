@@ -14,6 +14,13 @@ admin.site.register(EstadoDV)
 admin.site.register(Devolucion)
 
 class RadicacionAdmin(admin.ModelAdmin):
-    list_display = ('factura', 'convenio', 'fecha_radicacion', 'contrato_tipo', 'valor_factura', 'fecha_registro' )
+    list_display = (
+        'factura', 
+        'convenio', 
+        'fecha_radicacion', 
+        'contrato_tipo', 
+        'valor_factura', 
+        'fecha_registro',
+        )
 
 admin.site.register(Radicacion, RadicacionAdmin)

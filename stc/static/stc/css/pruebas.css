@@ -1,0 +1,17 @@
+
+        header, main, footer {
+          padding-left: 300px;
+        }
+        .brand-logo {
+          margin-left:20px;
+        }
+        .button-collapse{
+          margin-left:20px;
+        }
+        @media only screen and (max-width : 992px) {
+          header, main, footer {
+            padding-left: 0;
+          }
+          .brand-logo {
+          margin-left:0;
+        }

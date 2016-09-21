@@ -125,10 +125,22 @@ html, body {
   width: 250px;
   max-width:100%;
 }
+
 .full-table{
-  min-width: 100%;
-  max-width: 100%;
+  table-layout:auto;
+  width:100%; 
 }
+.fixed-table{
+  table-layout:fixed;
+  width:100%; 
+}
+#dash td, th {
+  white-space:nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+}
+
 .icon-consulta{
   font-size: 16px;
   margin-right: 3px;

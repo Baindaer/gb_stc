@@ -21,7 +21,7 @@
   <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_remision' %}">
     <i class="material-icons">forward</i>
   </a>
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_resp_agregar' %}">
+  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_respuestas' %}">
     <i class="material-icons">reply</i>
   </a>
 {% endblock %}
@@ -33,7 +33,7 @@
 {% language 'es' %}
   <div class="mdl-grid content">
     <div class="mdl-cell mdl-cell--12-col mdl-grid ">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash">
         <thead>
           <tr>
             <th class="mdl-data-table__cell--non-numeric">ID</th>

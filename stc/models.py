@@ -1,7 +1,5 @@
 import datetime
-from datetime import datetime
-from datetime import date, timedelta
-
+from datetime import datetime, date, timedelta
 
 from django.db import models
 from django.utils import timezone
@@ -93,7 +91,7 @@ class Radicacion(models.Model):
         else:
             return "NO"
     def fecha_max_glosa(self):
-        fmg = addworkdays(self.fecha_radicacion,20)
+        fmg = addworkdays(self.fecha_radicacion, 20)
         return fmg
 
 class Causal(models.Model):
@@ -176,15 +174,23 @@ class Glosa(models.Model):
             return "NO"
 
 class Respuesta(models.Model):
-    glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True,)
-    numero = models.IntegerField()
     fecha_respuesta = models.DateField()
+    referencia = models.CharField(max_length=250, null=True)
+    locked = models.BooleanField(default=False)
+    empresa = models.ForeignKey(Empresa)
+    convenio = models.ForeignKey(Convenio)
+    def __str__(self):
+        return str(self.id)
+
+class GlosaRespuesta(models.Model):
+    glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True)
+    respuesta = models.ForeignKey(Respuesta)
     gestion = models.CharField(max_length=250)
     aceptado_ips = models.IntegerField()
     codigo_respuesta = models.ForeignKey(Causal)
-    referencia = models.CharField(max_length=250, null=True)
     fecha_registro = models.DateField(null=True)
-    cerrado = models.BooleanField(default=False)
+    def __str__(self):
+        return str(self.glosa)
 
 class RespuestaRatificacion(models.Model):
     glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True)

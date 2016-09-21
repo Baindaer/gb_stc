@@ -8,14 +8,12 @@ if (day < 10)
   day = "0" + day;
 var today = year + "-" + month + "-" + day;   
 var mes = year + "-" + month;
-$("#fecha_respuesta").val(today)
-
+$("#fecha_respuesta").val(today);
 //Se vuelven a habilitar los elementos deshabilitados para que sean leidos por el post
 $( "#resp_agregar_form" ).submit(function( event ) {
     $("#convenio").attr("disabled", false);
     $("#empresa").attr("disabled", false);
 }); 
-
 
 function getCookie(name) {
     var cookieValue = null;
@@ -32,6 +30,7 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
 $(document).ready(function() {
     $('#glosa').val("");
     $("#glosa").change(function() {
@@ -70,6 +69,11 @@ $(document).ready(function() {
                 $("#empresa").val(data.empresa).attr("disabled", true);
                 $("#fecha_respuesta").val(data.fecha_respuesta).attr('readonly', true);
                 $("#referencia").val(data.referencia).attr('readonly', true).parent().addClass('is-dirty');
+                if (data.cerrado){
+                    $("#cargar").html("Cerrado")
+                } else {
+                    $("#cargar").html("Cargar")
+                }
             },
             error: function() {
                 $("#convenio").attr("disabled", false);
@@ -83,8 +87,8 @@ $(document).ready(function() {
         var glosa = $('#glosa').val();
         var separador = glosa.indexOf("@")+1;
         var glosa_id = glosa.substring(separador,separador+5);
-        if ($('#aceptado_ips').val() > $("#valor_glosa").val()){
-            alert("El valor aceptado no puede ser mayor al valor de la glosa")
+        if (parseInt($('#aceptado_ips').val()) > parseInt($("#valor_glosa").val())){
+            alert("El valor aceptado "+$('#aceptado_ips').val()+"  no puede ser mayor al valor de la glosa " + $("#valor_glosa").val())
         } else {
             var data = { 
                 "submit" : 'agregar', 
