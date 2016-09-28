@@ -61,8 +61,8 @@ def radicacion(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     #Cargando variables de contexto iniciales
-    last_registros = Radicacion.objects.order_by('-fecha_registro')[:40]
-    context = {'last_registros': last_registros}
+    ult_reg = Radicacion.objects.order_by('-fecha_registro')[:40]
+    context = {'ult_reg': ult_reg}
     return render(request, 'stc/radicacion.html', context)
 
 def rad_agregar(request):
@@ -71,12 +71,12 @@ def rad_agregar(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     #Cargando variables de contexto iniciales
-    last_registros = Radicacion.objects.order_by('-fecha_registro')[:40]
+    ult_reg = Radicacion.objects.order_by('-fecha_registro')[:40]
     empresas = Empresa.objects.all()
     convenios = Convenio.objects.all()
     servicios = Servicio.objects.all()
     context = {
-        'last_registros': last_registros, 
+        'ult_reg': ult_reg, 
         'empresas': empresas,
         'convenios': convenios,
         'servicios': servicios,
@@ -147,17 +147,17 @@ def rad_gestion(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     #Cargando variables de contexto iniciales
-    last_registros = Radicacion.objects.order_by('-fecha_registro')[:50]
-    context = {'last_registros': last_registros}
+    ult_reg = Radicacion.objects.order_by('-fecha_registro')[:50]
+    context = {'ult_reg': ult_reg}
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
         if request.POST['submit'] == 'buscar':
             #Realizando filtro de consulta
-            last_registros = Radicacion.objects.filter(
+            ult_reg = Radicacion.objects.filter(
                 factura__contains=factura
                 ).order_by('-fecha_registro')[:100]
-            context['last_registros'] = last_registros
-            if last_registros:
+            context['ult_reg'] = ult_reg
+            if ult_reg:
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
@@ -168,9 +168,9 @@ def rad_gestion(request):
                 exe = Radicacion.objects.get(factura=factura).delete()
                 messages.success(request, 
                     'Factura ' + factura + ' eliminada')
-                last_registros = Radicacion.objects.order_by(
+                ult_reg = Radicacion.objects.order_by(
                     '-fecha_registro')[:50]
-                context['last_registros'] = last_registros
+                context['ult_reg'] = ult_reg
             except:
                 messages.error(request, 'Factura no encontrada')
             return render(request, 'stc/rad_gestion.html', context)
@@ -206,7 +206,8 @@ def rep_capitas(request):
         #Validando sesion
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    #Obteniendo las empresas unicas que en radicacion tiene al menos 1 registro como capita
+    #Obteniendo las empresas unicas que en radicacion tiene al 
+    #menos 1 registro como capita
     empresas = Empresa.objects.filter(
         radicacion__tipo_contrato='1'
         ).distinct()
@@ -293,7 +294,7 @@ def devoluciones(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    last_registros = Devolucion.objects.order_by('-id')[:40]
+    ult_reg = Devolucion.objects.order_by('-id')[:40]
     fecha = timezone.now()
     mes_actual = fecha.month
     dev = Devolucion.objects.all()
@@ -305,7 +306,7 @@ def devoluciones(request):
     cant_dv_registradas = dev.filter(estado=1).count()
     cant_dv_revision = dev.filter(estado=2).count()
     context = {
-        'last_registros': last_registros,
+        'ult_reg': ult_reg,
         'cant_dv_reg': cant_dv_reg,
         'vr_dv_reg': "%.0f" % vr_dv_reg,
         'fecha': fecha,
@@ -319,14 +320,14 @@ def dev_agregar(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    last_registros = Devolucion.objects.order_by('-id')[:40]
+    ult_reg = Devolucion.objects.order_by('-id')[:40]
     empresas = Empresa.objects.all()
     convenios = Convenio.objects.all()
     causales = Causal.objects.all()
     gestores = Gestor.objects.all()
     radicacion = Radicacion.objects.all()
     context = {
-        'last_registros': last_registros,
+        'ult_reg': ult_reg,
         'empresas': empresas,
         'convenios': convenios,
         'causales': causales,
@@ -454,7 +455,8 @@ def exp_rad_general(request):
     response['Content-Disposition'] = '''
         attachment; filename="radicacion.csv"'''
     #Consultando base de datos
-    data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
+    #data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
+    data = Radicacion.objects.all()
     #Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
     #Escribiendo archivo, el proceso puede tardar varios segundos
@@ -465,6 +467,7 @@ def exp_rad_general(request):
         'Tipo contrato', 
         'Valor', 
         'Fecha Radicacion',
+        'Mes Servicio',
         ])
     for each in data:
         writer.writerow([
@@ -473,7 +476,8 @@ def exp_rad_general(request):
             each.unidad, 
             each.contrato_tipo(), 
             each.valor_factura, 
-            each.fecha_radicacion
+            each.fecha_radicacion,
+            each.mes_servicio,
             ])
     return response
 
@@ -834,10 +838,11 @@ def gl_remision(request):
             except:
                 messages.error(request, 'Gestor no existente')
                 return render(request, 'stc/gl_remision.html', context)
-            pendientes = Glosa.objects.filter(gestor_id=gestor_id, estado="1").order_by('-id')
+            pendientes = Glosa.objects.filter(
+                gestor_id=gestor_id, estado="1").order_by('-id')
             gestor_id= Gestor.objects.get(nombre=gestor)
             if pendientes:
-                #Realizando realmente la remision luego de las validaciones correspondientes
+                #Realizando realmente la remision luego de las validaciones
                 fecha_actual = timezone.now()
                 fecha_remitido = fecha_actual.strftime('%Y-%m-%d')
                 context['fecha'] = fecha_actual

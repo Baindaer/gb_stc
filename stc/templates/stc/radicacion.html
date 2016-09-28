@@ -6,47 +6,51 @@
   Radicación
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:inicio' %}">
+  <a class="left bot-atras" href="{% url 'stc:inicio' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  RADICACION
+  <a class="brand-logo">Radicación</a>
 {% endblock %}
-{% block acciones %}
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:rad_agregar' %}">
-    <i class="material-icons">add_box</i>
-  </a>
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:rad_gestion' %}">
-    <i class="material-icons">delete</i>
-  </a> 
+{% block opciones %}
+  <li><a href="{% url 'stc:rad_agregar' %}">Agregar</a></li>
+  <li><a href="{% url 'stc:rad_gestion' %}">Eliminar</a></li>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a class="breadcrumb">Radicación</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash">
+  {% language 'es' %}
+    <div class="container">
+      <table class="bordered responsive-table highlight">
         <thead>
           <tr>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">UNIDAD</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">RADICADO</th>
-            <th class="mdl-data-table__cell--non-numeric">CONTRATO</th>
-            <th>VALOR</th>
+            <th data-field="factura">FACTURA</th>
+            <th data-field="unidad">UNIDAD</th>
+            <th data-field="convenio">CONVENIO</th>
+            <th data-field="radicado">RADICADO</th>
+            <th data-field="contrato">CONTRATO</th>
+            <th data-field="valor">VALOR</th>
           </tr>
         </thead>
-        {% for reg in last_registros %}
+        <tbody>
+          {% for i in ult_reg %}
             <tr>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.unidad }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion|date:"Y-m-d" }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
-              <td>{{ reg.valor_factura|intcomma }}</td>
+              <td>{{ i.factura }}</td>
+              <td>{{ i.unidad.id }}</td>
+              <td>{{ i.convenio.nombre }}</td>
+              <td>{{ i.fecha_radicacion|date:"Y-m-d" }}</td>
+              <td>{{ i.contrato_tipo }}</td>
+              <td>{{ i.valor_factura|intcomma }}</td>
             </tr>
-          {% endfor %}  
+          {% endfor %}
+        </tbody>
       </table>
     </div>
-  </div>
-  <a href="{% url 'stc:rad_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
-{% endlanguage %}
+    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+      <a class="btn-floating btn-large blue" href="{% url 'stc:rad_agregar' %}">
+        <i class="large material-icons">add</i>
+      </a>
+    </div>
+  {% endlanguage %}
 {% endblock %}

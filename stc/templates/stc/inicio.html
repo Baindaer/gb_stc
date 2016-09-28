@@ -2,102 +2,42 @@
 {% load static %}
 {% load humanize %}
 {% block titulo_page %}
-Sistema de trazabilidad de cartera
+  Sistema de trazabilidad 
 {% endblock %}
 {% block titulo_body %}
-  STC
+  <a class="brand-logo">Sistema de trazabilidad de cuentas</a>
+{% endblock %}
+{% block breadcrumb %}
+  <a class="breadcrumb">STC</a>
 {% endblock %}
 {% block body %}
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--4-col mdl-grid">
-      <div class="card-square card-radicacion mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-          <h2 class="mdl-card__title-text">Radicación</h2>
+  <div class="row">
+    <div class="col s12 m6 l4">
+      <div class="card blue-grey darken-1">
+        <div class="card-content white-text">
+          <span class="card-title">Card Title</span>
+          <p>I am a very simple card. I am good at containing small bits of information.
+          ely.</p>
         </div>
-        <div class="mdl-card__supporting-text">
-          Registro de radicación y custodia de facturacion radicada.
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:radicacion' %}">
-            Abrir módulo
-          </a>
+        <div class="card-action">
+          <a href="#">This is a link</a>
+          <a href="#">This is a link</a>
         </div>
       </div>
     </div>
-    <div class="mdl-cell mdl-cell--4-col mdl-grid">
-      <div class="card-square card-devoluciones mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-          <h2 class="mdl-card__title-text">Devoluciones</h2>
+    <div class="col s12 m6 l4">
+      <div class="card blue-grey darken-1">
+        <div class="card-content white-text">
+          <span class="card-title">Card Title</span>
+          <p>I am a very simple card. I am good at containing small bits of information.
+          I am convenient because I require little markup to use effectively.</p>
         </div>
-        <div class="mdl-card__supporting-text">
-          Registro y gestión automatizada de devoluciones. 
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:devoluciones' %}">
-            Abrir módulo
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="mdl-cell mdl-cell--4-col mdl-grid">
-      <div class="card-square card-glosas mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-          <h2 class="mdl-card__title-text">Glosas</h2>
-        </div>
-        <div class="mdl-card__supporting-text">
-          Gestion y seguimiento a glosas y recobros.
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:glosas' %}">
-            Abrir módulo
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="mdl-cell mdl-cell--4-col mdl-grid">
-      <div class="card-square card-crm mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-          <h2 class="mdl-card__title-text">CRM</h2>
-        </div>
-        <div class="mdl-card__supporting-text">
-          Herramienta de seguimiento a gestión con clientes.
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" target="_blank" href="https://docs.google.com/spreadsheets/d/1y2SwNubrzlXzwxEyFBl9Ht9C_Bu75bg6tCkroVjMa90/edit#gid=1903171471">
-            Abrir módulo
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="mdl-cell mdl-cell--4-col mdl-grid">
-      <div class="card-square card-consulta mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-          <h2 class="mdl-card__title-text">Consultas</h2>
-        </div>
-        <div class="mdl-card__supporting-text">
-          Consulta de detallado de movimientos por facturas.
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:consulta' %}">
-            Abrir módulo
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="mdl-cell mdl-cell--4-col mdl-grid">
-      <div class="card-square card-reportes mdl-card mdl-shadow--2dp">
-        <div class="mdl-card__title mdl-card--expand">
-          <h2 class="mdl-card__title-text">Reportes</h2>
-        </div>
-        <div class="mdl-card__supporting-text">
-          Generación de reportes, resumenes e informes predeterminados.
-        </div>
-        <div class="mdl-card__actions mdl-card--border">
-          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="{% url 'stc:reportes' %}">
-            Abrir módulo
-          </a>
+        <div class="card-action">
+          <a href="#">This is a link</a>
+          <a href="#">This is a link</a>
         </div>
       </div>
     </div>
   </div>
+
 {% endblock %}

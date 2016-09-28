@@ -6,93 +6,61 @@
   Devoluciones
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:inicio' %}">
+  <a class="left bot-atras" href="{% url 'stc:inicio' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  DEVOLUCIONES
+  <a class="brand-logo">Devoluciones</a>
 {% endblock %}
-{% block acciones %}
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:dev_agregar' %}">
-    <i class="material-icons">add_box</i>
-  </a>
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:dev_actualizacion' %}">
-    <i class="material-icons">sync</i>
-  </a> 
+{% block opciones %}
+  <li><a href="{% url 'stc:dev_agregar' %}">Agregar</a></li>
+  <li><a href="{% url 'stc:dev_gestion' %}">Eliminar</a></li>
+  <li><a href="{% url 'stc:dev_remision' %}">Remitir</a></li>
+  <li><a href="{% url 'stc:dev_actualizacion' %}">Actualizar</a></li>
 {% endblock %}
-{% block add_menu %}
-  <li><a class="mdl-menu__item" href="{% url 'stc:dev_agregar' %}">Agregar devolución</a></li>
-  <li><a class="mdl-menu__item" href="{% url 'stc:dev_remision' %}">Remitir pendientes</a></li>
-  <li><a class="mdl-menu__item" href="{% url 'stc:dev_actualizacion' %}">Actualizar estado</a></li>
-  <li><a class="mdl-menu__item mdl-menu__item--full-bleed-divider" href="{% url 'stc:dev_gestion' %}">Eliminar</a></li>
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a class="breadcrumb">Devoluciones</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <div class="mdl-grid content">
-    <div class="cell mdl-cell mdl-color--white mdl-cell--12-col mdl-grid mdl-shadow--2dp">
-      <h4>Resumen {{ fecha|date:'F' }}</h4>
-    </div>
-    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
-      <div class="indicador cell mdl-cell mdl-cell--12-col">
-        {{ cant_dv_reg }}
-      </div>
-      <div class="cell mdl-cell mdl-cell--12-col">
-        Devoluciones registradas
-      </div>
-    </div>
-    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
-      <div class="indicador cell mdl-cell mdl-cell--12-col">
-        {{ vr_dv_reg|intcomma }}M
-      </div>
-      <div class="cell mdl-cell mdl-cell--12-col">
-        Total devoluciones
-      </div>
-    </div>
-    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
-      <div class="indicador cell mdl-cell mdl-cell--12-col">
-        {{ cant_dv_registradas|intcomma }}
-      </div>
-      <div class="cell mdl-cell mdl-cell--12-col">
-        Pendientes por remitir
-      </div>
-    </div>
-    <div class="mdl-cell mdl-color--white mdl-cell--3-col mdl-grid mdl-shadow--2dp">
-      <div class="indicador cell mdl-cell mdl-cell--12-col">
-        {{ cant_dv_revision|intcomma }}
-      </div>
-      <div class="cell mdl-cell mdl-cell--12-col">
-        Devoluciones en revisión
-      </div>
-    </div>
-  </div>
-
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash">
+  {% language 'es' %}
+    <div class="container">
+      <table class="bordered responsive-table highlight">
         <thead>
           <tr>
-            <th class="mdl-data-table__cell--non-numeric">ID</th>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">FECHA DEV</th>
-            <th>VALOR</th>
-            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+            <th data-field="id">ID</th>
+            <th data-field="factura">FACTURA</th>
+            <th data-field="empresa">EMPRESA</th>
+            <th data-field="convenio">CONVENIO</th>
+            <th data-field="fecha_dev">FECHA DEV</th>
+            <th data-field="valor">VALOR</th>
+            <th data-field="estado">ESTADO</th>
           </tr>
         </thead>
-        {% for reg in last_registros %}
+        <tbody>
+          {% for i in ult_reg %}
             <tr>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion|date:"Y-m-d" }}</td>
-              <td>{{ reg.valor_factura|intcomma }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+              <td>{{ i.id }}</td>
+              <td>{{ i.factura }}</td>
+              <td>{{ i.empresa.nombre }}</td>
+              <td>{{ i.convenio.nombre }}</td>
+              <td>{{ i.fecha_devolucion|date:"Y-m-d" }}</td>
+              <td>{{ i.valor_factura|intcomma }}</td>
+              <td>{{ i.estado.descripcion }}</td>
             </tr>
-          {% endfor %}  
+          {% endfor %}
+        </tbody>
       </table>
     </div>
-  </div>
-  <a href="{% url 'stc:dev_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
-{% endlanguage %}
+    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+      <a class="btn-floating btn-large blue">
+        <i class="material-icons">menu</i>
+      </a>
+      <ul>
+        <li><a class="btn-floating green" href="{% url 'stc:dev_agregar' %}"><i class="material-icons">add</i></a></li>
+        <li><a class="btn-floating red" href="{% url 'stc:dev_gestion' %}"><i class="material-icons">delete</i></a></li>
+        <li><a class="btn-floating blue" href="{% url 'stc:dev_remision' %}"><i class="material-icons">forward</i></a></li>
+        <li><a class="btn-floating yellow darken-1" href="{% url 'stc:dev_actualizacion' %}"><i class="material-icons">update</i></a></li>
+      </ul>
+    </div>
+  {% endlanguage %}
 {% endblock %}

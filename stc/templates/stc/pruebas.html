@@ -1,57 +1,97 @@
 <!DOCTYPE html>
 {% load static %}
-  <html lang="en">
-    <head>
-      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <link type="text/css" rel="stylesheet" href="{% static 'stc/css/materialize.min.css' %}"  media="screen,projection"/>
-      <link type="text/css" rel="stylesheet" href="{% static 'stc/css/pruebas.css' %}"  media="screen,projection"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <meta charset="utf-8">
-      
-    </head>
-
-    <body>
-      <header>
-
-        <div class="navbar-fixed">
-          <nav>
-            <div class="nav-wrapper blue-grey">
-              <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
-              <a href="#!" class="brand-logo">Logo</a>
-              <ul class="right hide-on-med-and-down">
-                <li><a href="sass.html">Sass</a></li>
-                <li><a href="badges.html">Components</a></li>
-              </ul>
+<html lang="en">
+  <head>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="{% static 'stc/css/materialize.min.css' %}"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'stc/css/pruebas.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8">
+    <title>
+      {% block titulo_page %}
+      {% endblock %}
+    </title>
+  </head>
+  <body class="grey lighten-5">
+    <header>
+      <!-- Barra de navegacion fija -->
+      <nav class="navbar-fixed">
+        <div class="nav-wrapper blue-grey darken-2">
+          <a href="" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+          <a class="brand-logo"> {% block titulo_body %}{% endblock %}</a>
+          <a class="dropdown-button right opciones" href="#!" data-activates="opciones"><i class="material-icons right">more_vert</i></a>
+            <!-- listado de opciones principal -->
+            <ul id="opciones" class="dropdown-content">
+              {% block opciones %}
+              {% endblock %}
+              <li class="divider"></li>
+              <li><a href="#">Configuración</a></li>
+            </ul>
+          <form action="{% url 'stc:consulta' %}" class="right hide-on-med-and-down" method="POST">
+            {% csrf_token %}
+            <div class="input-field">
+              <input id="search" name="factura" type="search" required>
+              <label for="search"><i class="material-icons">search</i></label>
+              <i class="material-icons">close</i>
             </div>
-          </nav>
-
+          </form>
         </div>
-
-          <ul id="slide-out" class="side-nav fixed">
-    <li><div class="userView">
-      <img class="background" src="images/office.jpg">
-      <a href="#!user"><img class="circle" src="images/yuna.jpg"></a>
-      <a href="#!name"><span class="white-text name">John Doe</span></a>
-      <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
-    </div></li>
-    <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-    <li><a href="#!">Second Link</a></li>
-    <li><div class="divider"></div></li>
-    <li><a class="subheader">Subheader</a></li>
-    <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
-  </ul>
-      </header>
-      <main>asdadasdasdsa fdwfw qef aef adfsadef qwefq sef asd</main>
-
-          
-      <!--Import jQuery before materialize.js-->
-      <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-      <script type="text/javascript" src="{% static 'stc/js/materialize.min.js' %}"></script>
-      <script>
-          $( document ).ready(function(){
-            $(".button-collapse").sideNav();
-          })
-      </script>
-    </body>
-  </html>
+      </nav>
+      <!-- Barra de navegacion lateral -->
+      <ul id="slide-out" class="side-nav fixed">
+        <li class="det-usuario">
+          <!-- Panel de usuario -->
+          <div class="row">
+            <div class="col s4">
+              <img src="{% static 'stc/images/icoGB.ico' %}" alt="" class="avatar">
+            </div>
+            <div class="col s8">
+              {% if not request.user.is_authenticated %}
+                <a class="btn-flat waves-effect waves-light white-text" href="{% url 'stc:login' %}" id="bot-usuario">Iniciar Sesion</a>
+              {% else %}
+                <a class="btn-flat dropdown-button waves-effect waves-light white-text" href="#" data-activates="profile-dropdown" id="bot-usuario">
+                  {{ request.user.first_name }}
+                </a>
+                <!-- Lista de opciones de usuario -->
+                <ul id="profile-dropdown" class="dropdown-content">
+                  <li><a href="{% url 'stc:logout' %}" class="opc-usuario">Cerrar sesión</a></li>
+                  <li><a class="opc-usuario">Cambiar clave</a></li>
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+        <!-- Secciones -->
+        <li><a class="subheader">MODULOS</a></li>
+        <li><a href="{% url 'stc:inicio' %}" class="waves-effect list-modulos"><i class="material-icons">home</i>Inicio</a></li>
+        <li><a href="{% url 'stc:radicacion' %}" class="waves-effect"><i class="material-icons">input</i>Radicación</a></li>
+        <li><a href="{% url 'stc:devoluciones' %}" class="waves-effect"><i class="material-icons">autorenew</i>Devoluciones</a></li>
+        <li><a href="{% url 'stc:glosas' %}" class="waves-effect"><i class="material-icons">update</i>Glosas</a></li>
+        <li><a href="#!" class="waves-effect"><i class="material-icons">work</i>CRM</a></li>
+        <li><a href="{% url 'stc:consulta' %}" class="waves-effect"><i class="material-icons">search</i>Consulta</a></li>
+        <li><a href="{% url 'stc:reportes' %}" class="waves-effect"><i class="material-icons">timeline</i>Reportes</a></li>
+        <li><div class="divider"></div></li>
+        <li><a class="subheader">ADMIN</a></li>
+        <li><a href="/admin" class="waves-effect"><i class="material-icons">settings</i>Panel de control</a></li>
+        <li><a href="#" class="waves-effect"><i class="material-icons">help_outline</i>Acerca de</a></li>
+      </ul>
+    </header>
+    <!-- Contenido -->
+    <main>
+      {% block body %}
+      {% endblock %}
+    </main>
+    <!-- Seccion de scripts -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'stc/js/materialize.min.js' %}"></script>
+    <script src="{% static 'stc/js/layout.js' %}"></script>
+    <script>
+      {% for each in messages %}
+        Materialize.toast('{{ each.message }}', 20000) 
+      {% endfor %}
+    </script>
+    {% block scripts %}
+    {% endblock %}
+  </body>
+</html>
 

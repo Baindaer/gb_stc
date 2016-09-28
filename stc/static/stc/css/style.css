@@ -1,0 +1,202 @@
+/* Estilos generales */ 
+main, footer {
+  padding-left: 300px;
+}
+
+/* Estilos para cambios de tamaño de pantalla */ 
+@media only screen and (min-width: 993px) {
+  .side-nav {
+    margin-top: 64px;
+  }
+
+  .form-container{
+    margin-right: 15%;
+    margin-left: 15%;
+    max-width: 900px;
+  }
+
+  .form-mini {
+    margin-right: 25%;
+    margin-left: 25%;
+    max-width: 600px;
+  } 
+
+}
+
+@media only screen and (max-width: 992px) {
+  header, main, footer {
+    padding-left: 0;
+  }
+
+  .brand-logo {
+  margin-left: 0;
+  }
+
+  .form-mini {
+    margin-right: 10%;
+    margin-left: 10%;
+    max-width: 600px;
+  } 
+}
+
+@media only screen and (max-width: 600px) {
+  .form-mini {
+    margin-right: 0;
+    margin-left: 0;
+    max-width: 100%;
+  } 
+}
+/* Modificaciones a etiquetas de Materialize */
+.brand-logo {
+  margin-left: 20px;
+}
+
+.button-collapse {
+  margin-left: 20px;
+}
+
+.side-nav.fixed a {
+  padding-left: 32px;
+  font-size: 16px;
+}
+
+input[type="search"] {
+height: 64px !important;
+}
+
+.dropdown-content li>a, .dropdown-content li>span {
+  color: #263238;
+}
+
+a.breadcrumb {
+  color: #2196f3;
+  font-weight: 800;
+}
+
+a.breadcrumb::before {
+  color: #E0E0E0;
+}
+
+.breadcrumb:last-child {
+  color: #9E9E9E;
+  font-weight: 500
+}
+
+.autocomplete-content {
+  position: absolute;
+}
+
+.label.active {
+  color: black;
+}
+
+.input-field input[type]:focus + label {
+  color: #2196f3;
+} 
+
+.input-field input[type]:focus {
+  border-bottom: 1px solid #2196f3;
+  box-shadow: 0 1px 0 0 #2196f3;
+}
+
+.input-field input[type].valid {
+  border-bottom: 1px solid #2196f3;
+  box-shadow: 0 1px 0 0 #2196f3;
+}
+
+.switch label input[type=checkbox]:checked+.lever {
+  background-color: #90caf9;  
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+  background-color: #2196f3;
+}
+
+.input:not([type]), input[type=month] {
+  border-top: 0px;
+  border-right: 0px;
+  border-bottom: 1px solid #9e9e9e;
+  border-left: 0px;
+  border-radius: 0;
+  outline: none;
+  height: 3rem;
+  width: 100%;
+  font-size: 1rem;
+  margin: 0 0 20px 0;
+  padding: 0;
+  box-shadow: none;
+  box-sizing: content-box;
+  transition: all 0.3s;
+}
+
+.switch {
+  margin-top: 15px; 
+  margin-bottom: 15px;
+}
+
+/* Estilos del proyecto */
+.opciones {
+  padding-right: 20px;
+}
+
+.avatar {
+  height: 60px;
+  width: 60px;
+}
+
+.det-usuario {
+  background-image: url('/static/stc/images/user_bg1.png');
+  padding: 15px 0px 0px 15px;
+}
+
+.opc-usuario {
+  padding: 15px 15px 15px 15px !important;
+}
+
+.bot-atras {
+  padding-left: 20px;
+}
+
+.breadcrumb-container {
+  padding: 20px 20px 20px 20px;
+  background-color: #EEEEEE;
+  height: 94px;
+  box-shadow: 0px 0px 0px 0px;
+}
+
+.form-container {
+  margin-top: 20px;
+}
+.form-mini {
+  margin-top: 20px;
+}
+
+.form-main {
+  padding: 20px;
+}
+
+.form-bot {
+  padding-bottom: 40px;
+}
+
+.dash-cont {
+  margin-top: 40px;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+/* Estilos de elementos */
+#bot-usuario {
+  font-size: 14px;
+  padding-left: 10px;
+}
+
+#opciones.dropdown-content.active {
+  width:200px !important;
+  margin-top: 0px;
+}
+
+#opciones.dropdown-content {
+  width:200px !important;
+  margin-top: 0px;
+}

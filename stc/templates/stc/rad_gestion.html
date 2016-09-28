@@ -6,67 +6,66 @@
   Radicación
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:radicacion' %}">
+  <a class="left bot-atras" href="{% url 'stc:radicacion' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  ELIMINAR REGISTROS
+  <a class="brand-logo">Radicación</a>
+{% endblock %}
+{% block shortcuts %}
+  <a class="right opciones" href="{% url 'stc:rad_agregar' %}"><i class="material-icons right">add</i></a>
+{% endblock %}
+{% block opciones %}
+  <li><a href="{% url 'stc:radicacion' %}">Dash</a></li>
+  <li><a href="{% url 'stc:rad_agregar' %}">Agregar</a></li>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:radicacion' %}" class="breadcrumb">Radicación</a>
+  <a class="breadcrumb">Gestión</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <form action="{% url 'stc:rad_gestion' %}" method="post">
+  <form id="formulario" action="{% url 'stc:rad_gestion' %}" method="POST" class="white z-depth-1 form-mini">
     {% csrf_token %}
-    <div class="mdl-grid content-rad-gest">
-      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-        <div class="cell-head mdl-cell mdl-cell--12-col">
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--6-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:180px" onclick="limpiarInput('factura')">
-            <input class="mdl-textfield__input" type="text" id="factura" name="factura" required />
-            <label class="mdl-textfield__label" for="factura" required>Factura</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--6-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:150px">
-            <input class="mdl-textfield__input" type="text" id="id_registro" name="id_registro" readonly="readonly" />
-            <label class="mdl-textfield__label" for="id_registro" required>ID Registro</label>
-          </div>
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="margin-right:30px" name="submit" value="buscar">Buscar</button>
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="eliminar">Eliminar</button>
-        </div>
+    <div class="row container form-main">
+      <div class="input-field col s12 m12 l12">
+        <input id="factura" name="factura" type="text" class="validate" autocomplete="off" required>
+        <label for="factura">Factura</label>
+      </div>
+    </div>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="buscar" name="submit" value="buscar" class="waves-effect waves-light grey lighten-3 black-text btn"><i class="material-icons left">search</i>Buscar</button>
+        <button id="eliminar" name="submit" value="eliminar" class="waves-effect waves-light red btn" style="margin-left:20px"><i class="material-icons left">delete</i>Eliminar</button>
       </div>
     </div>
   </form>
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" name="dash" id="dash">
-        <thead>
-          <tr>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">UNIDAD</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">RADICADO</th>
-            <th class="mdl-data-table__cell--non-numeric">CONTRATO</th>
-            <th>VALOR</th>
+  <div class="row dash-cont">
+    <table class="bordered responsive-table highlight" id="dash">
+      <thead>
+        <tr>
+          <th data-field="factura">FACTURA</th>
+          <th data-field="unidad">UNIDAD</th>
+          <th data-field="convenio">CONVENIO</th>
+          <th data-field="radicado">RADICADO</th>
+          <th data-field="contrato">CONTRATO</th>
+          <th data-field="valor">VALOR</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in ult_reg %}
+          <tr onclick="getRow(this)">
+            <td>{{ i.factura }}</td>
+            <td>{{ i.unidad.id }}</td>
+            <td>{{ i.convenio.nombre }}</td>
+            <td>{{ i.fecha_radicacion|date:"Y-m-d" }}</td>
+            <td>{{ i.contrato_tipo }}</td>
+            <td>{{ i.valor_factura|intcomma }}</td>
           </tr>
-        </thead>
-        {% for reg in last_registros %}
-            <tr onclick="getRow(this)">
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.unidad }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion|date:"Y-m-d" }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.contrato_tipo }}</td>
-              <td>{{ reg.valor_factura|intcomma }}</td>
-            </tr>
-          {% endfor %}  
-      </table>
-    </div>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-{% endlanguage %}
 {% endblock %}
-
 {% block scripts %}
-  <script src="{% static 'stc/rad_gestion.js' %}"></script> 
+  <script src="{% static 'stc/js/rad_gestion.js' %}"></script>
 {% endblock %}
