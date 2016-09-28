@@ -4,7 +4,7 @@
   <body style="max-width: 800px">
     <span style="font-family: sans-serif; font-size: 12px">
     {% language 'es' %}
-      <img src="https://dl.dropboxusercontent.com/u/49997815/GestionarBienestar/logoGB.png" style="max-width:350px">
+      <a href="{% url 'stc:devoluciones' %}"><img src="https://dl.dropboxusercontent.com/u/49997815/GestionarBienestar/logoGB.png" style="max-width:350px"></a>
       <br><br>
       <p>Floridablanca, {{ fecha.day }} de {{ fecha|date:'F' }} de {{ fecha.year }}</p>
       <br><br><br>

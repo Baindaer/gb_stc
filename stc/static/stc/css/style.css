@@ -45,6 +45,11 @@ main, footer {
     margin-left: 0;
     max-width: 100%;
   } 
+
+  .campos-consulta {
+  padding: 10px;
+  }
+
 }
 /* Modificaciones a etiquetas de Materialize */
 .brand-logo {
@@ -183,6 +188,14 @@ a.breadcrumb::before {
   margin-top: 40px;
   margin-left: 5%;
   margin-right: 5%;
+}
+
+.campos-consulta {
+  padding: 20px;
+}
+
+.label-consulta {
+  font-weight: 500;
 }
 
 /* Estilos de elementos */

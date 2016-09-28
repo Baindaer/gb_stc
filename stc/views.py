@@ -185,15 +185,15 @@ def consulta(request):
         return HttpResponseRedirect(reverse('stc:login'))
     if request.method == 'POST':
         factura = request.POST['factura'].upper()  
-        consulta_factura = Radicacion.objects.filter(factura=factura)
-        consulta_devolucion = Devolucion.objects.filter(factura=factura)
-        if consulta_factura or consulta_devolucion:
+        data_factura = Radicacion.objects.filter(factura=factura)
+        data_devolucion = Devolucion.objects.filter(factura=factura)
+        if data_factura or data_devolucion:
             messages.success(request, 'Busqueda realizada')
         else:
             messages.error(request, 'Factura no encontrada')
         context = {
-        'consulta_factura': consulta_factura, 
-        'consulta_devolucion': consulta_devolucion,
+        'data_factura': data_factura, 
+        'data_devolucion': data_devolucion,
         }
         return render(request, 'stc/consulta.html', context)
     return render(request, 'stc/consulta.html')
@@ -397,18 +397,18 @@ def dev_gestion(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     #Cargando variables de contexto iniciales
-    last_registros = Devolucion.objects.order_by('-id')[:50]
-    context = {'last_registros': last_registros}
+    ult_reg = Devolucion.objects.order_by('-id')[:50]
+    context = {'ult_reg': ult_reg}
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
         id_registro = request.POST['id_registro']
         if request.POST['submit'] == 'buscar':
             #Realizando filtro de consulta
-            last_registros = Devolucion.objects.filter(
+            ult_reg = Devolucion.objects.filter(
                 factura__contains=factura
                 ).order_by('-id')[:100]
-            context['last_registros'] = last_registros
-            if last_registros:
+            context['ult_reg'] = ult_reg
+            if ult_reg:
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
@@ -419,8 +419,8 @@ def dev_gestion(request):
                 exe = Devolucion.objects.get(id=id_registro).delete()
                 messages.success(request, 
                     'Devolucion de ' + factura + ' eliminada')
-                last_registros = Devolucion.objects.order_by('-id')[:50]
-                context['last_registros'] = last_registros
+                ult_reg = Devolucion.objects.order_by('-id')[:50]
+                context['ult_reg'] = ult_reg
             except:
                 messages.error(request, 
                     'Factura no seleccionada')
@@ -551,13 +551,13 @@ def dev_remision(request):
                     [to]
                     )
                 msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                #msg.send()
                 for each in pendientes:
                     #Actualizando estados
                     mod = Devolucion.objects.get(id=each.id)
                     mod.estado_id = "2"
                     mod.fecha_remitido = fecha_remitido
-                    mod.save() 
+                    #mod.save() 
                 return render(request, 'stc/dev_rem_email.html', context)           
             else:
                 messages.error(request, 

@@ -34,7 +34,7 @@
             <form action="{% url 'stc:consulta' %}" class="right hide-on-med-and-down" id="consulta" method="POST">
               {% csrf_token %}
               <div class="input-field">
-                <input id="search" name="factura" type="search" required>
+                <input id="search" name="factura" type="search" required autocomplete="off">
                 <label for="search"><i class="material-icons">search</i></label>
                 <i class="material-icons">close</i>
               </div>

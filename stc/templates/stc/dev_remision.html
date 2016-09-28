@@ -6,73 +6,82 @@
   Devoluciones
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:devoluciones' %}">
+  <a class="left bot-atras" href="{% url 'stc:devoluciones' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  REMITIR
+  <a class="brand-logo">Devoluciones</a>
+{% endblock %}
+{% block shortcuts %}
+{% endblock %}
+{% block opciones %}
+  <li><a href="{% url 'stc:devoluciones' %}">Dash</a></li>
+  <li><a href="{% url 'stc:dev_agregar' %}">Agregar</a></li>
+  <li><a href="{% url 'stc:dev_gestion' %}">Eliminar</a></li>
+  <li><a href="{% url 'stc:dev_actualizacion' %}">Actualizar</a></li>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:devoluciones' %}" class="breadcrumb">Devoluciones</a>
+  <a class="breadcrumb">Remisión</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <form action="{% url 'stc:dev_remision' %}" method="post">
+  <form id="formulario" action="{% url 'stc:dev_remision' %}" method="POST" class="white z-depth-1 form-mini">
     {% csrf_token %}
-    <div class="mdl-grid content-rad-gest">
-      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-        <div class="cell-head mdl-cell mdl-cell--12-col">
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:250px;" onclick="limpiarInput('gestor')">
-            <input class="mdl-textfield__input" type="text" id="gestor" name="gestor" list="lstGestores" />
-            <datalist name="lstGestores" id="lstGestores"> 
-              {% for each in gestores %}
-                <option>{{ each.nombre }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="gestor">Gestor</label>
-          </div>
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="margin-right:30px" name="submit" value="buscar">Buscar</button>
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="remitir">Remitir</button>
-        </div>
+    <div class="row container form-main">
+      <div class="input-field col s12 m12 l12">
+        <select id="gestor" name="gestor">
+          {% for i in gestores %}
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Gestores</label>
+      </div>
+    </div>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="buscar" name="submit" value="buscar" class="waves-effect waves-light grey lighten-3 black-text btn"><i class="material-icons left">search</i>Buscar</button>
+        <button id="eliminar" name="submit" value="remitir" class="waves-effect waves-light green btn" style="margin-left:20px"><i class="material-icons left">forward</i>Remitir</button>
       </div>
     </div>
   </form>
   {% if pendientes %}
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash" name="dash">
+    <div class="row dash-cont">
+      <table class="bordered responsive-table highlight" id="dash">
         <thead>
           <tr>
-            <th class="mdl-data-table__cell--non-numeric">ID</th>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">FECHA DEV</th>
-            <th>VALOR</th>
-            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+            <th data-field="id">ID</th>
+            <th data-field="factura">FACTURA</th>
+            <th data-field="empresa">EMPRESA</th>
+            <th data-field="convenio">CONVENIO</th>
+            <th data-field="fecha_dev">FECHA DEV</th>
+            <th data-field="valor">VALOR</th>
+            <th data-field="estado">ESTADO</th>
           </tr>
         </thead>
-        {% for reg in pendientes %}
-            <tr onclick="getRow(this)">
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_devolucion|date:"Y-m-d" }}</td>
-              <td>{{ reg.valor_factura|intcomma }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
+        <tbody>
+          {% for i in pendientes %}
+            <tr>
+              <td>{{ i.id }}</td>
+              <td>{{ i.factura }}</td>
+              <td>{{ i.empresa.nombre }}</td>
+              <td>{{ i.convenio.nombre }}</td>
+              <td>{{ i.fecha_devolucion|date:"Y-m-d" }}</td>
+              <td>{{ i.valor_factura|intcomma }}</td>
+              <td>{{ i.estado.descripcion }}</td>
             </tr>
-          {% endfor %}  
+          {% endfor %}
+        </tbody>
       </table>
     </div>
-  </div>
   {% endif %}
-{% endlanguage %}
 {% endblock %}
 {% block scripts %}
   {% if gestor %}
     <script>
-      document.getElementById("gestor").value = "{{ gestor }}";
+      $(document).ready(function() {
+        $("#gestor").val("{{ gestor }}");
+        $('select').material_select();
+      });
     </script>
   {% endif %}
 {% endblock %}
