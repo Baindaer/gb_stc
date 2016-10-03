@@ -1,4 +1,3 @@
-var dialog = document.querySelector('dialog');
 
 function refresh(){
     window.location.href="/reportes/";
@@ -10,7 +9,7 @@ $(document).ready(function () {
             url: '/reportes/exp_rad_general/',
             beforeSend: function() {
                 $("#linkdesc").hide();
-                dialog.showModal();
+                $('#modal1').openModal();
             },
             success: function(result) {
                 var csvData= 'data:application/csv;charset=utf-8,' + encodeURIComponent(result);

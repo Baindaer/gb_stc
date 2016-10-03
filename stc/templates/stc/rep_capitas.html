@@ -1,111 +1,85 @@
 {% extends "stc/layout.html" %}
 {% load static %}
 {% load humanize %}
-{% load i18n %}
 {% block titulo_page %}
-  Reportes
+  Reporte capitación
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:reportes' %}">
-    <i class="material-icons">arrow_back</i>
-  </a>
-  CAPITAS
+  <a class="brand-logo">Reportes</a>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:reportes' %}" class="breadcrumb">Reportes</a>
+  <a class="breadcrumb">Capitas</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <form action="{% url 'stc:rep_capitas' %}" method="post">
+  <form id="formulario" action="{% url 'stc:rep_capitas' %}" method="POST" class="white z-depth-1 form-mini">
     {% csrf_token %}
-    <div class="mdl-grid content-rad-gest">
-      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-        <div class="cell mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
-              {% for each in empresas %}
-                {% if pre_empresa == each.nombre %}
-                  <option selected>{{each.nombre}}</option>
-                {% else %} 
-                  <option>{{each.nombre}}</option>
-                {% endif %}
-              {% endfor %}  
-            </select>
-            <label class="mdl-textfield__label" for="empresa">Empresa</label>
-          </div>
-        </div>
-        <div class="cell mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" onclick="limpiarInput('convenio')">
-            <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required/>
-            <datalist name="lstConvenio" id="lstConvenio"> 
-              {% for each in convenios %}
-                <option value="{{ each.nombre }}">{{ each.nombre }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="convenio">Convenio</label>
-          </div>
-        </div>
-        <div class="cell mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="month" id="mes_reporte" name="mes_reporte" />
-            <label class="mdl-textfield__label" for="mes_reporte">Mes de reporte</label>
-          </div>
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="generar">Generar</button>
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" name="submit" value="exportar" style="margin-left:30px">Exportar</button>
-        </div>
+    <div class="row container-mini form-main">
+      <div class="input-field col s12">
+        <select id="empresa" name="empresa">
+          {% for i in empresas %}
+              <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Empresa</label>
+      </div>
+      <div class="input-field col s12">
+        <select id="convenio" name="convenio">
+          {% for i in convenios %}
+              <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Convenio</label>
+      </div>
+      <div class="input-field col s6">
+        <input type="month" id="mes_reporte" name="mes_reporte">
+        <label for="mes_reporte" class="active">Mes reporte</label>
       </div>
     </div>
-  </form>
-  <form id="consultar" name="consultar" action="{% url 'stc:consulta' %}" method="post" visible="false">
-    {% csrf_token %}
-    <input id="factura" name="factura"/>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="buscar" name="submit" value="generar" class="waves-effect waves-light grey lighten-3 black-text btn"><i class="material-icons left">search</i>Generar</button>
+        <button id="eliminar" name="submit" value="exportar" class="waves-effect waves-light blue btn" style="margin-left:20px"><i class="material-icons left">get_app</i>Exportar</button>
+      </div>
+    </div>
   </form>
   {% if reporte_capitas %}
-    <div class="mdl-grid content">
-      <div class="mdl-cell mdl-cell--12-col mdl-grid">
-        <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" name="dash" id="dash">
-          <thead>
-              <tr>
-                <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-                <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-                <th class="mdl-data-table__cell--non-numeric">RADICADO</th>
-                <th class="mdl-data-table__cell--non-numeric">SERVICIO</th>
-                <th class="mdl-data-table__cell--non-numeric">DEV</th>
-                <th>VALOR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for reg in reporte_capitas %}
-                <tr onclick="getRow(this)">
-                  <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-                  <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio }}</td>
-                  <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_radicacion|date:"Y-m-d" }}</td>
-                  <td class="mdl-data-table__cell--non-numeric">{{ reg.servicio }}</td>
-                  <td class="mdl-data-table__cell--non-numeric">{{ reg.tiene_dev }}</td>
-                  <td>{{ reg.valor_factura|intcomma }}</td>
-                </tr>
-              {% endfor %}       
-            </tbody>
-            <tfoot>
-              <tr>
-                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
-                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
-                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
-                <td class="mdl-data-table__cell--non-numeric foot-table"></td>
-                <td class="foot-table"><b>TOTAL<b></td>
-                <td class="foot-table"><b>{{ total_capitas|intcomma }}<b></td>
-              </tr>
-            </tfoot>
-        </table>
-      </div>
+    <div class="row dash-cont">
+      <table class="bordered responsive-table highlight" id="dash">
+        <thead>
+          <tr>
+            <th data-field="factura">FACTURA</th>
+            <th data-field="unidad">CONVENIO</th>
+            <th data-field="convenio">RADICADO</th>
+            <th data-field="radicado">SERVICIO</th>
+            <th data-field="valor">DEV</th>
+            <th data-field="valor">VALOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in reporte_capitas %}
+            <tr onclick="getConsulta(this)">
+              <td>{{ i.factura }}</td>
+              <td>{{ i.convenio.nombre }}</td>
+              <td>{{ i.fecha_radicacion|date:"Y-m-d" }}</td>
+              <td>{{ i.servicio.descripcion }}</td>
+              <td>{{ i.tiene_dev }}</td>
+              <td>{{ i.valor_factura|intcomma }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   {% endif %}
-{% endlanguage %}
 {% endblock %}
 {% block scripts %}
-  <script src="{% static 'stc/rep_capitas.js' %}"></script>
+  <script src="{% static 'stc/js/rep_capitas.js' %}"></script>
   {% if pre_mes_reporte %}
     <script>
-      document.getElementById("mes_reporte").value = "{{ pre_mes_reporte }}";
+      $("#mes_reporte").val("{{ pre_mes_reporte }}");
+      $("#empresa").val("{{ pre_empresa }}");
+      $("#convenio").val("{{ pre_convenio }}");
     </script>
   {% endif %}
 {% endblock %} 

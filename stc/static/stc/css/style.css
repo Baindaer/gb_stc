@@ -254,6 +254,10 @@ a.breadcrumb::before {
   margin-right: 5%;
 }
 
+.card-reporte {
+  min-height: 100%;
+}
+
 /* Estilos de elementos */
 #bot-usuario {
   font-size: 14px;
@@ -269,3 +273,12 @@ a.breadcrumb::before {
   width:200px !important;
   margin-top: 0px;
 }
+
+#modal1 {
+  max-width: 30%;
+}
+
+#loading {
+  max-width: 100%;
+}
+

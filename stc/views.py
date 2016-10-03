@@ -254,8 +254,8 @@ def rep_capitas(request):
             if reporte_capitas:
                 response = HttpResponse(content_type='text/csv')
                 #Asignando nombre de archivo
-                response['Content-Disposition'] = '''
-                    attachment; filename="reporte_capitas.csv"'''
+                header = 'attachment; filename="reporte_capitas.csv"'
+                response['Content-Disposition'] = header
                 #Creando el archivo csv con el tipo de delimitador ; semicolon
                 #para ser leido por excel
                 writer = csv.writer(response, delimiter=';')
@@ -452,11 +452,10 @@ def exp_rad_general(request):
     #definiendo el tipo de response a texto o csv
     response = HttpResponse(content_type='text/csv')
     #Asignando nombre de archivo
-    response['Content-Disposition'] = '''
-        attachment; filename="radicacion.csv"'''
+    response['Content-Disposition'] = 'attachment; filename="radicacion.csv"'
     #Consultando base de datos
-    #data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
-    data = Radicacion.objects.all()
+    data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
+    #data = Radicacion.objects.all()
     #Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
     #Escribiendo archivo, el proceso puede tardar varios segundos
