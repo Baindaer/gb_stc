@@ -21,6 +21,14 @@ main, footer {
     max-width: 600px;
   } 
 
+  .login-body {
+    max-width: 300px;
+    min-width: 300px;
+    margin-top: 10%;
+    margin-left: 40%;
+    margin-right: 40%;
+  }
+
 }
 
 @media only screen and (max-width: 992px) {
@@ -37,6 +45,14 @@ main, footer {
     margin-left: 10%;
     max-width: 600px;
   } 
+
+  .login-body {
+    max-width: 300px;
+    min-width: 300px;
+    margin-top: 10%;
+    margin-left: 33%;
+    margin-right: 33%;
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -46,10 +62,21 @@ main, footer {
     max-width: 100%;
   } 
 
-  .campos-consulta {
-  padding: 10px;
+  .login-body {
+    max-width: 300px;
+    min-width: 300px;
+    margin-top: 10%;
+    margin-left: 8%;
+    margin-right: 8%;
   }
 
+  .campos-consulta {
+    padding: 10px;
+  }
+
+  .breadcrumb-container {
+    display: none;
+  }
 }
 /* Modificaciones a etiquetas de Materialize */
 .brand-logo {
@@ -139,6 +166,14 @@ a.breadcrumb::before {
   margin-bottom: 15px;
 }
 
+.prefix {
+  padding-top: 10px;
+}
+
+.material-icons.prefix.active {
+  color: #2196f3;
+}
+
 /* Estilos del proyecto */
 .opciones {
   padding-right: 20px;
@@ -196,6 +231,27 @@ a.breadcrumb::before {
 
 .label-consulta {
   font-weight: 500;
+}
+
+
+
+.login-form {
+  min-height: 500px;
+}
+
+.img-login {
+  max-width: 100px;
+  margin-top: 30px;
+}
+
+.login-btn {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.container-mini {
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 /* Estilos de elementos */

@@ -47,10 +47,10 @@
         <li class="det-usuario">
           <!-- Panel de usuario -->
           <div class="row">
-            <div class="col s4">
+            <div class="col s4 center">
               <img src="{% static 'stc/images/icoGB.ico' %}" alt="" class="avatar">
             </div>
-            <div class="col s8">
+            <div class="col s8 center">
               {% if not request.user.is_authenticated %}
                 <a class="btn-flat waves-effect waves-light white-text" href="{% url 'stc:login' %}" id="bot-usuario">Iniciar Sesion</a>
               {% else %}

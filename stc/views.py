@@ -551,13 +551,13 @@ def dev_remision(request):
                     [to]
                     )
                 msg.attach_alternative(html_content, "text/html")
-                #msg.send()
+                msg.send()
                 for each in pendientes:
                     #Actualizando estados
                     mod = Devolucion.objects.get(id=each.id)
                     mod.estado_id = "2"
                     mod.fecha_remitido = fecha_remitido
-                    #mod.save() 
+                    mod.save() 
                 return render(request, 'stc/dev_rem_email.html', context)           
             else:
                 messages.error(request, 
@@ -570,10 +570,10 @@ def dev_actualizacion(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    last_registros = Devolucion.objects.order_by('-id')[:50]
+    ult_reg = Devolucion.objects.order_by('-id')[:50]
     estados = EstadoDV.objects.all()
     context = {
-        'last_registros':last_registros, 
+        'ult_reg':ult_reg, 
         'estados':estados,
         }
     if request.method == 'POST':
@@ -581,11 +581,11 @@ def dev_actualizacion(request):
         id_registro = request.POST['id_registro']
         if request.POST['submit'] == 'buscar':
             #Realizando filtro de consulta
-            last_registros = Devolucion.objects.filter(
+            ult_reg = Devolucion.objects.filter(
                 factura__contains=factura
                 ).order_by('-id')[:100]
-            context['last_registros'] = last_registros
-            if last_registros:
+            context['ult_reg'] = ult_reg
+            if ult_reg:
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
@@ -604,8 +604,8 @@ def dev_actualizacion(request):
                     mod.gestion = gestion
                 mod.save()
                 messages.success(request, 'La devolucion ha sido actualizada')
-                last_registros = Devolucion.objects.order_by('-id')[:50]
-                context['last_registros'] = last_registros
+                ult_reg = Devolucion.objects.order_by('-id')[:50]
+                context['ult_reg'] = ult_reg
             except:
                 messages.error(request, 'Factura no encontrada')
             return render(request, 'stc/dev_actualizacion.html', context)

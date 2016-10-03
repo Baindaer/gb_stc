@@ -30,7 +30,7 @@
     {% csrf_token %}
     <div class="row form-main">
       <div class="input-field col s6 m4 l4">
-        <input id="factura" name="factura" type="text" class="validate" autocomplete="off" required>
+        <input id="factura" name="factura" type="text" class="validate" autocomplete="off" required autofocus>
         <label for="factura">Factura</label>
       </div>
       <div class="input-field col s12 m8 l8">
@@ -58,7 +58,7 @@
         <label for="valor_factura">Valor factura</label>
       </div>
       <div class="input-field col s6 m4 l4">
-        <input type="text" id="causal" name="causal" class="autocomplete" autocomplete="off" value="{{ pre_convenio }}">
+        <input type="text" id="causal" name="causal" class="autocomplete" autocomplete="off">
         <label for="causal">Causal</label>
       </div>
       <div class="input-field col s12 m12 l8">

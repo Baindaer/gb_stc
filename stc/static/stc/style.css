@@ -194,10 +194,17 @@ html, body {
   margin-top: 30px;
 }
 
+.login-body {
+  max-width: 300px;
+  min-width: 300px;
+  width: 300px;
+}
+
 #icon-lock{
   font-size: 18px;
   margin-right: 3px;
 }
+
 #main-action {
       position: fixed;
       display: block;
