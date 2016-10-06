@@ -44,17 +44,16 @@ $(document).ready(function() {
                 $("#convenio").val(data.convenio);
                 $("#valor_factura").val(data.valor_factura);
                 $("#empresa").val(data.empresa);
-                $('select').material_select();
                 if (data.tipo_contrato){
                     $("#tipo_contrato").attr('checked', true);
                 };
                 $("#servicio").val(data.servicio);
                 $("#mes_servicio").val(data.mes_servicio);
                 Materialize.updateTextFields();
+                $('select').material_select();
             }
         });
     });
-    $("#empresa").val("GESTIONARBIENESTAR");
     $('select').material_select();
     $(window).keydown(function(event){
         if(event.keyCode == 13) {
@@ -67,6 +66,7 @@ $(document).ready(function() {
           $("#formulario").submit();
         }
     });
+    $('.class').attr('tabindex', '-1');
 });
 
 //Realizando post cada vez que el evento change ocurra en el elemento factura

@@ -139,10 +139,9 @@
         <input readonly id="num_glosa" name="num_glosa">
       </div>
       <div class="modal-footer">
-        <form id="confirm_eliminar" action="{% url 'stc:gl_resp_agregar' %}" method="POST"> 
           {% csrf_token %}
-          <button href="#!" name="submit" value="respuesta_elim" class="modal-action waves-effect waves-green btn-flat">Eliminar</button>
-          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+          <button href="#!" name="submit" value="respuesta_elim" class="modal-action red waves-effect waves-green btn-flat" style="margin-left:20px">Eliminar</button>
+          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
       </div>
     </div>
   </form>

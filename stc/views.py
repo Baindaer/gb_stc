@@ -952,6 +952,7 @@ def gl_resp_agregar(request):
             empresa_id=Empresa.objects.get(nombre=empresa).id
             )
         context['glosas'] = glosas
+        # Generando numero de respuesta a glosa o encabezado
         if request.POST['submit'] == 'respuesta_reg':
             registro = Respuesta(
                 empresa_id=Empresa.objects.get(nombre=empresa).id, 
@@ -965,6 +966,7 @@ def gl_resp_agregar(request):
             messages.success(request, 
                 'Respuesta #' + str(context['pre_respuesta']) + ' registrada')
             return render(request, 'stc/gl_resp_agregar.html', context)
+        # Creando detallado de respuesta a glosas
         if request.POST['submit'] == 'respuesta_det':
             glosa = request.POST['glosa']
             gestion = request.POST['gestion']
@@ -979,9 +981,12 @@ def gl_resp_agregar(request):
                 codigo_respuesta = "998"
             saldo_glosa = Glosa.objects.get(id=glosa).saldo_glosa 
             if saldo_glosa < int(aceptado_ips):
-                context['pre_respuesta'] = Respuesta.objects.order_by('-id')[0]
-                messages.success(request,'El valor aceptado supera al saldo de la glosa')
+                pre_respuesta = Respuesta.objects.order_by('-id')[0]
+                context['pre_respuesta'] = pre_respuesta
+                messages.success(request,
+                    'El valor aceptado supera al saldo de la glosa')
                 return render(request, 'stc/gl_resp_agregar.html', context)
+            new_saldo =saldo_glosa - int(aceptado_ips)
             registro = GlosaRespuesta(
                 glosa=Glosa.objects.get(id=glosa),
                 respuesta_id=respuesta,
@@ -993,10 +998,35 @@ def gl_resp_agregar(request):
             registro.save()
             actualizacion = Glosa.objects.get(id=glosa)
             actualizacion.estado_id = "3"
+            actualizacion.saldo_glosa = new_saldo
             actualizacion.save()
             context['pre_respuesta'] = Respuesta.objects.order_by('-id')[0]
             detallados = GlosaRespuesta.objects.filter(respuesta=respuesta)
             context['detallados'] = detallados
+            return render(request, 'stc/gl_resp_agregar.html', context)
+        # Eliminando detallado de respuesta a glosa
+        if request.POST['submit'] == 'respuesta_elim':
+            glosa = request.POST['num_glosa']
+            saldo_glosa = Glosa.objects.get(id=glosa).saldo_glosa 
+            new_saldo = saldo_glosa + GlosaRespuesta.objects.get(glosa_id=glosa).aceptado_ips
+            print(new_saldo)
+            exe = GlosaRespuesta.objects.get(glosa_id=glosa).delete()
+            actualizacion = Glosa.objects.get(id=glosa)
+            actualizacion.saldo_glosa = new_saldo
+            actualizacion.estado_id = "2"
+            actualizacion.save()
+            glosas = Glosa.objects.filter(
+                estado="2",
+                convenio_id=convenio_id,
+                empresa_id=Empresa.objects.get(nombre=empresa).id
+                )
+            context['glosas'] = glosas
+            detallados = GlosaRespuesta.objects.filter(respuesta=respuesta)
+            context['pre_respuesta'] = Respuesta.objects.order_by('-id')[0]
+            context['detallados'] = detallados
+            context['band_detalle'] = True
+            messages.success(request, 
+                'Respuesta de glosa # ' + glosa + ' eliminada')
             return render(request, 'stc/gl_resp_agregar.html', context)
 
     return render(request, 'stc/gl_resp_agregar.html', context)

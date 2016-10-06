@@ -32,7 +32,7 @@
         <label for="factura">Factura</label>
       </div>
       <div class="input-field col s12 m8 l8">
-        <select id="empresa" name="empresa">
+        <select id="empresa" name="empresa" tabindex="">
           {% for i in empresas %}
             {% if i.nombre ==  pre_empresa %}
               <option selected value="{{ i.nombre }}">{{ i.nombre }}</option>
@@ -44,11 +44,11 @@
         <label>Empresa</label>
       </div>
       <div class="input-field col s12">
-        <input type="text" id="convenio" name="convenio" class="autocomplete" autocomplete="off" value="{{ pre_convenio }}">
+        <input type="text" id="convenio" name="convenio" class="autocomplete notab" autocomplete="off" value="{{ pre_convenio }}">
         <label for="convenio">Convenio</label>
       </div>
       <div class="input-field col s6 m4 l4">
-        <input type="date" id="fecha_radicacion" name="fecha_radicacion" >
+        <input type="date" id="fecha_radicacion" name="fecha_radicacion" class="notab">
         <label for="fecha_radicacion" class="active">Fecha radicado</label>
       </div>
       <div class="input-field col s6 m4 l4">
@@ -130,6 +130,9 @@
 {% if pre_fecha_radicacion %}
   <script>
     document.getElementById("fecha_radicacion").value = "{{ pre_fecha_radicacion }}";
+    $(document).ready(function () {
+      $('.notab').attr('tabindex', '-1');
+    });
   </script>
 {% endif %}
 {% endblock %}
