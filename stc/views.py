@@ -536,7 +536,22 @@ def dev_remision(request):
                 context['gestor'] = gestor
                 subject = 'Notificación de devolución'
                 from_email = 'notificaciones.carteragb@gmail.com'
-                to = gestor_id.email
+                emails = gestor_id.email
+                c = emails.count(",") + 1
+                to = []
+                start = 0
+                if c == 1:
+                    to = [emails]
+                else:
+                    for i in range (c):
+                        u = emails.find(",",start)
+                        if start == 0:
+                            s = emails[ start : start + u ]
+                        else:
+                            s = emails[ start + 2*i : start + u + 2*i]
+                        start += u 
+                        to.append(s)
+                to.append('cartera@gestionarbienestar.com')
                 html_content = render_to_string(
                     'stc/dev_rem_email.html', context)
                 # Esto desnuda el contenido del html para ser leido desde
@@ -547,7 +562,7 @@ def dev_remision(request):
                     subject, 
                     text_content, 
                     from_email, 
-                    [to]
+                    to
                     )
                 msg.attach_alternative(html_content, "text/html")
                 msg.send()
@@ -615,21 +630,21 @@ def glosas(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    last_registros = Glosa.objects.order_by('-id')[:50]
-    context = {'last_registros':last_registros}
+    ult_reg = Glosa.objects.order_by('-id')[:50]
+    context = {'ult_reg':ult_reg}
     return render(request, 'stc/glosas.html', context)
 
 def gl_agregar(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    last_registros = Glosa.objects.order_by('-id')[:50]
+    ult_reg = Glosa.objects.order_by('-id')[:50]
     empresas = Empresa.objects.all()
     convenios = Convenio.objects.all()
     causales = Causal.objects.all()
     gestores = Gestor.objects.all()
     context = {
-        'last_registros':last_registros,
+        'ult_reg':ult_reg,
         'empresas':empresas,
         'convenios':convenios,
         'causales':causales,
@@ -703,18 +718,18 @@ def gl_gestion(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    last_registros = Glosa.objects.order_by('-id')[:50]
-    context = {'last_registros':last_registros}
+    ult_reg = Glosa.objects.order_by('-id')[:50]
+    context = {'ult_reg':ult_reg}
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
         id_registro = request.POST['id_registro']
         if request.POST['submit'] == 'buscar':
             #Realizando filtro de consulta
-            last_registros = Glosa.objects.filter(
+            ult_reg = Glosa.objects.filter(
                 factura__contains=factura
                 ).order_by('-id')[:100]
-            context['last_registros'] = last_registros
-            if last_registros:
+            context['ult_reg'] = ult_reg
+            if ult_reg:
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
@@ -725,8 +740,8 @@ def gl_gestion(request):
                 exe = Glosa.objects.get(id=id_registro).delete()
                 messages.success(request, 
                     'Glosa de la factura ' + factura + ' ha sido eliminada')
-                last_registros = Glosa.objects.order_by('-id')[:50]
-                context['last_registros'] = last_registros
+                ult_reg = Glosa.objects.order_by('-id')[:50]
+                context['ult_reg'] = ult_reg
             except:
                 messages.error(request, 'Factura seleccionada')
             return render(request, 'stc/gl_gestion.html',context)
@@ -764,11 +779,14 @@ def get_glosa(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     if request.method == 'POST':
-        glosa_id = request.POST.get('glosa_id')
-        gl = Glosa.objects.get(id=glosa_id)
+        glosa = request.POST.get('glosa')
+        gl = Glosa.objects.get(id=glosa)
         valor_glosa = gl.valor_glosa
         factura = gl.factura
-        extemporaneidad = gl.extemporaneidad()
+        try:
+            extemporaneidad = gl.extemporaneidad()
+        except:
+            extemporaneidad = "NO"
         data = {
             'valor_glosa': valor_glosa,
             'factura': factura,
@@ -879,97 +897,114 @@ def gl_resp_agregar(request):
         return HttpResponseRedirect(reverse('stc:login'))
     convenios = Convenio.objects.all().order_by('nombre')
     empresas = Empresa.objects.all()
-    respuestas = Respuesta.objects.all()
-    try:
-        respuesta = respuestas.aggregate(Max('numero'))['numero__max'] + 1
-    except:
-        respuesta = 1
+    ult_respuesta = Respuesta.objects.order_by('-id')[0]
+    new_respuesta = int(ult_respuesta.id) + 1
     context = {
-        'convenios':convenios,
-        'empresas':empresas,
-        'respuesta':respuesta,
+        'new_respuesta': new_respuesta,
+        'convenios': convenios,
+        'empresas': empresas,
         }
     if request.method == 'POST':
         respuesta = request.POST['respuesta']
-        convenio = request.POST['convenio'].upper()
+        if request.POST['submit'] == 'respuesta_cons':
+            try:
+                dat_resp = Respuesta.objects.get(id=respuesta)
+            except:
+                messages.error(request, 'Respuesta no existente')
+                return HttpResponseRedirect(reverse('stc:gl_resp_agregar'))
+            convenio = dat_resp.convenio.nombre
+            empresa = dat_resp.empresa.nombre
+            referencia = dat_resp.referencia
+            fecha_respuesta = dat_resp.fecha_respuesta.strftime('%Y-%m-%d')
+            print(fecha_respuesta)
+            detallados = GlosaRespuesta.objects.filter(respuesta=respuesta)
+            context['pre_respuesta'] = respuesta
+            context['pre_empresa'] = empresa
+            context['pre_convenio'] = convenio
+            context['pre_referencia'] = referencia
+            context['pre_fecha_respuesta'] = fecha_respuesta
+            context['detallados'] = detallados
+            context['band_detalle'] = True
+            glosas = Glosa.objects.filter(
+            estado="2",
+            convenio_id=Convenio.objects.get(nombre=convenio).nit,
+            empresa_id=Empresa.objects.get(nombre=empresa).id
+            )
+            context['glosas'] = glosas
+            return render(request, 'stc/gl_resp_agregar.html', context)
         empresa = request.POST['empresa']
-        referencia = request.POST['referencia'].upper()
+        convenio = request.POST['convenio'].upper()
+        referencia = request.POST['referencia']
         fecha_respuesta = request.POST['fecha_respuesta']
-        empresa_id = Empresa.objects.get(nombre=empresa).id
-        convenio_id = Convenio.objects.get(nombre=convenio).nit
-        if request.POST.get('submit') == 'agregar':
-            glosa_id = request.POST.get('glosa_id')
-            aceptado_ips = request.POST.get('aceptado_ips')
-            gestion = request.POST.get('gestion').upper()
-            fecha_registro = timezone.now()
-            if aceptado_ips == 0:
-                codigo_respuesta = 999
-            elif aceptado_ips == Glosa.objects.get(id=glosa_id).valor_glosa:
-                codigo_respuesta = 997
-            else:
-                codigo_respuesta = 998
+        try:
+            convenio_id = Convenio.objects.get(nombre=convenio).nit
+        except:
+            messages.error(request, 'Convenio no existente')
+            return render(request, 'stc/gl_resp_agregar.html', context)
+        context['pre_empresa'] = empresa
+        context['pre_convenio'] = convenio
+        context['pre_referencia'] = referencia
+        context['pre_fecha_respuesta'] = fecha_respuesta
+        context['band_detalle'] = True
+        glosas = Glosa.objects.filter(
+            estado="2",
+            convenio_id=convenio_id,
+            empresa_id=Empresa.objects.get(nombre=empresa).id
+            )
+        context['glosas'] = glosas
+        if request.POST['submit'] == 'respuesta_reg':
             registro = Respuesta(
-                glosa=Glosa.objects.get(id=glosa_id), 
-                numero=respuesta, 
+                empresa_id=Empresa.objects.get(nombre=empresa).id, 
+                convenio_id=convenio_id,
+                referencia=referencia,
                 fecha_respuesta=fecha_respuesta,
-                referencia=referencia, 
-                codigo_respuesta_id =codigo_respuesta,
+                locked=False,
+                )
+            registro.save()
+            context['pre_respuesta'] = Respuesta.objects.order_by('-id')[0]
+            messages.success(request, 
+                'Respuesta #' + str(context['pre_respuesta']) + ' registrada')
+            return render(request, 'stc/gl_resp_agregar.html', context)
+        if request.POST['submit'] == 'respuesta_det':
+            glosa = request.POST['glosa']
+            gestion = request.POST['gestion']
+            aceptado_ips = request.POST['aceptado_ips']
+            fecha_registro = timezone.now()
+            valor_factura = Glosa.objects.get(id=glosa).valor_factura  
+            if valor_factura == aceptado_ips:
+                codigo_respuesta = "997"
+            elif aceptado_ips == 0:
+                codigo_respuesta = "999"
+            else:
+                codigo_respuesta = "998"
+            saldo_glosa = Glosa.objects.get(id=glosa).saldo_glosa 
+            if saldo_glosa < int(aceptado_ips):
+                context['pre_respuesta'] = Respuesta.objects.order_by('-id')[0]
+                messages.success(request,'El valor aceptado supera al saldo de la glosa')
+                return render(request, 'stc/gl_resp_agregar.html', context)
+            registro = GlosaRespuesta(
+                glosa=Glosa.objects.get(id=glosa),
+                respuesta_id=respuesta,
                 gestion=gestion,
                 aceptado_ips=aceptado_ips,
+                codigo_respuesta_id=codigo_respuesta,
                 fecha_registro=fecha_registro,
                 )
             registro.save()
-            mod = Glosa.objects.get(id=glosa_id)
-            mod.saldo_glosa = int(mod.valor_glosa) - int(aceptado_ips)
-            mod.estado_id = 3
-            mod.save()
-            data = {
-                'mensaje': 'registrada',
-                'glosa_id': glosa_id,   
-                }
-            return HttpResponse(
-                json.dumps(data), content_type='application/json')
-        if request.POST['submit'] == 'cargar':
-            respuestas = Respuesta.objects.filter(numero=respuesta)
-            bandera = False
-            for each in respuestas:
-                bandera = each.cerrado
-            if bandera:
-                messages.success(request, 'La respuesta ya está cerrada')
-                return HttpResponseRedirect(reverse('stc:gl_resp_agregar'))
-            glosas = Glosa.objects.filter(
-                convenio=convenio_id
-                ).filter(
-                empresa=empresa_id
-                ).filter(
-                estado=2
-                ).order_by('-id')
-            context['glosas'] = glosas
-            context['respuesta'] = respuesta
-            context['respuestas'] = respuestas
-            context['lock'] = True
-            context['pre_convenio'] = convenio
-            context['pre_empresa'] = empresa
-            context['pre_referencia'] = referencia
-            context['pre_fecha_respuesta'] = fecha_respuesta
+            actualizacion = Glosa.objects.get(id=glosa)
+            actualizacion.estado_id = "3"
+            actualizacion.save()
+            context['pre_respuesta'] = Respuesta.objects.order_by('-id')[0]
+            detallados = GlosaRespuesta.objects.filter(respuesta=respuesta)
+            context['detallados'] = detallados
             return render(request, 'stc/gl_resp_agregar.html', context)
-        if request.POST['submit'] == 'finalizar':
-            resp = Respuesta.objects.filter(numero=respuesta)
-            for each in resp:
-                each.cerrado = 1
-                each.save()
-            return HttpResponseRedirect(reverse('stc:glosas'))
+
     return render(request, 'stc/gl_resp_agregar.html', context)
 
 def gl_respuestas(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    unicas = Respuesta.objects.values("numero").distinct()
-    respuestas = Respuesta.objects.all()
-    context = {
-        'unicas':unicas,
-        'respuestas':respuestas,
-        }
+    context = {}
+    ult_reg = Respuesta.objects.all()
     return render(request, 'stc/gl_respuestas.html', context)
-

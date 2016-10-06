@@ -110,7 +110,7 @@ class EstadoDV(models.Model):
 
 class Gestor(models.Model):
     nombre = models.CharField(max_length=100)
-    email = models.EmailField()
+    email = models.CharField(max_length=255)
     def __str__(self):
         return self.nombre
 

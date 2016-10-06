@@ -11,6 +11,54 @@
   <a class="breadcrumb">STC</a>
 {% endblock %}
 {% block body %}
-  
-
+  <div class="row container center-align modulos-cont">
+    <a class="waves-effect col s12 m4 l3 row hoverable z-depth-1 card-panel blue-grey darken-2 modulos" href="{% url 'stc:radicacion' %}">
+      <div class="col s12">
+        <img src="{% static 'stc/images/input.png' %}" alt="" class="img-login">
+      </div>
+      <div class="col s12 white-text">
+        <p>RADICACIÓN</p>
+      </div>
+    </a>
+    <a class="waves-effect col s12 m4 l3 row hoverable z-depth-1 card-panel blue-grey darken-2 modulos" href="{% url 'stc:devoluciones' %}">
+      <div class="col s12">
+        <img src="{% static 'stc/images/autorenew.png' %}" alt="" class="img-login">
+      </div>
+      <div class="col s12 white-text">
+        <p>DEVOLUCIONES</p>
+      </div>
+    </a>
+    <a class="waves-effect col s12 m4 l3 row hoverable z-depth-1 card-panel blue-grey darken-2 modulos" href="{% url 'stc:glosas' %}">
+      <div class="col s12">
+        <img src="{% static 'stc/images/update.png' %}" alt="" class="img-login">
+      </div>
+      <div class="col s12 white-text">
+        <p>GLOSAS</p>
+      </div>
+    </a>
+    <a class="waves-effect col s12 m4 l3 row hoverable z-depth-1 card-panel blue-grey darken-2 modulos" href="">
+      <div class="col s12">
+        <img src="{% static 'stc/images/work.png' %}" alt="" class="img-login">
+      </div>
+      <div class="col s12 white-text">
+        <p>CRM</p>
+      </div>
+    </a>
+    <a class="waves-effect col s12 m4 l3 row hoverable z-depth-1 card-panel blue-grey darken-2 modulos" href="{% url 'stc:consulta' %}">
+      <div class="col s12">
+        <img src="{% static 'stc/images/search.png' %}" alt="" class="img-login">
+      </div>
+      <div class="col s12 white-text">
+        <p>CONSULTAS</p>
+      </div>
+    </a>
+    <a class="waves-effect col s12 m4 l3 row hoverable z-depth-1 card-panel blue-grey darken-2 modulos" href="{% url 'stc:reportes' %}">
+      <div class="col s12">
+        <img src="{% static 'stc/images/timeline.png' %}" alt="" class="img-login">
+      </div>
+      <div class="col s12 white-text">
+        <p>REPORTES</p>
+      </div>
+    </a>
+  </div>
 {% endblock %}

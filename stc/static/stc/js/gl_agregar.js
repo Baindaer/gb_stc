@@ -42,8 +42,21 @@ $(document).ready(function() {
                 $("#convenio").val(data.convenio).parent().addClass('is-dirty');
                 $("#valor_factura").val(data.valor_factura).parent().addClass('is-dirty');
                 $("#empresa").val(data.empresa).parent().addClass('is-dirty');
-                $("#valor_glosa").focus();
+                $("#fecha_glosa").focus();
+                Materialize.updateTextFields();
+                $('select').material_select();
             }
         });
+    });
+    $("#formulario").keydown(function(event){
+        if(event.keyCode == 13) {
+          event.preventDefault();
+          return false;
+        }
+    });
+    $("#registrar").keydown(function(event){
+        if(event.keyCode == 13) {
+          $("#formulario").submit();
+        }
     });
 });

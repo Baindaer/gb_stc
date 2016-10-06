@@ -6,75 +6,85 @@
   Glosas
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:glosas' %}">
+  <a class="left bot-atras" href="{% url 'stc:glosas' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  REMITIR
+  <a class="brand-logo">Glosas</a>
+{% endblock %}
+{% block shortcuts %}
+{% endblock %}
+{% block opciones %}
+  <li><a href="{% url 'stc:glosas' %}">Dash</a></li>
+  <li><a href="{% url 'stc:gl_agregar' %}">Agregar</a></li>
+  <li><a href="{% url 'stc:gl_gestion' %}">Eliminar</a></li>
+  <li><a href="{% url 'stc:gl_resp_agregar' %}">Respuesta</a></li>
+  <li><a href="">Actualización</a></li>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:glosas' %}" class="breadcrumb">Glosas</a>
+  <a class="breadcrumb">Remisión</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <form action="{% url 'stc:gl_remision' %}" method="post">
+  <form id="formulario" action="{% url 'stc:gl_remision' %}" method="POST" class="white z-depth-1 form-mini">
     {% csrf_token %}
-    <div class="mdl-grid content-rad-gest">
-      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-        <div class="cell-head mdl-cell mdl-cell--12-col">
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:250px;" onclick="limpiarInput('gestor')">
-            <input class="mdl-textfield__input" type="text" id="gestor" name="gestor" list="lstGestores" />
-            <datalist name="lstGestores" id="lstGestores"> 
-              {% for each in gestores %}
-                <option>{{ each.nombre }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="gestor">Gestor</label>
-          </div>
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="margin-right:30px" name="submit" value="buscar">Buscar</button>
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="remitir">Remitir</button>
-        </div>
+    <div class="row container form-main">
+      <div class="input-field col s12 m12 l12">
+        <select id="gestor" name="gestor">
+          {% for i in gestores %}
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Gestores</label>
+      </div>
+    </div>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="buscar" name="submit" value="buscar" class="waves-effect waves-light grey lighten-3 black-text btn"><i class="material-icons left">search</i>Buscar</button>
+        <button id="eliminar" name="submit" value="remitir" class="waves-effect waves-light green btn" style="margin-left:20px"><i class="material-icons left">forward</i>Remitir</button>
       </div>
     </div>
   </form>
   {% if pendientes %}
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash">
-        <thead>
+    <div class="row cont-grande">
+    <table class="bordered responsive-table highlight" id="dash">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>FACTURA</th>
+          <th>EMPRESA</th>
+          <th>CONVENIO</th>
+          <th>FECHA GL</th>
+          <th>EXTEMP</th>
+          <th>VR GLOSA</th>
+          <th>ESTADO</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in pendientes %}
           <tr>
-            <th class="mdl-data-table__cell--non-numeric">ID</th>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">FECHA GL</th>
-            <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
-            <th>VR GLOSA</th>
-            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+            <td>{{ i.id }}</td>
+            <td>{{ i.factura }}</td>
+            <td>{{ i.empresa.id }}</td>
+            <td>{{ i.convenio.nombre }}</td>
+            <td>{{ i.fecha_glosa|date:"Y-m-d" }}</td>
+            <td>{{ i.extemporaneidad }}</td>
+            <td>{{ i.valor_glosa|intcomma }}</td>
+            <td>{{ i.estado.descripcion }}</td>
           </tr>
-        </thead>
-        {% for reg in pendientes %}
-            <tr>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_glosa|date:"Y-m-d" }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.extemporaneidad }}</td>
-              <td>{{ reg.valor_glosa|intcomma }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
-            </tr>
-          {% endfor %}  
-      </table>
-    </div>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
   {% endif %}
-{% endlanguage %}
 {% endblock %}
 {% block scripts %}
   {% if gestor %}
     <script>
-      document.getElementById("gestor").value = "{{ gestor }}";
+      $(document).ready(function() {
+        $("#gestor").val("{{ gestor }}");
+        $('select').material_select();
+      });
     </script>
   {% endif %}
 {% endblock %}

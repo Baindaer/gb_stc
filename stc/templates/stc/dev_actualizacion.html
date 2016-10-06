@@ -39,7 +39,7 @@
       <div class="input-field col s12">
         <select id="estado" name="estado">
           {% for i in estados %}
-              <option value="{{ i.descripcion }}">{{ i.descripcion }}</option>
+            <option value="{{ i.descripcion }}">{{ i.descripcion }}</option>
           {% endfor %}
         </select>
         <label>Estado</label>
@@ -90,5 +90,5 @@
   </div>
 {% endblock %}
 {% block scripts %}
-<script src="{% static 'stc/js/dev_actualizacion.js' %}"></script>
+  <script src="{% static 'stc/js/dev_actualizacion.js' %}"></script>
 {% endblock %}

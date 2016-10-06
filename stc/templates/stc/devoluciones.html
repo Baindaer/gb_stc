@@ -23,6 +23,40 @@
 {% endblock %}
 {% block body %}
   {% language 'es' %}
+    <div class="row cont-grande">
+      <div class="col s6 m3 l3">
+        <div class="card-panel blue-grey darken-2 center">
+          <span class="est-num flow-text">{{ cant_dv_reg }}<br>
+          </span>
+          <span class="est-det flow-text">Devoluciones registradas en {{ fecha|date:"F" }}<br>
+          </span>
+        </div>
+      </div>
+      <div class="col s6 m3 l3">
+        <div class="card-panel blue-grey darken-2 center">
+          <span class="est-num flow-text">{{ vr_dv_reg|intcomma }}M<br>
+          </span>
+          <span class="est-det flow-text">Total en devoluciones en el mes de {{ fecha|date:"F" }}<br>
+          </span>
+        </div>
+      </div>
+      <div class="col s6 m3 l3">
+        <div class="card-panel blue-grey darken-2 center">
+          <span class="est-num flow-text">{{ cant_dv_registradas|intcomma }}<br>
+          </span>
+          <span class="est-det flow-text">Devoluciones pendientes por remitir<br>
+          </span>
+        </div>
+      </div>
+      <div class="col s6 m3 l3">
+        <div class="card-panel blue-grey darken-2 center">
+          <span class="est-num flow-text">{{ cant_dv_revision|intcomma }}<br>
+          </span>
+          <span class="est-det flow-text">Devoluciones en proceso de revisión<br>
+          </span>
+        </div>
+      </div>
+    </div>
     <div class="container">
       <table class="bordered responsive-table highlight">
         <thead>

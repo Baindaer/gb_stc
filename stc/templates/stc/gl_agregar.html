@@ -6,150 +6,146 @@
   Glosas
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:glosas' %}">
+  <a class="left bot-atras" href="{% url 'stc:glosas' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  AGREGAR REGISTRO
+  <a class="brand-logo">Glosas</a>
 {% endblock %}
-{% block acciones %}
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_agregar' %}">
-    <i class="material-icons">add_box</i>
-  </a>
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_gestion' %}">
-    <i class="material-icons">delete</i>
-  </a> 
+{% block shortcuts %}
+  <a class="right opciones" href="{% url 'stc:gl_gestion' %}"><i class="material-icons right">delete</i></a>
 {% endblock %}
-{% block add_menu %}
-  <li><a class="mdl-menu__item" href="">Agregar glosa</a></li>
+{% block opciones %}
+  <li><a href="{% url 'stc:glosas' %}">Dash</a></li>
+  <li><a href="{% url 'stc:gl_gestion' %}">Eliminar</a></li>
+  <li><a href="{% url 'stc:gl_remision' %}">Remitir</a></li>
+  <li><a href="{% url 'stc:gl_resp_agregar' %}">Respuesta</a></li>
+  <li><a href="">Actualización</a></li>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:devoluciones' %}" class="breadcrumb">Glosas</a>
+  <a class="breadcrumb">Registrar</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <form action="{% url 'stc:gl_agregar' %}" method="post">
+  <form id="formulario" action="{% url 'stc:gl_agregar' %}" method="POST" class="white z-depth-1 form-container">
     {% csrf_token %}
-    <div class="mdl-grid content-form-agregar">
-      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-        <div class="cell-head-form mdl-cell mdl-cell--4-col">
-          <h5><img src="{% static 'stc/images/logoGB.png' %}" class="logo-form"></h5>
-        </div>
-        <div class="cell-head-form mdl-cell mdl-cell--8-col">
-          <h5><b>Formato de registro de glosas</b></h5>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--5-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:90px; width:150px">
-            <input class="mdl-textfield__input" type="text" id="factura" name="factura" autofocus required />
-            <label class="mdl-textfield__label" for="factura" required>Factura</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--7-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <select class="mdl-textfield__input" id="empresa" name="empresa" required> 
-              {% for each in empresas %}
-                {% if pre_empresa == each.nombre %}
-                  <option selected>{{each.nombre}}</option>
-                {% else %} 
-                  <option>{{each.nombre}}</option>
-                {% endif %}
-              {% endfor %}  
-            </select>
-            <label class="mdl-textfield__label" for="empresa">Empresa</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:630px">
-            <input class="mdl-textfield__input" type="text" id="convenio" name="convenio" list="lstConvenio" value="{{ pre_convenio }}" required />
-            <datalist name="lstConvenio" id="lstConvenio"> 
-              {% for each in convenios %}
-                <option>{{ each.nombre }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="convenio">Convenio</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--5-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-right:30px;width:175px">
-            <input class="mdl-textfield__input" type="date" id="fecha_glosa" name="fecha_glosa" required/>
-            <label class="mdl-textfield__label" for="fecha_glosa">Fecha de glosa</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--3-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:120px; margin-right:30px">
-            <input class="mdl-textfield__input" type="number" id="valor_factura" name="valor_factura" required/>
-            <label class="mdl-textfield__label" for="valor_factura">Valor factura</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--4-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:120px; margin-right:30px">
-            <input class="mdl-textfield__input" type="number" id="valor_glosa" name="valor_glosa" required/>
-            <label class="mdl-textfield__label" for="valor_glosa">Valor glosa</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--5-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:190px;" onclick="limpiarInput('causal')">
-            <input class="mdl-textfield__input" type="text" id="causal" name="causal" list="lstCausales" />
-            <datalist name="lstCausales" id="lstCausales"> 
-              {% for each in causales %}
-                <option>{{ each.codigo }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="causal">Causal</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--7-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:250px; margin-right:60px" onclick="limpiarInput('gestor')">
-            <input class="mdl-textfield__input" type="text" id="gestor" name="gestor" list="lstGestores" />
-            <datalist name="lstGestores" id="lstGestores"> 
-              {% for each in gestores %}
-                <option>{{ each.nombre }}</option>
-              {% endfor %}
-            </datalist>
-            <label class="mdl-textfield__label" for="gestor">Gestor</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--12-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:630px; ">
-            <textarea class="mdl-textfield__input" type="text" rows= "2" id="detalle" name="detalle" ></textarea>
-            <label class="mdl-textfield__label" for="detalle">Detalle</label>
-          </div>
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" value="registrar">Registrar</button>
-        </div>
+    <div class="row form-main">
+      <div class="input-field col s6 m4 l4">
+        <input id="factura" name="factura" type="text" class="validate" autocomplete="off" required autofocus>
+        <label for="factura">Factura</label>
+      </div>
+      <div class="input-field col s12 m8 l8">
+        <select id="empresa" name="empresa">
+          {% for i in empresas %}
+            {% if i.nombre ==  pre_empresa %}
+              <option selected value="{{ i.nombre }}">{{ i.nombre }}</option>
+            {% else %} 
+              <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <label>Empresa</label>
+      </div>
+      <div class="input-field col s12 m9 l9">
+        <input type="text" id="convenio" name="convenio" class="autocomplete" autocomplete="off" value="{{ pre_convenio }}" required>
+        <label for="convenio">Convenio</label>
+      </div>
+      <div class="input-field col s6 m3 l3">
+        <input id="valor_factura" name="valor_factura" type="number" class="validate">
+        <label for="valor_factura">Valor factura</label>
+      </div>
+      <div class="input-field col s6 m4 l4">
+        <input type="date" id="fecha_glosa" name="fecha_glosa" >
+        <label for="fecha_glosa" class="active">Fecha glosa</label>
+      </div>
+       <div class="input-field col s6 m4 l4">
+        <input id="valor_glosa" name="valor_glosa" type="number" class="validate" required>
+        <label for="valor_glosa">Valor glosa</label>
+      </div>
+      <div class="input-field col s6 m4 l4">
+        <input type="text" id="causal" name="causal" class="autocomplete" autocomplete="off" required>
+        <label for="causal">Causal</label>
+      </div>
+      <div class="input-field col s12 m8 l8">
+        <input id="detalle" name="detalle" type="text" class="validate" autocomplete="off">
+        <label for="detalle">Detalle</label>
+      </div>
+      <div class="input-field col s6 m4 l4">
+        <select id="gestor" name="gestor">
+          {% for i in gestores %}
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Gestores</label>
+      </div>
+    </div>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="registrar" class="waves-effect waves-light blue btn"><i class="material-icons left">send</i>Registrar</button>
       </div>
     </div>
   </form>
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash">
-        <thead>
+  <div class="row cont-grande">
+    <table class="bordered responsive-table highlight" id="dash">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>FACTURA</th>
+          <th>EMPRESA</th>
+          <th>CONVENIO</th>
+          <th>FECHA GL</th>
+          <th>EXTEMP</th>
+          <th>VR GLOSA</th>
+          <th>ESTADO</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in ult_reg %}
           <tr>
-            <th class="mdl-data-table__cell--non-numeric">ID</th>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">FECHA GL</th>
-            <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
-            <th>VR GLOSA</th>
-            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+            <td>{{ i.id }}</td>
+            <td>{{ i.factura }}</td>
+            <td>{{ i.empresa.id }}</td>
+            <td>{{ i.convenio.nombre }}</td>
+            <td>{{ i.fecha_glosa|date:"Y-m-d" }}</td>
+            <td>{{ i.extemporaneidad }}</td>
+            <td>{{ i.valor_glosa|intcomma }}</td>
+            <td>{{ i.estado.descripcion }}</td>
           </tr>
-        </thead>
-        {% for reg in last_registros %}
-            <tr>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_glosa|date:"Y-m-d" }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.extemporaneidad }}</td>
-              <td>{{ reg.valor_glosa|intcomma }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
-            </tr>
-          {% endfor %}  
-      </table>
-    </div>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-  <a href="{% url 'stc:dev_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
-{% endlanguage %}
+  <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large blue">
+      <i class="material-icons">menu</i>
+    </a>
+    <ul>
+      <li><a class="btn-floating green" href="{% url 'stc:gl_agregar' %}"><i class="material-icons">add</i></a></li>
+      <li><a class="btn-floating red" href="{% url 'stc:gl_gestion' %}"><i class="material-icons">delete</i></a></li>
+      <li><a class="btn-floating blue" href="{% url 'stc:gl_remision' %}"><i class="material-icons">forward</i></a></li>
+      <li><a class="btn-floating purple" href="{% url 'stc:dev_remision' %}"><i class="material-icons">mail</i></a></li>
+      <li><a class="btn-floating yellow darken-1" href="{% url 'stc:dev_actualizacion' %}"><i class="material-icons">update</i></a></li>
+    </ul>
+  </div>
 {% endblock %}
 {% block scripts %}
-  <script src="{% static 'stc/gl_agregar.js' %}"></script> 
+  <script src="{% static 'stc/js/gl_agregar.js' %}"></script> 
+  <script>
+    $(document).ready(function() {
+      $('#convenio').autocomplete({
+        data: {
+          {% for i in convenios %}
+            "{{i.nombre}}": null,
+          {% endfor %}
+        }
+      });
+      $('#causal').autocomplete({
+        data: {
+          {% for i in causales %}
+            "{{i.codigo}}": null,
+          {% endfor %}
+        }
+      });
+    });
+  </script>
 {% endblock %}

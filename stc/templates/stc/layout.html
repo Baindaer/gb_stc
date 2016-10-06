@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8">
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="{% static 'stc/css/materialize.min.css' %}"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="{% static 'stc/css/style.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'stc/css/materialize.min.css' %}"  media="all"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'stc/css/style.css' %}" media="all">
     <link rel="shortcut icon" href="{% static 'stc/images/icoGB.ico' %}">
     <title>
       {% block titulo_page %}
@@ -97,17 +97,17 @@
     <main>
       <nav class="breadcrumb-container">
         <div class="nav-wrapper ">
-            <div class="col l6 m6 s12 valign-wrapper">
-              {% block breadcrumb %}
-              {% endblock %}
-            </div>          
+          <div class="col l6 m6 s12 valign-wrapper">
+            {% block breadcrumb %}
+            {% endblock %}
+          </div>          
         </div>
       </nav>
       {% block body %}
       {% endblock %}
     </main>
     <!-- Seccion de scripts -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static 'stc/js/materialize.min.js' %}"></script>
     <script src="{% static 'stc/js/layout.js' %}"></script>
     <script>

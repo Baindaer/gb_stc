@@ -3,73 +3,94 @@
 {% load humanize %}
 {% load i18n %}
 {% block titulo_page %}
-  Devoluciones
+  Glosas
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:glosas' %}">
+  <a class="left bot-atras" href="{% url 'stc:glosas' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  ELIMINAR REGISTROS
+  <a class="brand-logo">Glosas</a>
+{% endblock %}
+{% block shortcuts %}
+  <a class="right opciones" href="{% url 'stc:gl_agregar' %}"><i class="material-icons right">add</i></a>
+{% endblock %}
+{% block opciones %}
+  <li><a href="{% url 'stc:glosas' %}">Dash</a></li>
+  <li><a href="{% url 'stc:gl_agregar' %}">Agregar</a></li>
+  <li><a href="{% url 'stc:gl_remision' %}">Remitir</a></li>
+  <li><a href="{% url 'stc:gl_resp_agregar' %}">Respuesta</a></li>
+  <li><a href="">Actualización</a></li>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:glosas' %}" class="breadcrumb">Glosas</a>
+  <a class="breadcrumb">Gestión</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <form action="{% url 'stc:gl_gestion' %}" method="post">
+  <form id="formulario" action="{% url 'stc:gl_gestion' %}" method="POST" class="white z-depth-1 form-mini">
     {% csrf_token %}
-    <div class="mdl-grid content-rad-gest">
-      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
-        <div class="cell-head mdl-cell mdl-cell--12-col">
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--6-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:180px" onclick="limpiarInput('factura')">
-            <input class="mdl-textfield__input" type="text" id="factura" name="factura" required />
-            <label class="mdl-textfield__label" for="factura" required>Factura</label>
-          </div>
-        </div>
-        <div class="cell-form mdl-cell mdl-cell--6-col">
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:150px">
-            <input class="mdl-textfield__input" type="text" id="id_registro" name="id_registro" readonly="readonly" />
-            <label class="mdl-textfield__label" for="id_registro" required>ID Registro</label>
-          </div>
-        </div>
-        <div class="cell-button mdl-cell mdl-cell--12-col">
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="margin-right:30px" name="submit" value="buscar">Buscar</button>
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" name="submit" value="eliminar">Eliminar</button>
-        </div>
+    <div class="row container form-main">
+      <div class="input-field col s12 m6 l6">
+        <input id="factura" name="factura" type="text" class="validate" autocomplete="off" required>
+        <label for="factura">Factura</label>
+      </div>
+      <div class="input-field col s12 m6 l6">
+        <input id="id_registro" name="id_registro" type="text" class="validate" autocomplete="off" readonly>
+        <label for="id_registro">Glosa</label>
+      </div>
+    </div>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="buscar" name="submit" value="buscar" class="waves-effect waves-light grey lighten-3 black-text btn"><i class="material-icons left">search</i>Buscar</button>
+        <button id="eliminar" name="submit" value="eliminar" class="waves-effect waves-light red btn" style="margin-left:20px"><i class="material-icons left">delete</i>Eliminar</button>
       </div>
     </div>
   </form>
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash" name="dash">
-        <thead>
-          <tr>
-            <th class="mdl-data-table__cell--non-numeric">ID</th>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">FECHA GL</th>
-            <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
-            <th>VR GLOSA</th>
-            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
+  <div class="row cont-grande">
+    <table class="bordered responsive-table highlight" id="dash">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>FACTURA</th>
+          <th>EMPRESA</th>
+          <th>CONVENIO</th>
+          <th>FECHA GL</th>
+          <th>EXTEMP</th>
+          <th>VR GLOSA</th>
+          <th>ESTADO</th>
+          <th>SALDO GLOSA</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in ult_reg %}
+          <tr onclick="getRow(this)">
+            <td>{{ i.id }}</td>
+            <td>{{ i.factura }}</td>
+            <td>{{ i.empresa.id }}</td>
+            <td>{{ i.convenio.nombre }}</td>
+            <td>{{ i.fecha_glosa|date:"Y-m-d" }}</td>
+            <td>{{ i.extemporaneidad }}</td>
+            <td>{{ i.valor_glosa|intcomma }}</td>
+            <td>{{ i.estado.descripcion }}</td>
+            <td>{{ i.saldo_glosa|intcomma }}</td>
           </tr>
-        </thead>
-        {% for reg in last_registros %}
-            <tr onclick="getRow(this)">
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.factura }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.empresa }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_glosa|date:"Y-m-d" }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.extemporaneidad }}</td>
-              <td>{{ reg.valor_glosa|intcomma }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
-            </tr>
-          {% endfor %}  
-      </table>
-    </div>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-{% endlanguage %}
+  <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large blue">
+      <i class="material-icons">menu</i>
+    </a>
+    <ul>
+      <li><a class="btn-floating green" href="{% url 'stc:gl_agregar' %}"><i class="material-icons">add</i></a></li>
+      <li><a class="btn-floating red" href="{% url 'stc:gl_gestion' %}"><i class="material-icons">delete</i></a></li>
+      <li><a class="btn-floating blue" href="{% url 'stc:gl_remision' %}"><i class="material-icons">forward</i></a></li>
+      <li><a class="btn-floating purple" href="{% url 'stc:dev_remision' %}"><i class="material-icons">mail</i></a></li>
+      <li><a class="btn-floating yellow darken-1" href="{% url 'stc:dev_actualizacion' %}"><i class="material-icons">update</i></a></li>
+    </ul>
+  </div>
 {% endblock %}
 {% block scripts %}
-  <script src="{% static 'stc/gl_gestion.js' %}"></script> 
+  <script src="{% static 'stc/js/gl_gestion.js' %}"></script> 
 {% endblock %}
