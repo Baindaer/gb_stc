@@ -838,9 +838,8 @@ def gl_remision(request):
                 messages.error(request, 'Gestor no existente')
                 return render(request, 'stc/gl_remision.html', context)
             pendientes = Glosa.objects.filter(
-                gestor_id=gestor_id, 
-                estado="1",
-                ).order_by('-id')
+                gestor_id=gestor_id).filter(
+                Q(estado="1") | Q(estado="4")).order_by('-id')
             context['pendientes'] = pendientes
             context['gestor'] = gestor
             if pendientes:
@@ -858,16 +857,26 @@ def gl_remision(request):
                 messages.error(request, 'Gestor no existente')
                 return render(request, 'stc/gl_remision.html', context)
             pendientes = Glosa.objects.filter(
-                gestor_id=gestor_id, estado="1").order_by('-id')
+                gestor_id=gestor_id).filter(
+                Q(estado="1") | Q(estado="4")).order_by('-id')
             gestor_id= Gestor.objects.get(nombre=gestor)
             if pendientes:
                 #Realizando realmente la remision luego de las validaciones
                 fecha_actual = timezone.now()
                 fecha_remitido = fecha_actual.strftime('%Y-%m-%d')
-                fecha_limite = addworkdays(
-                    datetime.strptime(
-                        fecha_remitido, 
-                        '%Y-%m-%d').date(), 10)
+                for i in pendientes:
+                    if i.estado.id == 4:
+                        band_rat = True
+                if band_rat:
+                    fecha_limite = addworkdays(
+                        datetime.strptime(
+                            fecha_remitido, 
+                            '%Y-%m-%d').date(), 5)
+                else:
+                    fecha_limite = addworkdays(
+                        datetime.strptime(
+                            fecha_remitido, 
+                            '%Y-%m-%d').date(), 10)
                 context['fecha_limite'] = fecha_limite
                 context['fecha'] = fecha_actual
                 context['pendientes'] = pendientes
