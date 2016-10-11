@@ -153,8 +153,8 @@ class Glosa(models.Model):
     gestor = models.ForeignKey(Gestor)
     fecha_remitido = models.DateField(null=True)
     estado = models.ForeignKey(EstadoGL)
-    fecha_ratificacion = models.DateField(null=True)
-    fecha_max_respuesta_rat = models.DateField(null=True)
+    fecha_ratificacion = models.DateField(null=True, blank=True)
+    fecha_max_respuesta_rat = models.DateField(null=True, blank=True)
     fecha_registro = models.DateField(null=True)
     usuario = models.ForeignKey(User)
     def __str__(self):

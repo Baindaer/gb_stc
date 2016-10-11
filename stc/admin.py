@@ -26,3 +26,13 @@ class RadicacionAdmin(admin.ModelAdmin):
         )
 
 admin.site.register(Radicacion, RadicacionAdmin)
+
+class GlosaAdmin(admin.ModelAdmin):
+    list_display = (
+        'factura',
+        'convenio', 
+        'valor_glosa',
+        )
+    search_fields = ['factura']
+
+admin.site.register(Glosa, GlosaAdmin)
