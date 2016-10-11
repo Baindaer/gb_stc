@@ -122,11 +122,11 @@ class Devolucion(models.Model):
     fecha_devolucion = models.DateField()
     valor_factura = models.IntegerField()
     causal = models.ForeignKey(Causal)
-    detalle = models.CharField(max_length=250)
+    detalle = models.CharField(max_length=512)
     gestor = models.ForeignKey(Gestor)
     fecha_remitido = models.DateField(null=True)
     fecha_registro = models.DateField(null=True)
-    gestion = models.CharField(max_length=250)
+    gestion = models.CharField(max_length=512)
     fecha_gestion = models.DateField(null=True)
     estado = models.ForeignKey(EstadoDV)
     usuario = models.ForeignKey(User)
@@ -146,7 +146,7 @@ class Glosa(models.Model):
     fecha_glosa = models.DateField()
     valor_factura = models.IntegerField()
     valor_glosa = models.IntegerField()
-    saldo_glosa = models.IntegerField()
+    saldo_glosa = models.PositiveIntegerField()
     causal = models.ForeignKey(Causal)
     fecha_max_respuesta = models.DateField()
     detalle = models.CharField(max_length=250)
@@ -179,25 +179,46 @@ class Respuesta(models.Model):
     locked = models.BooleanField(default=False)
     empresa = models.ForeignKey(Empresa)
     convenio = models.ForeignKey(Convenio)
+    usuario = models.ForeignKey(User)
     def __str__(self):
         return str(self.id)
+    def procesada(self):
+        if self.locked:   
+            return "Si"
+        else:
+            return "No"
 
 class GlosaRespuesta(models.Model):
-    glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True)
-    respuesta = models.ForeignKey(Respuesta)
-    gestion = models.CharField(max_length=250)
+    glosa = models.OneToOneField(Glosa, 
+        on_delete=models.CASCADE, primary_key=True)
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    gestion = models.CharField(max_length=512)
     aceptado_ips = models.IntegerField()
     codigo_respuesta = models.ForeignKey(Causal)
     fecha_registro = models.DateField(null=True)
     def __str__(self):
         return str(self.glosa)
+    def no_aceptado(self):
+        return int(self.glosa.valor_glosa) - int(self.aceptado_ips)
 
-class RespuestaRatificacion(models.Model):
-    glosa = models.OneToOneField(Glosa, on_delete=models.CASCADE, primary_key=True)
+class GlosaRespRatif(models.Model):
+    glosa = models.OneToOneField(Glosa, 
+        on_delete=models.CASCADE, primary_key=True)
     numero = models.IntegerField()
     fecha_respuesta = models.DateField()
-    gestion = models.CharField(max_length=250)
+    gestion = models.CharField(max_length=512)
     aceptado_ips = models.IntegerField()
     codigo_respuesta = models.ForeignKey(Causal)
     referencia = models.CharField(max_length=250, null=True)
     fecha_registro = models.DateField(null=True)
+    def __str__(self):
+        return str(self.glosa)
+
+class GlosaActualizacion(models.Model):
+    glosa = models.OneToOneField(Glosa, 
+        on_delete=models.CASCADE, primary_key=True)
+    gestion = models.CharField(max_length=512)
+    fecha_actualizacion = models.DateField()
+    aceptado_ips = models.IntegerField()
+    fecha_registro = models.DateField(null=True)
+    usuario = models.ForeignKey(User)

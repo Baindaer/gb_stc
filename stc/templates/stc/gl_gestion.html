@@ -19,7 +19,7 @@
   <li><a href="{% url 'stc:gl_agregar' %}">Agregar</a></li>
   <li><a href="{% url 'stc:gl_remision' %}">Remitir</a></li>
   <li><a href="{% url 'stc:gl_resp_agregar' %}">Respuesta</a></li>
-  <li><a href="">Actualización</a></li>
+  <li><a href="{% url 'stc:gl_actualizacion' %}">Actualización</a></li>
 {% endblock %}
 {% block breadcrumb %}
   <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
@@ -87,7 +87,7 @@
       <li><a class="btn-floating red" href="{% url 'stc:gl_gestion' %}"><i class="material-icons">delete</i></a></li>
       <li><a class="btn-floating blue" href="{% url 'stc:gl_remision' %}"><i class="material-icons">forward</i></a></li>
       <li><a class="btn-floating purple" href="{% url 'stc:dev_remision' %}"><i class="material-icons">mail</i></a></li>
-      <li><a class="btn-floating yellow darken-1" href="{% url 'stc:dev_actualizacion' %}"><i class="material-icons">update</i></a></li>
+      <li><a class="btn-floating yellow darken-1" href="{% url 'stc:gl_actualizacion' %}"><i class="material-icons">update</i></a></li>
     </ul>
   </div>
 {% endblock %}

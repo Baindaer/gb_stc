@@ -66,3 +66,36 @@ function getRow(x) {
     $('#modal1').openModal();
     Materialize.updateTextFields();
 };
+
+function post(path, params, method) {
+    method = method || "post";  // Asignar como tipo post si no se especifica
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function imprimir() {
+    var respuesta = $('#respuesta').val();
+    var cookie = getCookie('csrftoken');
+    post('/glosas/respuestas/imprimir', {respuesta: respuesta, csrfmiddlewaretoken: cookie });
+}
+
+function eliminar() {
+    var respuesta = $('#respuesta').val();
+    var cookie = getCookie('csrftoken');
+    post('/glosas/respuestas/agregar', {respuesta: respuesta, btn_submit: 'respuesta_elim', csrfmiddlewaretoken: cookie });
+}

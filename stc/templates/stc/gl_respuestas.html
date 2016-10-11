@@ -3,53 +3,73 @@
 {% load humanize %}
 {% load i18n %}
 {% block titulo_page %}
-  Glosas
+  Respuestas
 {% endblock %}
 {% block titulo_body %}
-  <a class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:inicio' %}">
+  <a class="left bot-atras" href="{% url 'stc:glosas' %}">
     <i class="material-icons">arrow_back</i>
   </a>
-  RESPUESTAS
+  <a class="brand-logo">Respuestas</a>
 {% endblock %}
-{% block acciones %}
-  <a class="action-button mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" href="{% url 'stc:gl_resp_agregar' %}">
-    <i class="material-icons">add_box</i>
-  </a>
+{% block opciones %}
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:glosas' %}" class="breadcrumb">Glosas</a>
+  <a class="breadcrumb">Respuestas</a>
 {% endblock %}
 {% block body %}
-{% language 'es' %}
-  <div class="mdl-grid content">
-    <div class="mdl-cell mdl-cell--12-col mdl-grid ">
-      <table class="full-table mdl-data-table mdl-js-data-table mdl-shadow--2dp" id="dash">
+  {% language 'es' %}
+    <form id="formulario" action="{% url 'stc:gl_respuestas' %}" method="POST" class="white z-depth-1 form-mini">
+      {% csrf_token %}
+      <div class="row form-main">
+        <div class="input-field col s12 m3 l3">
+          <input id="valor_busqueda" name="valor_busqueda" type="text" class="validate" autocomplete="off">
+        </div>
+        <div class="input-field col s12 m5 l5">
+          <select name="variable" id="variable">
+          <option value="respuesta">RESPUESTA</option>
+          <option value="factura">FACTURA</option>
+          </select>
+        </div>
+        <div class="input-field col s12 m4 l4">
+          <button id="buscar" name="submit" value="buscar" class="btn-flat waves-effect  waves-light"><i class="material-icons left">search</i>Filtrar</button>
+        </div>
+      </div>
+    </form>
+    <div class="row cont-grande">
+      <table class="bordered responsive-table highlight" id="dash">
         <thead>
           <tr>
-            <th class="mdl-data-table__cell--non-numeric">RESPUESTA</th>
-            <th class="mdl-data-table__cell--non-numeric">FACTURA</th>
-            <th class="mdl-data-table__cell--non-numeric">EMRPESA</th>
-            <th class="mdl-data-table__cell--non-numeric">CONVENIO</th>
-            <th class="mdl-data-table__cell--non-numeric">FECHA RESP</th>
-            <th class="mdl-data-table__cell--non-numeric">EXTEMP</th>
-            <th>VR GLOSA</th>
-            <th class="mdl-data-table__cell--non-numeric">ESTADO</th>
-            <th>SALDO GL</th>
+            <th>RESPUESTA</th>
+            <th>EMPRESA</th>
+            <th>CONVENIO</th>
+            <th>FECHA RESPUESTA</th>
+            <th>PROCESADA</th>
+            <th>REFERENCIA</th>
           </tr>
         </thead>
-        {% for reg in unicas %}
-            <tr>
-              <td class="mdl-data-table__cell--non-numeric">{{ respuestas.reg.glosa.convenio}}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ forloop.counter }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.glosa.empresa.id }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.glosa.convenio.nombre }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.fecha_respuesta|date:"Y-m-d" }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.extemporaneidad }}</td>
-              <td>{{ reg.valor_glosa|intcomma }}</td>
-              <td class="mdl-data-table__cell--non-numeric">{{ reg.estado.descripcion }}</td>
-              <td>{{ reg.saldo_glosa|intcomma }}</td>
+        <tbody>
+          {% for i in ult_reg %}
+            <tr onclick="getConsulta(this)" style="cursor:pointer">
+              <td>{{ i.id }}</td>
+              <td>{{ i.empresa.nombre }}</td>
+              <td>{{ i.convenio.nombre }}</td>
+              <td>{{ i.fecha_respuesta|date:"Y-m-d" }}</td>
+              <td>{{ i.procesada }}</td>
+              <td>{{ i.referencia }}</td>
             </tr>
-          {% endfor %}  
+          {% endfor %}
+        </tbody>
       </table>
     </div>
-  </div>
-  <a href="{% url 'stc:gl_agregar' %}" id="main-action" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp"><i class="material-icons">add</i></a>
-{% endlanguage %}
+    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+      <a class="btn-floating btn-large blue" href="{% url 'stc:gl_resp_agregar' %}">
+        <i class="large material-icons">add</i>
+      </a>
+    </div>
+  {% endlanguage %}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'stc/js/gl_respuestas.js' %}"></script> 
 {% endblock %}

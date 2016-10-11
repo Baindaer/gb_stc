@@ -11,5 +11,5 @@ $( document ).ready(function(){
 });
 
 function limpiarInput(id) {
-    $("#id").value= "";
+    document.getElementById(id).value = "";
 };

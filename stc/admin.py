@@ -12,6 +12,8 @@ admin.site.register(Ejecutivo)
 admin.site.register(Servicio)
 admin.site.register(EstadoDV)
 admin.site.register(Devolucion)
+admin.site.register(Respuesta)
+admin.site.register(EstadoGL)
 
 class RadicacionAdmin(admin.ModelAdmin):
     list_display = (

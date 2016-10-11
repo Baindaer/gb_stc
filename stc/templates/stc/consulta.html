@@ -190,16 +190,213 @@
         {% endfor %}
       </li>
     {% endif %}
+    {% if data_glosa %}
     <li>
-      <div class="collapsible-header">
+      <div class="collapsible-header active">
         <i class="material-icons">update</i>Glosas
       </div>
-      <div class="collapsible-body">
-        <div class="row">
-          <p>Lorem ipsum dolor sit amet.</p>
+      {% for i in data_glosa %}
+        <div class="collapsible-body campos-consulta">
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              ID:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.id }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha glosa:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_glosa }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Estado:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.estado.descripcion }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Codigo Glosa:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.causal.codigo }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Causal:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.causal.descripcion }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Detalle:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.detalle }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Valor glosado:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.valor_glosa|intcomma }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Saldo glosa:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.saldo_glosa|intcomma }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Gestor:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.gestor.nombre }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha remitido:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_remitido }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Gestión:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.gestion }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha gestión:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_gestion }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha maxima respuesta:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_max_respuesta }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Extemporanea:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.extemporaneidad }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha registro de glosa:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_registro }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Registrada por:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.usuario.first_name }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Respuesta:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosarespuesta.respuesta.id }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha respuesta:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosarespuesta.respuesta.fecha_respuesta }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Gestion:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosarespuesta.gestion }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Aceptado IPS en respuesta:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosarespuesta.aceptado_ips|intcomma }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Codigo Respuesta:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosarespuesta.codigo_respuesta }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Respuesta realizada por:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosarespuesta.respuesta.usuario.first_name }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha actualización:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosaactualizacion.fecha_actualizacion }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Detalle actualización:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosaactualizacion.gestion }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Actualizada por:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosaactualizacion.usuario.first_name }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Aceptado en actualización:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.glosaactualizacion.aceptado_ips|intcomma }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha maxima respuesta a ratificacion:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_max_respuesta_rat }}
+            </div>
+            <div class="col s4 m2 l2 label-consulta">
+              Fecha ratificacion:
+            </div>
+            <div class="col s8 m4 l4">
+              {{ i.fecha_ratificacion }}
+            </div>
+          </div>
         </div>
-      </div>
+      {% endfor %}
     </li>
+    {% endif %}
   </ul>
   </div>
 {% endblock %}

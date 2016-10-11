@@ -6,24 +6,27 @@
   Glosas
 {% endblock %}
 {% block titulo_body %}
-  <a class="left bot-atras" href="{% url 'stc:glosas' %}">
+  <a class="left bot-atras" href="{% url 'stc:gl_respuestas' %}">
     <i class="material-icons">arrow_back</i>
   </a>
   <a class="brand-logo">Glosas</a>
 {% endblock %}
 {% block shortcuts %}
-  <a class="right opciones" href="{% url 'stc:gl_gestion' %}"><i class="material-icons right">delete</i></a>
+  {% if pre_respuesta.locked %}
+    <a class="right opciones" href="#" onclick="imprimir()" ><i class="material-icons right">print</i></a>
+  {% endif %}
 {% endblock %}
 {% block opciones %}
   <li><a href="{% url 'stc:glosas' %}">Dash</a></li>
   <li><a href="{% url 'stc:gl_agregar' %}">Agregar</a></li>
   <li><a href="{% url 'stc:gl_gestion' %}">Eliminar</a></li>
   <li><a href="{% url 'stc:gl_remision' %}">Remitir</a></li>
-  <li><a href="">Actualización</a></li>
+  <li><a href="{% url 'stc:gl_actualizacion' %}">Actualización</a></li>
+  <li><a href="#" onclick="eliminar()">Eliminar</a></li>
 {% endblock %}
 {% block breadcrumb %}
   <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
-  <a href="{% url 'stc:devoluciones' %}" class="breadcrumb">Glosas</a>
+  <a href="{% url 'stc:glosas' %}" class="breadcrumb">Glosas</a>
   <a href="{% url 'stc:gl_respuestas' %}" class="breadcrumb">Respuestas</a>
   <a class="breadcrumb">Agregar</a>
 {% endblock %}
@@ -33,20 +36,20 @@
       {% csrf_token %}
       <div class="row form-main">
         <div class="input-field col s6 m3 l3">
-          <input id="respuesta" name="respuesta" type="number" min="1" required autofocus {% if pre_respuesta %} value='{{ pre_respuesta }}' max="{{ pre_respuesta }}" readonly {% else %} value='{{ new_respuesta }}' max="{{ new_respuesta }}"{% endif %} >
+          <input id="respuesta" name="respuesta" type="number" min="1" required autofocus {% if pre_respuesta %} value='{{ pre_respuesta.id }}' max="{{ pre_respuesta.id }}" readonly {% else %} value='{{ new_respuesta }}' max="{{ new_respuesta }}"{% endif %} >
           <label for="respuesta">Respuesta</label>
         </div>
         <div class="input-field col s12 m9 l9">
           <select id="empresa" name="empresa">
             {% if pre_respuesta %} 
               {% for i in empresas %}
-                {% if i.nombre ==  pre_empresa %}
+                {% if i.nombre ==  pre_respuesta.empresa.nombre %}
                   <option selected value="{{ i.nombre }}">{{ i.nombre }}</option>
                 {% endif %}
               {% endfor %} 
             {% else %}
               {% for i in empresas %}
-                {% if i.nombre ==  pre_empresa %}
+                {% if i.nombre ==  pre_respuesta.empresa.nombre %}
                   <option selected value="{{ i.nombre }}">{{ i.nombre }}</option>
                 {% else %} 
                   <option value="{{ i.nombre }}">{{ i.nombre }}</option>
@@ -57,7 +60,7 @@
           <label>Empresa</label>
         </div>
         <div class="input-field col s12 m8 l8">
-          <input type="text" id="convenio" name="convenio" class="autocomplete" autocomplete="off" value="{{ pre_convenio }}" {% if pre_respuesta %} readonly {% endif %}>
+          <input type="text" id="convenio" name="convenio" class="autocomplete" autocomplete="off" value="{{ pre_respuesta.convenio.nombre }}" {% if pre_respuesta %} readonly {% endif %}>
           <label for="convenio">Convenio</label>
         </div>
         <div class="input-field col s6 m4 l4">
@@ -65,85 +68,90 @@
           <label for="fecha_respuesta" class="active">Fecha respuesta</label>
         </div>
         <div class="input-field col s12">
-          <input id="referencia" name="referencia" type="text" autocomplete="off" value="{{ pre_referencia }}" {% if pre_respuesta %} readonly {% endif %}>
+          <input id="referencia" name="referencia" type="text" autocomplete="off" value="{{ pre_respuesta.referencia }}" {% if pre_respuesta %} readonly {% endif %}>
           <label for="referencia">Referencia</label>
         </div>
       </div>
       <div class="row form-bot">
         <div class="col s12 center">
-          <button id="respuesta_reg" name="submit" value="respuesta_reg" {% if band_detalle %} disabled {% endif %} class="waves-effect waves-light blue btn"><i class="material-icons left">note_add</i>Generar</button>
-          <button id="respuesta_cons" name="submit" value="respuesta_cons" class="waves-effect waves-light green btn" style="margin-left: 20px"><i class="material-icons left">open_in_browser</i>Cargar</button>
+          <button id="respuesta_reg" name="btn_submit" value="respuesta_reg" {% if band_detalle %} disabled {% endif %} class="waves-effect waves-light blue btn"><i class="material-icons left">note_add</i>Generar</button>
+          <button id="respuesta_cons" name="btn_submit" value="respuesta_cons" class="waves-effect waves-light green btn" style="margin-left: 20px;"><i class="material-icons left">open_in_browser</i>Cargar</button>
+          <button id="respuesta_proc" name="btn_submit" value="respuesta_proc" {% if pre_respuesta.locked %} disabled {% endif %} class="waves-effect waves-light deep-orange btn" style="margin-left: 20px"><i class="material-icons left">lock</i>Procesar</button>
         </div>
       </div>
     </div>
-    <div class="row cont-grande">
-      <table class="bordered responsive-table highlight" id="dash">
-        <thead>
-          <tr>
-            <th>GLOSA</th>
-            <th>FACTURA</th>
-            <th>VR GLOSA</th>
-            <th>EXTEMP</th>
-            <th>ACEPTA IPS</th>
-            <th>GESTION</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <select id="glosa" name="glosa" class="input-table">
-                <option value="" disabled selected>ID Glosa</option>
-                {% for i in glosas %}
-                  <option value="{{ i.id }}">{{ i.id }} # {{ i.factura }}</option>
-                {% endfor %} 
-              </select>
-            </td>
-            <td>
-              <input type="text" id="factura" name="factura"  autocomplete="off" readonly> 
-            </td>
-            <td>
-              <input type="number" id="valor_glosa" name="valor_glosa"  readonly> 
-            </td>
-            <td>
-              <input type="text" id="extemporaneidad" name="extemporaneidad"  readonly> 
-            </td>
-            <td>
-              <input type="number" id="aceptado_ips" name="aceptado_ips" > 
-            </td>
-            <td style="width: 30%">
-              <input type="text" id="gestion" name="gestion" autocomplete="off" > 
-            </td>
-          </tr>
-          {% for i in detallados %}
-            <tr ondblclick="getRow(this)">
-              <td>{{ i.glosa.id }}</td>
-              <td>{{ i.glosa.factura }}</td>
-              <td>{{ i.glosa.valor_glosa|intcomma }}</td>
-              <td>{{ i.glosa.extemporaneidad }}</td>
-              <td>{{ i.aceptado_ips|intcomma }}</td>
-              <td>{{ i.gestion }}</td>
+    {% if pre_respuesta %}
+      <div class="row cont-grande">
+        <table class="bordered responsive-table highlight" id="dash">
+          <thead>
+            <tr>
+              <th>GLOSA</th>
+              <th>FACTURA</th>
+              <th>VR GLOSA</th>
+              <th>EXTEMP</th>
+              <th>ACEPTA IPS</th>
+              <th>GESTION</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-      <button class="btn-floating btn-large blue" name="submit" value="respuesta_det" href="{% url 'stc:rad_agregar' %}">
-        <i class="large material-icons">send</i>
-      </button>
-    </div>
-    <div id="modal1" class="modal">
-      <div class="modal-content">
-        <h4>Confirmación</h4>
-        <p>Está a punto de eliminar el siguiente registro:</p>
-        <input readonly id="num_glosa" name="num_glosa">
+          </thead>
+          <tbody>
+            {% if not pre_respuesta.locked %}
+              <tr>
+                <td>
+                  <select id="glosa" name="glosa" class="input-table">
+                    <option value="" disabled selected>ID Glosa</option>
+                    {% for i in glosas %}
+                      <option value="{{ i.id }}">{{ i.id }} # {{ i.factura }}</option>
+                    {% endfor %} 
+                  </select>
+                </td>
+                <td>
+                  <input type="text" id="factura" name="factura"  autocomplete="off" readonly> 
+                </td>
+                <td>
+                  <input type="number" id="valor_glosa" name="valor_glosa"  readonly> 
+                </td>
+                <td>
+                  <input type="text" id="extemporaneidad" name="extemporaneidad"  readonly> 
+                </td>
+                <td>
+                  <input type="number" id="aceptado_ips" name="aceptado_ips" > 
+                </td>
+                <td style="width: 30%">
+                  <input type="text" id="gestion" name="gestion" autocomplete="off" > 
+                </td>
+              </tr>
+            {% endif %}
+            {% for i in detallados %}
+              <tr ondblclick="getRow(this)">
+                <td>{{ i.glosa.id }}</td>
+                <td>{{ i.glosa.factura }}</td>
+                <td>{{ i.glosa.valor_glosa|intcomma }}</td>
+                <td>{{ i.glosa.extemporaneidad }}</td>
+                <td>{{ i.aceptado_ips|intcomma }}</td>
+                <td>{{ i.gestion }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-      <div class="modal-footer">
-          {% csrf_token %}
-          <button href="#!" name="submit" value="respuesta_elim" class="modal-action red waves-effect waves-green btn-flat" style="margin-left:20px">Eliminar</button>
-          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+        <button class="btn-floating btn-large blue" name="btn_submit" value="respuesta_det" href="{% url 'stc:rad_agregar' %}">
+          <i class="large material-icons">send</i>
+        </button>
       </div>
-    </div>
+      <div id="modal1" class="modal">
+        <div class="modal-content">
+          <h4>Confirmación</h4>
+          <p>Está a punto de eliminar el siguiente registro:</p>
+          <input readonly id="num_glosa" name="num_glosa">
+        </div>
+        <div class="modal-footer">
+            {% csrf_token %}
+            <button href="#!" name="btn_submit" value="detalle_elim" class="modal-action red waves-effect waves-green btn-flat" style="margin-left:20px">Eliminar</button>
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        </div>
+      </div>
+    {% endif %}
   </form>
 {% endblock %}
 {% block scripts %}
@@ -164,7 +172,7 @@
   </script>
   {% if pre_fecha_respuesta %}
   <script>
-    document.getElementById("fecha_respuesta").value = "{{ pre_fecha_respuesta }}";
+    document.getElementById("fecha_respuesta").value = "{{ pre_respuesta.fecha_respuesta }}";
   </script>
   {% endif %}
 {% endblock %}
