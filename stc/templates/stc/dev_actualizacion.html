@@ -44,9 +44,18 @@
         </select>
         <label>Estado</label>
       </div>
-      <div class="input-field col s12 m6">
+      <div class="input-field col s12 m6 l6">
         <input type="date" id="fecha_gestion" name="fecha_gestion" >
         <label for="fecha_gestion" class="active">Fecha gestión</label>
+      </div>
+      <div class="col s12 m6 l6">
+        <div class="switch">
+          <label>
+            <input type="checkbox" id="fisico" name="fisico" value="1" checked>
+            <span class="lever"></span>
+            Fisico
+          </label>
+        </div>
       </div>
       <div class="input-field col s12">
         <input id="gestion" name="gestion" type="text" class="validate" autocomplete="off">
@@ -71,6 +80,7 @@
           <th data-field="fecha_dev">FECHA DEV</th>
           <th data-field="valor">VALOR</th>
           <th data-field="estado">ESTADO</th>
+          <th data-field="fisico">FISICO</th>
         </tr>
       </thead>
       <tbody>
@@ -83,6 +93,7 @@
             <td>{{ i.fecha_devolucion|date:"Y-m-d" }}</td>
             <td>{{ i.valor_factura|intcomma }}</td>
             <td>{{ i.estado.descripcion }}</td>
+            <td>{{ i.en_fisico }}</td>
           </tr>
         {% endfor %}
       </tbody>

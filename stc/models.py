@@ -160,6 +160,12 @@ class Devolucion(models.Model):
     def __str__(self):
         return self.factura + "@" + str(self.id)
 
+    def en_fisico(self):
+        if self.fisico:
+            return "SI"
+        else:
+            return "NO"
+
 
 class EstadoGL(models.Model):
     descripcion = models.CharField(max_length=50)

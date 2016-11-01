@@ -316,7 +316,7 @@ def devoluciones(request):
     vr_dv_reg = dev_mes.aggregate(
         Sum('valor_factura')
         )['valor_factura__sum'] / 1000000
-    cant_dv_registradas = dev.filter(estado=1).count()
+    cant_dv_registradas = dev.filter(estado=1, fisico=1).count()
     cant_dv_revision = dev.filter(estado=2).count()
     context = {
         'ult_reg': ult_reg,
@@ -637,11 +637,16 @@ def dev_actualizacion(request):
             fecha_gestion = request.POST['fecha_gestion']
             gestion = request.POST['gestion'].upper()
             estado_id = EstadoDV.objects.get(descripcion=estado)
+            try:
+                fisico = request.POST['fisico']
+            except:
+                fisico = 0
             # Actualizando registro
             try:
                 mod = Devolucion.objects.get(id=id_registro)
                 mod.estado_id = estado_id
                 mod.fecha_gestion = fecha_gestion
+                mod.fisico = fisico
                 if gestion != "":
                     mod.gestion = gestion
                 mod.save()
