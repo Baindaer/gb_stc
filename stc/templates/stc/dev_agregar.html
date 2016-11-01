@@ -45,7 +45,7 @@
         </select>
         <label>Empresa</label>
       </div>
-      <div class="input-field col s12">
+      <div class="input-field col s12 m12 l12">
         <input type="text" id="convenio" name="convenio" class="autocomplete" autocomplete="off" value="{{ pre_convenio }}">
         <label for="convenio">Convenio</label>
       </div>
@@ -61,17 +61,26 @@
         <input type="text" id="causal" name="causal" class="autocomplete" autocomplete="off">
         <label for="causal">Causal</label>
       </div>
-      <div class="input-field col s12 m12 l8">
+      <div class="input-field col s12 m6 l6">
         <input id="detalle" name="detalle" type="text" class="validate" autocomplete="off">
         <label for="detalle">Detalle</label>
       </div>
-      <div class="input-field col s6 m4 l4">
+      <div class="input-field col s6 m3 l4">
         <select id="gestor" name="gestor">
           {% for i in gestores %}
-              <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
           {% endfor %}
         </select>
         <label>Gestores</label>
+      </div>
+      <div class="col s6 m3 l2">
+        <div class="switch">
+          <label>
+            <input type="checkbox" id="fisico" name="fisico" value="1" checked>
+            <span class="lever"></span>
+            Fisico
+          </label>
+        </div>
       </div>
     </div>
     <div class="row form-bot">

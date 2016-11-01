@@ -15,24 +15,24 @@ admin.site.register(Devolucion)
 admin.site.register(Respuesta)
 admin.site.register(EstadoGL)
 
+
 class RadicacionAdmin(admin.ModelAdmin):
     list_display = (
-        'factura', 
-        'convenio', 
-        'fecha_radicacion', 
-        'contrato_tipo', 
-        'valor_factura', 
+        'factura',
+        'convenio',
+        'fecha_radicacion',
+        'contrato_tipo',
+        'valor_factura',
         'fecha_registro',
         )
-
 admin.site.register(Radicacion, RadicacionAdmin)
+
 
 class GlosaAdmin(admin.ModelAdmin):
     list_display = (
         'factura',
-        'convenio', 
+        'convenio',
         'valor_glosa',
         )
     search_fields = ['factura']
-
 admin.site.register(Glosa, GlosaAdmin)

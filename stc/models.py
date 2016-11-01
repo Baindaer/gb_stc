@@ -8,8 +8,9 @@ from django.contrib.auth.models import User
 
 (MON, TUE, WED, THU, FRI, SAT, SUN) = range(7)
 
-def addworkdays(start, days, holidays=(), workdays=(MON,TUE,WED,THU,FRI)):
-    #Definiendo funcion para agregar dias habiles a una fecha determinada
+
+def addworkdays(start, days, holidays=(), workdays=(MON, TUE, WED, THU, FRI)):
+    # Definiendo funcion para agregar dias habiles a una fecha determinada
     weeks, days = divmod(days, len(workdays))
     result = start + timedelta(weeks=weeks)
     lo, hi = min(start, result), max(start, result)
@@ -23,43 +24,55 @@ def addworkdays(start, days, holidays=(), workdays=(MON,TUE,WED,THU,FRI)):
 
 
 class Empresa(models.Model):
-    #En este modelo usaremos una id como pk ya que solo son pocas empresas
+    # En este modelo usaremos una id como pk ya que solo son pocas empresas
     id = models.CharField(max_length=10, primary_key=True)
     nombre = models.CharField(max_length=50)
     nit = models.IntegerField()
+
     def __str__(self):
         return self.nombre
 
+
 class Ejecutivo(models.Model):
     nombre = models.CharField(max_length=50)
+
     def __str__(self):
         return self.nombre
+
 
 class Unidad(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     nombre = models.CharField(max_length=50)
     empresa = models.ForeignKey(Empresa, null=True)
+
     def __str__(self):
         return self.id
+
 
 class RefUnidad(models.Model):
     referencia = models.CharField(max_length=100, primary_key=True)
     unidad = models.ForeignKey(Unidad)
+
     def __str__(self):
         return self.referencia
+
 
 class Convenio(models.Model):
     nit = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=100)
-    estado =  models.BooleanField(default=True)
+    estado = models.BooleanField(default=True)
     ejecutivo = models.ForeignKey(Ejecutivo, null=True)
+
     def __str__(self):
         return self.nombre
 
+
 class Servicio(models.Model):
     descripcion = models.CharField(max_length=200)
+
     def __str__(self):
         return self.descripcion
+
 
 class Radicacion(models.Model):
     factura = models.CharField(max_length=12, primary_key=True)
@@ -73,26 +86,32 @@ class Radicacion(models.Model):
     mes_servicio = models.CharField(max_length=7, null=True)
     usuario = models.ForeignKey(User)
     fecha_registro = models.DateTimeField(null=True)
+
     def __str__(self):
         return self.factura
+
     def contrato_tipo(self):
         if self.tipo_contrato == 1:
             return "CAPITA"
         else:
             return "EVENTO"
+
     def tiene_dev(self):
         if Devolucion.objects.filter(factura=self.factura):
             return "SI"
         else:
             return "NO"
+
     def tiene_gl(self):
         if Glosa.objects.filter(factura=self.factura):
             return "SI"
         else:
             return "NO"
+
     def fecha_max_glosa(self):
         fmg = addworkdays(self.fecha_radicacion, 20)
         return fmg
+
 
 class Causal(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -100,19 +119,25 @@ class Causal(models.Model):
     codigo = models.CharField(max_length=100)
     tipo = models.CharField(max_length=100)
     grupo = models.CharField(max_length=100)
+
     def __str__(self):
         return self.codigo
 
+
 class EstadoDV(models.Model):
     descripcion = models.CharField(max_length=50)
+
     def __str__(self):
         return self.descripcion
+
 
 class Gestor(models.Model):
     nombre = models.CharField(max_length=100)
     email = models.CharField(max_length=255)
+
     def __str__(self):
         return self.nombre
+
 
 class Devolucion(models.Model):
     factura = models.CharField(max_length=20)
@@ -130,13 +155,18 @@ class Devolucion(models.Model):
     fecha_gestion = models.DateField(null=True)
     estado = models.ForeignKey(EstadoDV)
     usuario = models.ForeignKey(User)
+    fisico = models.BooleanField(default=True)
+
     def __str__(self):
         return self.factura + "@" + str(self.id)
 
+
 class EstadoGL(models.Model):
     descripcion = models.CharField(max_length=50)
+
     def __str__(self):
         return self.descripcion
+
 
 class Glosa(models.Model):
     factura = models.CharField(max_length=20)
@@ -157,8 +187,10 @@ class Glosa(models.Model):
     fecha_max_respuesta_rat = models.DateField(null=True, blank=True)
     fecha_registro = models.DateField(null=True)
     usuario = models.ForeignKey(User)
+
     def __str__(self):
         return self.factura
+
     def extemporaneidad(self):
         fac = Radicacion.objects.get(factura=self.factura)
         fmg = fac.fecha_max_glosa()
@@ -166,12 +198,14 @@ class Glosa(models.Model):
             return "SI"
         else:
             return "NO"
+
     def rat_extemporaneidad(self):
         fecha_max_ratificacion = addworkdays(self.fecha_respuesta, 10)
         if self.fecha_ratificacion > fecha_max_ratificacion:
             return "SI"
         else:
             return "NO"
+
 
 class Respuesta(models.Model):
     fecha_respuesta = models.DateField()
@@ -180,30 +214,36 @@ class Respuesta(models.Model):
     empresa = models.ForeignKey(Empresa)
     convenio = models.ForeignKey(Convenio)
     usuario = models.ForeignKey(User)
+
     def __str__(self):
         return str(self.id)
+
     def procesada(self):
-        if self.locked:   
+        if self.locked:
             return "Si"
         else:
             return "No"
 
+
 class GlosaRespuesta(models.Model):
-    glosa = models.OneToOneField(Glosa, 
-        on_delete=models.CASCADE, primary_key=True)
+    glosa = models.OneToOneField(
+        Glosa, on_delete=models.CASCADE, primary_key=True)
     respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
     gestion = models.CharField(max_length=512)
     aceptado_ips = models.IntegerField()
     codigo_respuesta = models.ForeignKey(Causal)
     fecha_registro = models.DateField(null=True)
+
     def __str__(self):
         return str(self.glosa)
+
     def no_aceptado(self):
         return int(self.glosa.valor_glosa) - int(self.aceptado_ips)
 
+
 class GlosaRespRatif(models.Model):
-    glosa = models.OneToOneField(Glosa, 
-        on_delete=models.CASCADE, primary_key=True)
+    glosa = models.OneToOneField(
+        Glosa, on_delete=models.CASCADE, primary_key=True)
     numero = models.IntegerField()
     fecha_respuesta = models.DateField()
     gestion = models.CharField(max_length=512)
@@ -211,12 +251,14 @@ class GlosaRespRatif(models.Model):
     codigo_respuesta = models.ForeignKey(Causal)
     referencia = models.CharField(max_length=250, null=True)
     fecha_registro = models.DateField(null=True)
+
     def __str__(self):
         return str(self.glosa)
 
+
 class GlosaActualizacion(models.Model):
-    glosa = models.OneToOneField(Glosa, 
-        on_delete=models.CASCADE, primary_key=True)
+    glosa = models.OneToOneField(
+        Glosa, on_delete=models.CASCADE, primary_key=True)
     gestion = models.CharField(max_length=512)
     fecha_actualizacion = models.DateField()
     aceptado_ips = models.IntegerField()

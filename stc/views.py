@@ -30,6 +30,7 @@ def inicio(request):
     # Definiendo index de la pagina
     return render(request, 'stc/inicio.html',)
 
+
 def login(request):
     # Definiendo la funcion iniciar sesion con un requerimiento POST
     if request.method == 'POST':
@@ -45,15 +46,17 @@ def login(request):
         else:
             messages.error(request, 'Error de autenticación')
             return HttpResponseRedirect(reverse('stc:login'))
-    else: 
+    else:
         # Si no es un request tipo POST se renderiza el login
         return render(request, 'stc/login.html')
+
 
 def logout(request):
     # Cerrando sesion
     auth.logout(request)
     messages.success(request, 'Sesión cerrada corretamente')
     return HttpResponseRedirect(reverse('stc:inicio'))
+
 
 def radicacion(request):
     # Definiendo modulo de radicacion
@@ -64,6 +67,7 @@ def radicacion(request):
     ult_reg = Radicacion.objects.order_by('-fecha_registro')[:40]
     context = {'ult_reg': ult_reg}
     return render(request, 'stc/radicacion.html', context)
+
 
 def rad_agregar(request):
     # Validando si existe una sesion activa
@@ -76,7 +80,7 @@ def rad_agregar(request):
     convenios = Convenio.objects.all()
     servicios = Servicio.objects.all()
     context = {
-        'ult_reg': ult_reg, 
+        'ult_reg': ult_reg,
         'empresas': empresas,
         'convenios': convenios,
         'servicios': servicios,
@@ -108,26 +112,26 @@ def rad_agregar(request):
             unidad_id = RefUnidad.objects.get(
                 referencia=ref_unidad).unidad_id
         except:
-            messages.error(request, 
-                'Combinacion de empresa y prefijo no valida')
+            messages.error(
+                request, 'Combinacion de empresa y prefijo no valida')
             return render(request, 'stc/rad_agregar.html', context)
         try:
-            servicio_id=Servicio.objects.get(descripcion=servicio).id
+            servicio_id = Servicio.objects.get(descripcion=servicio).id
         except:
             messages.error(request, 'Servicio no existente')
             return render(request, 'stc/rad_agregar.html', context)
         # Registro en la base de datos
         registro = Radicacion(
-                factura=factura, 
-                empresa_id=Empresa.objects.get(nombre=empresa).id, 
+                factura=factura,
+                empresa_id=Empresa.objects.get(nombre=empresa).id,
                 convenio_id=convenio_id,
-                unidad_id=unidad_id, 
-                fecha_radicacion=fecha_radicacion, 
-                valor_factura=valor_factura, 
-                tipo_contrato=tipo_contrato, 
-                servicio_id=servicio_id, 
-                mes_servicio=mes_servicio, 
-                fecha_registro=fecha_registro, 
+                unidad_id=unidad_id,
+                fecha_radicacion=fecha_radicacion,
+                valor_factura=valor_factura,
+                tipo_contrato=tipo_contrato,
+                servicio_id=servicio_id,
+                mes_servicio=mes_servicio,
+                fecha_registro=fecha_registro,
                 usuario_id=request.user.id,
                 )
         registro.save()
@@ -140,6 +144,7 @@ def rad_agregar(request):
     else:
         # Haciendo render con el contexto cargado
         return render(request, 'stc/rad_agregar.html', context)
+
 
 def rad_gestion(request):
     # Validando sesion
@@ -165,9 +170,10 @@ def rad_gestion(request):
         if request.POST['submit'] == 'eliminar':
             # Eliminando registro
             try:
-                exe = Radicacion.objects.get(factura=factura).delete()
-                messages.success(request, 
-                    'Factura ' + factura + ' eliminada')
+                exe = Radicacion.objects.get(factura=factura)
+                exe.delete()
+                messages.success(
+                    request, 'Factura ' + factura + ' eliminada')
                 ult_reg = Radicacion.objects.order_by(
                     '-fecha_registro')[:50]
                 context['ult_reg'] = ult_reg
@@ -177,6 +183,7 @@ def rad_gestion(request):
     else:
         return render(request, 'stc/rad_gestion.html', context)
 
+
 def consulta(request):
     # Definiendo vista de consulta de factura
     if not request.user.is_authenticated:
@@ -184,7 +191,7 @@ def consulta(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     if request.method == 'POST':
-        factura = request.POST['factura'].upper()  
+        factura = request.POST['factura'].upper()
         data_factura = Radicacion.objects.filter(factura=factura)
         data_devolucion = Devolucion.objects.filter(factura=factura)
         data_glosa = Glosa.objects.filter(factura=factura)
@@ -193,22 +200,24 @@ def consulta(request):
         else:
             messages.error(request, 'Factura no encontrada')
         context = {
-        'data_factura': data_factura, 
-        'data_devolucion': data_devolucion,
-        'data_glosa': data_glosa,
-        }
+            'data_factura': data_factura,
+            'data_devolucion': data_devolucion,
+            'data_glosa': data_glosa,
+            }
         return render(request, 'stc/consulta.html', context)
     return render(request, 'stc/consulta.html')
 
+
 def reportes(request):
     return render(request, 'stc/reportes.html')
+
 
 def rep_capitas(request):
     if not request.user.is_authenticated:
         # Validando sesion
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    '''Obteniendo las empresas unicas que en radicacion tiene al 
+    '''Obteniendo las empresas unicas que en radicacion tiene al
     menos 1 registro como capita'''
     empresas = Empresa.objects.filter(
         radicacion__tipo_contrato='1'
@@ -218,7 +227,7 @@ def rep_capitas(request):
         ).distinct()
     context = {
         'empresas': empresas,
-        'convenios': convenios, 
+        'convenios': convenios,
         }
     if request.method == 'POST':
         empresa = request.POST['empresa']
@@ -227,13 +236,13 @@ def rep_capitas(request):
         empresa_id = Empresa.objects.get(nombre=empresa).id,
         convenio_id = Convenio.objects.get(nombre=convenio).nit
         reporte_capitas = Radicacion.objects.filter(
-            tipo_contrato='1', 
-            empresa=empresa_id, 
-            convenio=convenio_id, 
+            tipo_contrato='1',
+            empresa=empresa_id,
+            convenio=convenio_id,
             fecha_radicacion__startswith=mes_reporte,
             )
         val_dev = Devolucion.objects.filter(
-            empresa=empresa_id, 
+            empresa=empresa_id,
             convenio=convenio_id
             )
         context['pre_empresa'] = empresa
@@ -258,25 +267,25 @@ def rep_capitas(request):
                 # Asignando nombre de archivo
                 header = 'attachment; filename="reporte_capitas.csv"'
                 response['Content-Disposition'] = header
-                '''Creando el archivo csv con el tipo de delimitador ; 
+                '''Creando el archivo csv con el tipo de delimitador ;
                 para ser leido por excel'''
                 writer = csv.writer(response, delimiter=';')
                 # Escribiendo archivo, el proceso puede tardar varios segundos
                 writer.writerow([
-                    'Factura', 
-                    'Convenio', 
-                    'Radicado', 
-                    'Servicio', 
-                    'Tiene_Dev', 
+                    'Factura',
+                    'Convenio',
+                    'Radicado',
+                    'Servicio',
+                    'Tiene_Dev',
                     'Valor'
                     ])
                 for each in reporte_capitas:
                     writer.writerow([
-                        each.factura, 
-                        each.convenio.nombre, 
-                        each.fecha_radicacion, 
-                        each.servicio.descripcion, 
-                        each.tiene_dev(), 
+                        each.factura,
+                        each.convenio.nombre,
+                        each.fecha_radicacion,
+                        each.servicio.descripcion,
+                        each.tiene_dev(),
                         each.valor_factura
                         ])
                 return response
@@ -285,11 +294,13 @@ def rep_capitas(request):
                 return render(request, 'stc/rep_capitas.html', context)
     return render(request, 'stc/rep_capitas.html', context)
 
+
 def rep_dev_revision(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     pass
+
 
 def devoluciones(request):
     # Validando sesion
@@ -312,10 +323,11 @@ def devoluciones(request):
         'cant_dv_reg': cant_dv_reg,
         'vr_dv_reg': "%.0f" % vr_dv_reg,
         'fecha': fecha,
-        'cant_dv_registradas':cant_dv_registradas,
+        'cant_dv_registradas': cant_dv_registradas,
         'cant_dv_revision': cant_dv_revision,
         }
     return render(request, 'stc/devoluciones.html', context)
+
 
 def dev_agregar(request):
     # Validando sesion
@@ -347,6 +359,10 @@ def dev_agregar(request):
         gestor = request.POST['gestor']
         ref_unidad = empresa + factura[:2].upper()
         fecha_registro = timezone.now()
+        try:
+            fisico = request.POST['fisico']
+        except:
+            fisico = 0
         # Validando datos de traidos del formulario
         try:
             convenio_id = Convenio.objects.get(nombre=convenio).nit
@@ -356,11 +372,11 @@ def dev_agregar(request):
         try:
             unidad_id = RefUnidad.objects.get(referencia=ref_unidad).unidad_id
         except:
-            messages.error(request, 
-                'Combinacion de empresa y prefijo no valida')
+            messages.error(
+                request, 'Combinacion de empresa y prefijo no valida')
             return render(request, 'stc/dev_agregar.html', context)
         try:
-            gestor_id=Gestor.objects.get(nombre=gestor).id
+            gestor_id = Gestor.objects.get(nombre=gestor).id
         except:
             messages.error(request, 'Gestor no existente')
             return render(request, 'stc/dev_agregar.html', context)
@@ -369,29 +385,31 @@ def dev_agregar(request):
         except:
             messages.error(request, 'Causal no existente')
             return render(request, 'stc/dev_agregar.html', context)
-        # Registro en la base de datos 
+        # Registro en la base de datos
         registro = Devolucion(
-                factura=factura, 
-                empresa_id=Empresa.objects.get(nombre=empresa).id, 
+                factura=factura,
+                empresa_id=Empresa.objects.get(nombre=empresa).id,
                 convenio_id=convenio_id,
-                unidad_id=unidad_id, 
-                fecha_devolucion=fecha_devolucion, 
-                valor_factura=valor_factura,  
-                fecha_registro=fecha_registro, 
+                unidad_id=unidad_id,
+                fecha_devolucion=fecha_devolucion,
+                valor_factura=valor_factura,
+                fecha_registro=fecha_registro,
                 usuario_id=request.user.id,
                 causal_id=causal_id,
                 detalle=detalle,
                 gestor_id=gestor_id,
                 estado_id="1",
+                fisico=fisico,
                 )
         registro.save()
         # Cargando datos de contexto
         context['pre_empresa'] = empresa
         context['pre_convenio'] = convenio
-        messages.success(request, 
-            'Devolución de la factura ' + factura + ' registrada')
+        messages.success(
+            request, 'Devolución de la factura ' + factura + ' registrada')
         return render(request, 'stc/dev_agregar.html', context)
     return render(request, 'stc/dev_agregar.html', context)
+
 
 def dev_gestion(request):
     # Validando sesion
@@ -414,21 +432,23 @@ def dev_gestion(request):
                 messages.success(request, 'Busqueda realizada')
             else:
                 messages.error(request, 'Factura no encontrada')
-            return render(request, 'stc/dev_gestion.html',context)
+            return render(request, 'stc/dev_gestion.html', context)
         if request.POST['submit'] == 'eliminar':
             # Eliminando registro
             try:
-                exe = Devolucion.objects.get(id=id_registro).delete()
-                messages.success(request, 
-                    'Devolucion de ' + factura + ' eliminada')
+                exe = Devolucion.objects.get(id=id_registro)
+                exe.delete()
+                messages.success(
+                    request, 'Devolucion de ' + factura + ' eliminada')
                 ult_reg = Devolucion.objects.order_by('-id')[:50]
                 context['ult_reg'] = ult_reg
             except:
-                messages.error(request, 
-                    'Factura no seleccionada')
+                messages.error(
+                    request, 'Factura no seleccionada')
             return render(request, 'stc/dev_gestion.html', context)
     else:
         return render(request, 'stc/dev_gestion.html', context)
+
 
 def exportar(request):
     response = HttpResponse(content_type='text/csv')
@@ -446,6 +466,7 @@ def exportar(request):
             ])
     return response
 
+
 def exp_rad_general(request):
     # Validando sesion
     if not request.user.is_authenticated:
@@ -457,36 +478,38 @@ def exp_rad_general(request):
     response['Content-Disposition'] = 'attachment; filename="radicacion.csv"'
     # Consultando base de datos
     data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
-    #data = Radicacion.objects.all()
+    # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
     # Escribiendo archivo, el proceso puede tardar varios segundos
     writer.writerow([
-        'Factura', 
-        'Convenio', 
-        'Unidad', 
-        'Tipo contrato', 
-        'Valor', 
+        'Factura',
+        'Convenio',
+        'Unidad',
+        'Tipo contrato',
+        'Valor',
         'Fecha Radicacion',
         'Mes Servicio',
         ])
     for each in data:
         writer.writerow([
-            each.factura, 
-            each.convenio, 
-            each.unidad, 
-            each.contrato_tipo(), 
-            each.valor_factura, 
+            each.factura,
+            each.convenio,
+            each.unidad,
+            each.contrato_tipo(),
+            each.valor_factura,
             each.fecha_radicacion,
             each.mes_servicio,
             ])
     return response
 
+
 def pruebas(request):
     context = {}
     messages.success(request, 'probando 1,2,3')
-    print (messages)
+    print(messages)
     return render(request, 'stc/pruebas.html', context)
+
 
 def dev_remision(request):
     # Validando sesion
@@ -494,7 +517,7 @@ def dev_remision(request):
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     gestores = Gestor.objects.all()
-    context = {'gestores':gestores}
+    context = {'gestores': gestores}
     if request.method == 'POST':
         if request.POST['submit'] == 'buscar':
             # Realizando filtro de consulta
@@ -505,16 +528,17 @@ def dev_remision(request):
                 messages.error(request, 'Gestor no existente')
                 return render(request, 'stc/dev_remision.html', context)
             pendientes = Devolucion.objects.filter(
-                gestor_id=gestor_id, 
-                estado="1"
+                gestor_id=gestor_id,
+                estado="1",
+                fisico=True,
                 ).order_by('-id')
             context['pendientes'] = pendientes
             context['gestor'] = gestor
             if pendientes:
                 messages.success(request, 'Devoluciones pendientes mostradas')
             else:
-                messages.error(request, 
-                    'El gestor no tiene devoluciones por remitir')
+                messages.error(
+                    request, 'El gestor no tiene devoluciones por remitir')
             return render(request, 'stc/dev_remision.html', context)
         if request.POST['submit'] == 'remitir':
             # Realizando filtro de consulta
@@ -525,10 +549,11 @@ def dev_remision(request):
                 messages.error(request, 'Gestor no existente')
                 return render(request, 'stc/dev_remision.html', context)
             pendientes = Devolucion.objects.filter(
-                gestor_id=gestor_id, 
-                estado="1"
+                gestor_id=gestor_id,
+                estado="1",
+                fisico=True,
                 ).order_by('-id')
-            gestor_id= Gestor.objects.get(nombre=gestor)
+            gestor_id = Gestor.objects.get(nombre=gestor)
             if pendientes:
                 # Realizando realmente la remision luego de las validaciones
                 fecha_actual = timezone.now()
@@ -545,25 +570,25 @@ def dev_remision(request):
                 if c == 1:
                     to = [emails]
                 else:
-                    for i in range (c):
-                        u = emails.find(",",start)
+                    for i in range(c):
+                        u = emails.find(",", start)
                         if start == 0:
-                            s = emails[ start : start + u ]
+                            s = emails[start: start + u]
                         else:
-                            s = emails[ start + 2*i : start + u + 2*i]
-                        start += u 
+                            s = emails[start + 2*i: start + u + 2*i]
+                        start += u
                         to.append(s)
                 to.append('cartera@gestionarbienestar.com')
                 html_content = render_to_string(
                     'stc/dev_rem_email.html', context)
                 # Esto desnuda el contenido del html para ser leido desde
                 # cualquier cliente de correo sin soporte html
-                text_content = strip_tags(html_content) 
+                text_content = strip_tags(html_content)
                 # Creando el correo.
                 msg = EmailMultiAlternatives(
-                    subject, 
-                    text_content, 
-                    from_email, 
+                    subject,
+                    text_content,
+                    from_email,
                     to
                     )
                 msg.attach_alternative(html_content, "text/html")
@@ -573,13 +598,14 @@ def dev_remision(request):
                     mod = Devolucion.objects.get(id=each.id)
                     mod.estado_id = "2"
                     mod.fecha_remitido = fecha_remitido
-                    mod.save() 
-                return render(request, 'stc/dev_rem_email.html', context)           
+                    mod.save()
+                return render(request, 'stc/dev_rem_email.html', context)
             else:
-                messages.error(request, 
-                    'El gestor no tiene devoluciones para remitir')
+                messages.error(
+                    request, 'El gestor no tiene devoluciones para remitir')
             return render(request, 'stc/dev_remision.html', context)
     return render(request, 'stc/dev_remision.html', context)
+
 
 def dev_actualizacion(request):
     # Validando sesion
@@ -589,8 +615,8 @@ def dev_actualizacion(request):
     ult_reg = Devolucion.objects.order_by('-id')[:50]
     estados = EstadoDV.objects.all()
     context = {
-        'ult_reg':ult_reg, 
-        'estados':estados,
+        'ult_reg': ult_reg,
+        'estados': estados,
         }
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
@@ -628,13 +654,15 @@ def dev_actualizacion(request):
     else:
         return render(request, 'stc/dev_actualizacion.html', context)
 
+
 def glosas(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     ult_reg = Glosa.objects.order_by('-id')[:50]
-    context = {'ult_reg':ult_reg}
+    context = {'ult_reg': ult_reg}
     return render(request, 'stc/glosas.html', context)
+
 
 def gl_agregar(request):
     if not request.user.is_authenticated:
@@ -646,11 +674,11 @@ def gl_agregar(request):
     causales = Causal.objects.all()
     gestores = Gestor.objects.all()
     context = {
-        'ult_reg':ult_reg,
-        'empresas':empresas,
-        'convenios':convenios,
-        'causales':causales,
-        'gestores':gestores,
+        'ult_reg': ult_reg,
+        'empresas': empresas,
+        'convenios': convenios,
+        'causales': causales,
+        'gestores': gestores,
         }
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
@@ -664,7 +692,7 @@ def gl_agregar(request):
         gestor = request.POST['gestor']
         ref_unidad = empresa + factura[:2].upper()
         fecha_registro = timezone.now()
-        #Validando datos de traidos del formulario
+        # Validando datos de traidos del formulario
         try:
             convenio_id = Convenio.objects.get(nombre=convenio).nit
         except:
@@ -673,11 +701,11 @@ def gl_agregar(request):
         try:
             unidad_id = RefUnidad.objects.get(referencia=ref_unidad).unidad_id
         except:
-            messages.error(request, 
-                'Combinacion de empresa y prefijo no valida')
+            messages.error(
+                request, 'Combinacion de empresa y prefijo no valida')
             return render(request, 'stc/gl_agregar.html', context)
         try:
-            gestor_id=Gestor.objects.get(nombre=gestor).id
+            gestor_id = Gestor.objects.get(nombre=gestor).id
         except:
             messages.error(request, 'Gestor no existente')
             return render(request, 'stc/gl_agregar.html', context)
@@ -686,21 +714,21 @@ def gl_agregar(request):
         except:
             messages.error(request, 'Causal no existente')
             return render(request, 'stc/gl_agregar.html', context)
-        #Registro en la base de datos 
+        # Registro en la base de datos
         registro = Glosa(
-                factura=factura, 
-                empresa_id=Empresa.objects.get(nombre=empresa).id, 
+                factura=factura,
+                empresa_id=Empresa.objects.get(nombre=empresa).id,
                 convenio_id=convenio_id,
-                unidad_id=unidad_id, 
+                unidad_id=unidad_id,
                 fecha_glosa=fecha_glosa,
-                #Agregando 20 días habiles a la conversion de 
-                #fecha_glosa a dato tipo date con strp
+                # Agregando 20 días habiles a la conversion de
+                # fecha_glosa a dato tipo date con strp
                 fecha_max_respuesta=addworkdays(
                     datetime.strptime(fecha_glosa, '%Y-%m-%d').date(), 15),
-                valor_factura=valor_factura, 
+                valor_factura=valor_factura,
                 valor_glosa=valor_glosa,
                 saldo_glosa=valor_glosa,
-                fecha_registro=fecha_registro, 
+                fecha_registro=fecha_registro,
                 usuario_id=request.user.id,
                 causal_id=causal_id,
                 detalle=detalle,
@@ -708,20 +736,21 @@ def gl_agregar(request):
                 estado_id="1",
                 )
         registro.save()
-        #Cargando datos de contexto
+        # Cargando datos de contexto
         context['pre_empresa'] = empresa
         context['pre_convenio'] = convenio
-        messages.success(request, 
-            'Glosa de la factura ' + factura + ' registrada')
+        messages.success(
+            request, 'Glosa de la factura ' + factura + ' registrada')
         return render(request, 'stc/gl_agregar.html', context)
     return render(request, 'stc/gl_agregar.html', context)
+
 
 def gl_gestion(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
     ult_reg = Glosa.objects.order_by('-id')[:50]
-    context = {'ult_reg':ult_reg}
+    context = {'ult_reg': ult_reg}
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
         id_registro = request.POST['id_registro']
@@ -739,16 +768,19 @@ def gl_gestion(request):
         if request.POST['submit'] == 'eliminar':
             # Eliminando registro
             try:
-                exe = Glosa.objects.get(id=id_registro).delete()
-                messages.success(request, 
+                exe = Glosa.objects.get(id=id_registro)
+                exe.delete()
+                messages.success(
+                    request,
                     'Glosa de la factura ' + factura + ' ha sido eliminada')
                 ult_reg = Glosa.objects.order_by('-id')[:50]
                 context['ult_reg'] = ult_reg
             except:
                 messages.error(request, 'Factura seleccionada')
-            return render(request, 'stc/gl_gestion.html',context)
+            return render(request, 'stc/gl_gestion.html', context)
     else:
-        return render(request, 'stc/gl_gestion.html',context)
+        return render(request, 'stc/gl_gestion.html', context)
+
 
 def get_factura(request):
     if not request.user.is_authenticated:
@@ -766,7 +798,7 @@ def get_factura(request):
         mes_servicio = rad.mes_servicio
         data = {
             'empresa': empresa,
-            'convenio':convenio,
+            'convenio': convenio,
             'valor_factura': valor_factura,
             'servicio': servicio,
             'fecha_radicacion': fecha_radicacion,
@@ -775,6 +807,7 @@ def get_factura(request):
             }
         return HttpResponse(json.dumps(data), content_type='application/json')
     pass
+
 
 def get_glosa(request):
     if not request.user.is_authenticated:
@@ -796,6 +829,7 @@ def get_glosa(request):
             }
         return HttpResponse(json.dumps(data), content_type='application/json')
     pass
+
 
 def get_respuesta(request):
     if not request.user.is_authenticated:
@@ -821,8 +855,9 @@ def get_respuesta(request):
         return HttpResponse(json.dumps(data), content_type='application/json')
     pass
 
+
 def gl_remision(request):
-    #Validando sesion
+    # Validando sesion
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
@@ -830,7 +865,7 @@ def gl_remision(request):
     context = {'gestores': gestores}
     if request.method == 'POST':
         if request.POST['submit'] == 'buscar':
-            #Realizando filtro de consulta
+            # Realizando filtro de consulta
             gestor = request.POST['gestor']
             try:
                 gestor_id = Gestor.objects.get(nombre=gestor).id
@@ -845,11 +880,11 @@ def gl_remision(request):
             if pendientes:
                 messages.success(request, 'Glosas pendientes mostradas')
             else:
-                messages.error(request, 
-                    'El gestor no tiene glosas para remitir')
-            return render(request, 'stc/gl_remision.html',context)
+                messages.error(
+                    request, 'El gestor no tiene glosas para remitir')
+            return render(request, 'stc/gl_remision.html', context)
         if request.POST['submit'] == 'remitir':
-            #Realizando filtro de consulta
+            # Realizando filtro de consulta
             gestor = request.POST['gestor']
             try:
                 gestor_id = Gestor.objects.get(nombre=gestor).id
@@ -859,9 +894,9 @@ def gl_remision(request):
             pendientes = Glosa.objects.filter(
                 gestor_id=gestor_id).filter(
                 Q(estado="1") | Q(estado="4")).order_by('-id')
-            gestor_id= Gestor.objects.get(nombre=gestor)
+            gestor_id = Gestor.objects.get(nombre=gestor)
             if pendientes:
-                #Realizando realmente la remision luego de las validaciones
+                # Realizando realmente la remision luego de las validaciones
                 fecha_actual = timezone.now()
                 fecha_remitido = fecha_actual.strftime('%Y-%m-%d')
                 for i in pendientes:
@@ -870,12 +905,12 @@ def gl_remision(request):
                 if band_rat:
                     fecha_limite = addworkdays(
                         datetime.strptime(
-                            fecha_remitido, 
+                            fecha_remitido,
                             '%Y-%m-%d').date(), 5)
                 else:
                     fecha_limite = addworkdays(
                         datetime.strptime(
-                            fecha_remitido, 
+                            fecha_remitido,
                             '%Y-%m-%d').date(), 10)
                 context['fecha_limite'] = fecha_limite
                 context['fecha'] = fecha_actual
@@ -888,24 +923,25 @@ def gl_remision(request):
                     'stc/gl_rem_email.html', context)
                 text_content = strip_tags(html_content)
                 msg = EmailMultiAlternatives(
-                    subject, 
-                    text_content, 
-                    from_email, 
+                    subject,
+                    text_content,
+                    from_email,
                     [to]
                     )
                 msg.attach_alternative(html_content, "text/html")
                 msg.send()
                 for each in pendientes:
-                    #Actualizando estados
+                    # Actualizando estados
                     mod = Glosa.objects.get(id=each.id)
                     mod.estado_id = "2"
                     mod.fecha_remitido = fecha_remitido
-                    mod.save() 
-                return render(request, 'stc/gl_rem_email.html', context)           
+                    mod.save()
+                return render(request, 'stc/gl_rem_email.html', context)
             else:
-                messages.error(request, 
-                    'El gestor no tiene devoluciones para remitir')
+                messages.error(
+                    request, 'El gestor no tiene devoluciones para remitir')
     return render(request, 'stc/gl_remision.html', context)
+
 
 def gl_resp_agregar(request):
     # Verificando sesión
@@ -916,7 +952,10 @@ def gl_resp_agregar(request):
     convenios = Convenio.objects.all().order_by('nombre')
     empresas = Empresa.objects.all()
     # Calculando del nuevo numero de respuesta
-    new_respuesta = int(Respuesta.objects.order_by('-id')[0].id) + 1
+    try:
+        new_respuesta = int(Respuesta.objects.order_by('-id')[0].id) + 1
+    except:
+        new_respuesta = 1
     # Asignacion inicial de contexto
     context = {
         'new_respuesta': new_respuesta,
@@ -943,8 +982,8 @@ def gl_resp_agregar(request):
                 glos_resp.estado_id = "2"
                 glos_resp.save()
             resp_obj.delete()
-            messages.success(request, 
-                'Respuesta No. ' + respuesta + ' ha sido eliminada')
+            messages.success(
+                request, 'Respuesta No. ' + respuesta + ' ha sido eliminada')
             return HttpResponseRedirect(reverse('stc:gl_respuestas'))
 
         if request.POST['btn_submit'] == 'respuesta_proc':
@@ -977,17 +1016,17 @@ def gl_resp_agregar(request):
             detallados = GlosaRespuesta.objects.filter(respuesta=respuesta)
             # Consultando glosas disponibles para responder
             glosas = Glosa.objects.filter(
-            estado="2",
-            convenio_id=Convenio.objects.get(nombre=convenio).nit,
-            empresa_id=Empresa.objects.get(nombre=empresa).id
-            )
+                estado="2",
+                convenio_id=Convenio.objects.get(nombre=convenio).nit,
+                empresa_id=Empresa.objects.get(nombre=empresa).id
+                )
             # Obteniendo los valores para cargue en contexto
             context['pre_respuesta'] = resp_obj
             context['detallados'] = detallados
             context['band_detalle'] = True
             context['glosas'] = glosas
             return render(request, 'stc/gl_resp_agregar.html', context)
-        # Segundo cargue de variables globales 
+        # Segundo cargue de variables globales
         empresa = request.POST['empresa']
         convenio = request.POST['convenio'].upper()
         referencia = request.POST['referencia'].upper()
@@ -1014,7 +1053,7 @@ def gl_resp_agregar(request):
         if request.POST['btn_submit'] == 'respuesta_reg':
             # Creando registro en base de datos
             registro = Respuesta(
-                empresa_id=Empresa.objects.get(nombre=empresa).id, 
+                empresa_id=Empresa.objects.get(nombre=empresa).id,
                 convenio_id=convenio_id,
                 referencia=referencia,
                 fecha_respuesta=fecha_respuesta,
@@ -1025,8 +1064,8 @@ def gl_resp_agregar(request):
             # Consultando objeto de respuesta para asignar pre_respuesta
             resp_obj = Respuesta.objects.get(id=registro.id)
             context['pre_respuesta'] = resp_obj
-            messages.success(request, 
-                'Respuesta #' + str(resp_obj.id) + ' registrada')
+            messages.success(
+                request, 'Respuesta #' + str(resp_obj.id) + ' registrada')
             return render(request, 'stc/gl_resp_agregar.html', context)
         # Agregando glosas a detallado de respuesta
         if request.POST['btn_submit'] == 'respuesta_det':
@@ -1039,19 +1078,19 @@ def gl_resp_agregar(request):
             gestion = request.POST['gestion'].upper()
             aceptado_ips = request.POST['aceptado_ips']
             fecha_registro = timezone.now()
-            valor_factura = Glosa.objects.get(id=glosa).valor_factura  
+            valor_factura = Glosa.objects.get(id=glosa).valor_factura
             if valor_factura == aceptado_ips:
                 codigo_respuesta = "997"
             elif aceptado_ips == 0:
                 codigo_respuesta = "999"
             else:
                 codigo_respuesta = "998"
-            saldo_glosa = Glosa.objects.get(id=glosa).saldo_glosa 
+            saldo_glosa = Glosa.objects.get(id=glosa).saldo_glosa
             if saldo_glosa < int(aceptado_ips):
                 pre_respuesta = Respuesta.objects.get(id=respuesta)
                 context['pre_respuesta'] = pre_respuesta
-                messages.success(request,
-                    'El valor aceptado supera al saldo de la glosa')
+                messages.success(
+                    request, 'El valor aceptado supera al saldo de la glosa')
                 return render(request, 'stc/gl_resp_agregar.html', context)
             new_saldo = saldo_glosa - int(aceptado_ips)
             # Insertando registro en base de datos
@@ -1078,10 +1117,11 @@ def gl_resp_agregar(request):
         if request.POST['btn_submit'] == 'detalle_elim':
             glosa = request.POST['num_glosa']
             glosa_obj = Glosa.objects.get(id=glosa)
-            saldo_glosa = glosa_obj.saldo_glosa 
+            saldo_glosa = glosa_obj.saldo_glosa
             new_saldo = saldo_glosa + glosa_obj.glosarespuesta.aceptado_ips
             # Eliminando registro de bd
-            exe = GlosaRespuesta.objects.get(glosa_id=glosa).delete()
+            exe = GlosaRespuesta.objects.get(glosa_id=glosa)
+            exe.delete()
             # Actualizando estado y saldo de glosa
             actualizacion = Glosa.objects.get(id=glosa)
             actualizacion.saldo_glosa = new_saldo
@@ -1099,11 +1139,12 @@ def gl_resp_agregar(request):
             context['pre_respuesta'] = resp_obj
             context['detallados'] = detallados
             context['band_detalle'] = True
-            messages.success(request, 
-                'Respuesta de glosa # ' + glosa + ' eliminada')
+            messages.success(
+                request, 'Respuesta de glosa # ' + glosa + ' eliminada')
             return render(request, 'stc/gl_resp_agregar.html', context)
 
     return render(request, 'stc/gl_resp_agregar.html', context)
+
 
 def gl_respuestas(request):
     if not request.user.is_authenticated:
@@ -1134,6 +1175,7 @@ def gl_respuestas(request):
                 return render(request, 'stc/gl_respuestas.html', context)
     return render(request, 'stc/gl_respuestas.html', context)
 
+
 def gl_resp_imp(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
@@ -1150,12 +1192,13 @@ def gl_resp_imp(request):
             }
         return render(request, 'stc/gl_resp_imp.html', context)
 
+
 def gl_actualizacion(request):
     ult_reg = Glosa.objects.order_by('-id')[:50]
     estados = EstadoGL.objects.all()
     context = {
-        'ult_reg':ult_reg, 
-        'estados':estados,
+        'ult_reg': ult_reg,
+        'estados': estados,
         }
     if request.method == 'POST':
         factura = request.POST['factura'].upper()
@@ -1197,15 +1240,15 @@ def gl_actualizacion(request):
                 except:
                     acept_rat = 0
                 new_saldo = (
-                    int(glosa_obj.valor_glosa)
-                    - int(acept_resp)
-                    - int(acept_rat)
-                    - int(aceptado_ips))
+                    int(glosa_obj.valor_glosa) -
+                    int(acept_resp) -
+                    int(acept_rat) -
+                    int(aceptado_ips))
                 if new_saldo < 0:
-                    messages.error(request, 
-                        'El saldo de glosa no puede ser negativo')
-                    return render(request, 
-                        'stc/gl_actualizacion.html', context)
+                    messages.error(
+                        request, 'El saldo de glosa no puede ser negativo')
+                    return render(
+                        request, 'stc/gl_actualizacion.html', context)
             # Actualizando registro
             glosa_obj.estado_id = estado_id
             glosa_obj.saldo_glosa = new_saldo
@@ -1213,7 +1256,7 @@ def gl_actualizacion(request):
                 glosa_obj.fecha_ratificacion = fecha_actualizacion
                 glosa_obj.fecha_max_respuesta_rat = addworkdays(
                     datetime.strptime(
-                        fecha_actualizacion, 
+                        fecha_actualizacion,
                         '%Y-%m-%d').date(), 7)
             glosa_obj.save()
             try:

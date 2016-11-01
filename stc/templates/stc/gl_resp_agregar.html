@@ -63,7 +63,7 @@
           <input type="text" id="convenio" name="convenio" class="autocomplete" autocomplete="off" value="{{ pre_respuesta.convenio.nombre }}" {% if pre_respuesta %} readonly {% endif %}>
           <label for="convenio">Convenio</label>
         </div>
-        <div class="input-field col s6 m4 l4">
+        <div class="input-field col s12 m4 l4">
           <input type="date" id="fecha_respuesta" name="fecha_respuesta" {% if pre_respuesta %} readonly {% endif %}>
           <label for="fecha_respuesta" class="active">Fecha respuesta</label>
         </div>
@@ -170,7 +170,7 @@
       {% endif %}
     });
   </script>
-  {% if pre_fecha_respuesta %}
+  {% if pre_respuesta %}
   <script>
     document.getElementById("fecha_respuesta").value = "{{ pre_respuesta.fecha_respuesta }}";
   </script>
