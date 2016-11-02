@@ -26,7 +26,7 @@
   <a class="breadcrumb">Remisión</a>
 {% endblock %}
 {% block body %}
-  <form id="formulario" action="{% url 'stc:gl_remision' %}" method="POST" class="white z-depth-1 form-mini">
+  <form id="formulario" action="{% url 'stc:gl_remision' %}" method="POST" enctype="multipart/form-data" class="white z-depth-1 form-mini">
     {% csrf_token %}
     <div class="row container form-main">
       <div class="input-field col s12 m12 l12">
@@ -36,6 +36,15 @@
           {% endfor %}
         </select>
         <label>Gestores</label>
+      </div>
+      <div class="file-field input-field col s12 m12 l12">
+        <div class="blue btn">
+          <span>Adjunto</span>
+          <input type="file" name="adjunto">
+        </div>
+        <div class="file-path-wrapper">
+          <input class="file-path validate" type="text">
+        </div>
       </div>
     </div>
     <div class="row form-bot">

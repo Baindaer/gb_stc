@@ -1,4 +1,5 @@
 # Importando modulos generales
+# -*- coding: utf-8 -*-
 import csv
 import os
 import sqlite3
@@ -504,6 +505,108 @@ def exp_rad_general(request):
     return response
 
 
+def exp_gl_general(request):
+    # Validando sesion
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    # Definiendo el tipo de response a texto o csv
+    response = HttpResponse(content_type='text/csv')
+    # Asignando nombre de archivo
+    response['Content-Disposition'] = 'attachment; filename="glosas.csv"'
+    # Consultando base de datos
+    data = Glosa.objects.all()
+    # data = Radicacion.objects.all()
+    # Creando el archivo csv con el tipo de delimitador ; para excel
+    writer = csv.writer(response, delimiter=';')
+    # Escribiendo archivo, el proceso puede tardar varios segundos
+    writer.writerow([
+        'Id',
+        'Empresa',
+        'Unidad',
+        'Convenio',
+        'Factura',
+        'Fecha glosa',
+        'Valor factura',
+        'Valor glosa',
+        'Saldo glosa',
+        'Detalle',
+        'Fecha remitido',
+        'Causal',
+        'Estado',
+        'Gestor',
+        'Fecha ratificado',
+        ])
+    for each in data:
+        writer.writerow([
+            each.id,
+            each.empresa,
+            each.unidad,
+            each.convenio,
+            each.factura,
+            each.fecha_glosa,
+            each.valor_factura,
+            each.valor_glosa,
+            each.saldo_glosa,
+            each.detalle,
+            each.fecha_remitido,
+            each.causal_id,
+            each.estado.descripcion,
+            each.gestor.nombre,
+            each.fecha_ratificacion,
+            ])
+    return response
+
+
+def exp_dev_general(request):
+    # Validando sesion
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    # Definiendo el tipo de response a texto o csv
+    response = HttpResponse(content_type='text/csv')
+    # Asignando nombre de archivo
+    response['Content-Disposition'] = 'attachment; filename="devoluciones.csv"'
+    # Consultando base de datos
+    data = Devolucion.objects.all()
+    # data = Radicacion.objects.all()
+    # Creando el archivo csv con el tipo de delimitador ; para excel
+    writer = csv.writer(response, delimiter=';')
+    # Escribiendo archivo, el proceso puede tardar varios segundos
+    writer.writerow([
+        'Id',
+        'Empresa',
+        'Unidad',
+        'Convenio',
+        'Factura',
+        'Fecha devolucion',
+        'Valor factura',
+        'Detalle',
+        'Fecha remitido',
+        'Causal',
+        'Estado',
+        'Gestor',
+        'Fisico',
+        ])
+    for each in data:
+        writer.writerow([
+            each.id,
+            each.empresa,
+            each.unidad,
+            each.convenio,
+            each.factura,
+            each.fecha_devolucion,
+            each.valor_factura,
+            each.detalle,
+            each.fecha_remitido,
+            each.causal_id,
+            each.estado.descripcion,
+            each.gestor.nombre,
+            each.en_fisico(),
+            ])
+    return response
+
+
 def pruebas(request):
     context = {}
     messages.success(request, 'probando 1,2,3')
@@ -521,7 +624,10 @@ def dev_remision(request):
     if request.method == 'POST':
         if request.POST['submit'] == 'buscar':
             # Realizando filtro de consulta
-            gestor = request.POST['gestor']
+            try:
+                gestor = request.POST['gestor']
+            except:
+                pass
             try:
                 gestor_id = Gestor.objects.get(nombre=gestor).id
             except:
@@ -543,6 +649,10 @@ def dev_remision(request):
         if request.POST['submit'] == 'remitir':
             # Realizando filtro de consulta
             gestor = request.POST['gestor']
+            adjunto = request.FILES['adjunto']
+            print(adjunto.content_type)
+            print(adjunto.name)
+            print(adjunto.size)
             try:
                 gestor_id = Gestor.objects.get(nombre=gestor).id
             except:
@@ -585,14 +695,20 @@ def dev_remision(request):
                 # cualquier cliente de correo sin soporte html
                 text_content = strip_tags(html_content)
                 # Creando el correo.
-                msg = EmailMultiAlternatives(
+                email = EmailMultiAlternatives(
                     subject,
                     text_content,
                     from_email,
-                    to
-                    )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                    to,)
+                try:
+                    email.attach(
+                        adjunto.name,
+                        adjunto.read(),
+                        adjunto.content_type)
+                except:
+                    pass
+                email.attach_alternative(html_content, "text/html")
+                email.send()
                 for each in pendientes:
                     # Actualizando estados
                     mod = Devolucion.objects.get(id=each.id)
@@ -892,6 +1008,10 @@ def gl_remision(request):
             # Realizando filtro de consulta
             gestor = request.POST['gestor']
             try:
+                adjunto = request.FILES['adjunto']
+            except:
+                pass
+            try:
                 gestor_id = Gestor.objects.get(nombre=gestor).id
             except:
                 messages.error(request, 'Gestor no existente')
@@ -903,6 +1023,7 @@ def gl_remision(request):
             if pendientes:
                 # Realizando realmente la remision luego de las validaciones
                 fecha_actual = timezone.now()
+                band_rat = False
                 fecha_remitido = fecha_actual.strftime('%Y-%m-%d')
                 for i in pendientes:
                     if i.estado.id == 4:
@@ -927,14 +1048,20 @@ def gl_remision(request):
                 html_content = render_to_string(
                     'stc/gl_rem_email.html', context)
                 text_content = strip_tags(html_content)
-                msg = EmailMultiAlternatives(
+                email = EmailMultiAlternatives(
                     subject,
                     text_content,
                     from_email,
-                    [to]
-                    )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                    [to],)
+                try:
+                    email.attach(
+                        adjunto.name,
+                        adjunto.read(),
+                        adjunto.content_type)
+                except:
+                    pass
+                email.attach_alternative(html_content, "text/html")
+                email.send()
                 for each in pendientes:
                     # Actualizando estados
                     mod = Glosa.objects.get(id=each.id)
