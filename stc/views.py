@@ -300,7 +300,172 @@ def rep_dev_revision(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Debe iniciar sesion primero.')
         return HttpResponseRedirect(reverse('stc:login'))
-    pass
+    empresas = Empresa.objects.filter(
+        devolucion__estado_id='2'
+        ).distinct()
+    convenios = Convenio.objects.filter(
+        devolucion__estado_id='2'
+        ).distinct()
+    unidades = Unidad.objects.filter(
+        devolucion__estado_id='2'
+        ).distinct()
+    context = {
+        'empresas': empresas,
+        'convenios': convenios,
+        'unidades': unidades,
+        }
+    if request.method == 'POST':
+        empresa = request.POST['empresa']
+        convenio = request.POST['convenio']
+        unidad = request.POST['unidad']
+        filtros = {}
+        if empresa != "TODOS LOS ELEMENTOS":
+            empresa_id = Empresa.objects.get(nombre=empresa).id,
+            filtros['empresa'] = empresa_id
+        if convenio != "TODOS LOS ELEMENTOS":
+            convenio_id = Convenio.objects.get(nombre=convenio).nit
+            filtros['convenio'] = convenio_id
+        if unidad != "TODOS LOS ELEMENTOS":
+            unidad_id = Unidad.objects.get(nombre=unidad).id
+            filtros['unidad'] = unidad_id
+        reporte = Devolucion.objects.filter(**filtros).filter(estado_id='2')
+        context['pre_empresa'] = empresa
+        context['pre_convenio'] = convenio
+        context['pre_unidad'] = unidad
+        if request.POST['submit'] == 'generar':
+            if reporte:
+                messages.success(request, 'Reporte generado con exito')
+            else:
+                messages.error(request, 'Información no encontrada')
+                return render(request, 'stc/rep_dev_revision.html', context)
+            context['reporte'] = reporte
+            return render(request, 'stc/rep_dev_revision.html', context)
+        if request.POST['submit'] == 'exportar':
+            if reporte:
+                response = HttpResponse(content_type='text/csv')
+                # Asignando nombre de archivo
+                header = 'attachment; filename="rep_dev_revision.csv"'
+                response['Content-Disposition'] = header
+                '''Creando el archivo csv con el tipo de delimitador ;
+                para ser leido por excel'''
+                writer = csv.writer(response, delimiter=';')
+                # Escribiendo archivo, el proceso puede tardar varios segundos
+                writer.writerow([
+                    'Id',
+                    'Factura',
+                    'Empresa',
+                    'Convenio',
+                    'Fecha devolucion',
+                    'Vlr factura',
+                    'Fecha remitido',
+                    'Gestor'
+                    ])
+                for each in reporte:
+                    writer.writerow([
+                        each.id,
+                        each.factura,
+                        each.empresa.nombre,
+                        each.convenio.nombre,
+                        each.fecha_devolucion,
+                        each.valor_factura,
+                        each.fecha_remitido,
+                        each.gestor.nombre,
+                        ])
+                return response
+            else:
+                messages.error(request, 'Información no encontrada')
+                return render(request, 'stc/rep_dev_revision.html', context)
+    return render(request, 'stc/rep_dev_revision.html', context)
+
+
+def rep_gl_revision(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Debe iniciar sesion primero.')
+        return HttpResponseRedirect(reverse('stc:login'))
+    empresas = Empresa.objects.filter(
+        glosa__estado_id='2'
+        ).distinct()
+    convenios = Convenio.objects.filter(
+        glosa__estado_id='2'
+        ).distinct()
+    unidades = Unidad.objects.filter(
+        glosa__estado_id='2'
+        ).distinct()
+    context = {
+        'empresas': empresas,
+        'convenios': convenios,
+        'unidades': unidades,
+        }
+    if request.method == 'POST':
+        empresa = request.POST['empresa']
+        convenio = request.POST['convenio']
+        unidad = request.POST['unidad']
+        filtros = {}
+        if empresa != "TODOS LOS ELEMENTOS":
+            empresa_id = Empresa.objects.get(nombre=empresa).id,
+            filtros['empresa'] = empresa_id
+        if convenio != "TODOS LOS ELEMENTOS":
+            convenio_id = Convenio.objects.get(nombre=convenio).nit
+            filtros['convenio'] = convenio_id
+        if unidad != "TODOS LOS ELEMENTOS":
+            unidad_id = Unidad.objects.get(nombre=unidad).id
+            filtros['unidad'] = unidad_id
+        reporte = Glosa.objects.filter(**filtros).filter(estado_id='2')
+        context['pre_empresa'] = empresa
+        context['pre_convenio'] = convenio
+        context['pre_unidad'] = unidad
+        if request.POST['submit'] == 'generar':
+            if reporte:
+                messages.success(request, 'Reporte generado con exito')
+            else:
+                messages.error(request, 'Información no encontrada')
+                return render(request, 'stc/rep_gl_revision.html', context)
+            context['reporte'] = reporte
+            return render(request, 'stc/rep_gl_revision.html', context)
+        if request.POST['submit'] == 'exportar':
+            if reporte:
+                response = HttpResponse(content_type='text/csv')
+                # Asignando nombre de archivo
+                header = 'attachment; filename="rep_gl_revision.csv"'
+                response['Content-Disposition'] = header
+                '''Creando el archivo csv con el tipo de delimitador ;
+                para ser leido por excel'''
+                writer = csv.writer(response, delimiter=';')
+                # Escribiendo archivo, el proceso puede tardar varios segundos
+                writer.writerow([
+                    'Id',
+                    'Factura',
+                    'Empresa',
+                    'Convenio',
+                    'Fecha glosa',
+                    'Extemporanea',
+                    'Vlr Glosa',
+                    'Saldo Glosa',
+                    'Fecha remitido',
+                    'Gestor'
+                    ])
+                for each in reporte:
+                    try:
+                        extemp = each.extemporaneidad()
+                    except:
+                        extemp = ""
+                    writer.writerow([
+                        each.id,
+                        each.factura,
+                        each.empresa.nombre,
+                        each.convenio.nombre,
+                        each.fecha_glosa,
+                        extemp,
+                        each.valor_glosa,
+                        each.saldo_glosa,
+                        each.fecha_remitido,
+                        each.gestor.nombre,
+                        ])
+                return response
+            else:
+                messages.error(request, 'Información no encontrada')
+                return render(request, 'stc/rep_gl_revision.html', context)
+    return render(request, 'stc/rep_gl_revision.html', context)
 
 
 def devoluciones(request):

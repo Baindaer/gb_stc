@@ -1,0 +1,96 @@
+{% extends "stc/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block titulo_page %}
+  Devoluciones en revision
+{% endblock %}
+{% block titulo_body %}
+  <a class="brand-logo">Reportes</a>
+{% endblock %}
+{% block breadcrumb %}
+  <a href="{% url 'stc:inicio' %}" class="breadcrumb">STC</a>
+  <a href="{% url 'stc:reportes' %}" class="breadcrumb">Reportes</a>
+  <a class="breadcrumb">Devoluciones</a>
+{% endblock %}
+{% block body %}
+  <form id="formulario" action="{% url 'stc:rep_dev_revision' %}" method="POST" class="white z-depth-1 form-mini">
+    {% csrf_token %}
+    <div class="row container-mini form-main">
+      <div class="input-field col s12">
+        <select id="empresa" name="empresa">
+          <option value="TODOS LOS ELEMENTOS">TODOS LOS ELEMENTOS</option>
+          {% for i in empresas %}
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Empresa</label>
+      </div>
+      <div class="input-field col s12">
+        <select id="convenio" name="convenio">
+          <option value="TODOS LOS ELEMENTOS">TODOS LOS ELEMENTOS</option>
+          {% for i in convenios %}
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Convenio</label>
+      </div>
+      <div class="input-field col s12">
+        <select id="unidad" name="unidad">
+          <option value="TODOS LOS ELEMENTOS">TODOS LOS ELEMENTOS</option>
+          {% for i in unidades %}
+            <option value="{{ i.nombre }}">{{ i.nombre }}</option>
+          {% endfor %}
+        </select>
+        <label>Unidad</label>
+      </div>
+    </div>
+    <div class="row form-bot">
+      <div class="col s12 center">
+        <button id="buscar" name="submit" value="generar" class="waves-effect waves-light grey lighten-3 black-text btn"><i class="material-icons left">search</i>Generar</button>
+        <button id="exportar" name="submit" value="exportar" class="waves-effect waves-light blue btn" style="margin-left:20px"><i class="material-icons left">get_app</i>Exportar</button>
+      </div>
+    </div>
+  </form>
+  {% if reporte %}
+    <div class="row dash-cont">
+      <table class="bordered responsive-table highlight" id="dash">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>FACTURA</th>
+            <th>EMPRESA</th>
+            <th>CONVENIO</th>
+            <th>FECHA DEV</th>
+            <th>VLR FACTURA</th>
+            <th>FECHA REM</th>
+            <th>GESTOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in reporte %}
+            <tr onclick="getConsulta(this)">
+              <td>{{ i.id }}</td>
+              <td>{{ i.factura }}</td>
+              <td>{{ i.empresa.id }}</td>
+              <td>{{ i.convenio.nombre }}</td>
+              <td>{{ i.fecha_devolucion|date:"Y-m-d" }}</td>
+              <td>{{ i.valor_factura|intcomma }}</td>
+              <td>{{ i.fecha_remitido|date:"Y-m-d" }}</td>
+              <td>{{ i.gestor.nombre }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'stc/js/rep_dev_revision.js' %}"></script>
+  {% if pre_empresa %}
+    <script>
+      $("#unidad").val("{{ pre_unidad }}");
+      $("#empresa").val("{{ pre_empresa }}");
+      $("#convenio").val("{{ pre_convenio }}");
+    </script>
+  {% endif %}
+{% endblock %} 
