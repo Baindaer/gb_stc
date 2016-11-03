@@ -278,6 +278,7 @@ def rep_capitas(request):
                     'Radicado',
                     'Servicio',
                     'Tiene_Dev',
+                    'Saldo_Gl'
                     'Valor'
                     ])
                 for each in reporte_capitas:
@@ -287,6 +288,7 @@ def rep_capitas(request):
                         each.fecha_radicacion,
                         each.servicio.descripcion,
                         each.tiene_dev(),
+                        each.total_gl()['saldo_glosa__sum'],
                         each.valor_factura
                         ])
                 return response

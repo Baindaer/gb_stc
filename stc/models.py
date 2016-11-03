@@ -5,6 +5,7 @@ from datetime import datetime, date, timedelta
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.db.models import *
 
 
 (MON, TUE, WED, THU, FRI, SAT, SUN) = range(7)
@@ -102,6 +103,10 @@ class Radicacion(models.Model):
             return "SI"
         else:
             return "NO"
+
+    def total_gl(self):
+        a = Glosa.objects.filter(factura=self.factura)
+        return a.aggregate(Sum('saldo_glosa'))
 
     def tiene_gl(self):
         if Glosa.objects.filter(factura=self.factura):

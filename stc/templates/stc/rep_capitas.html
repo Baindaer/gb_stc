@@ -54,6 +54,7 @@
             <th data-field="convenio">RADICADO</th>
             <th data-field="radicado">SERVICIO</th>
             <th data-field="valor">DEV</th>
+            <th data-field="valor">GL</th>
             <th data-field="valor">VALOR</th>
           </tr>
         </thead>
@@ -65,6 +66,7 @@
               <td>{{ i.fecha_radicacion|date:"Y-m-d" }}</td>
               <td>{{ i.servicio.descripcion }}</td>
               <td>{{ i.tiene_dev }}</td>
+              <td>{{ i.total_gl.saldo_glosa__sum|intcomma }}</td>
               <td>{{ i.valor_factura|intcomma }}</td>
             </tr>
           {% endfor %}
