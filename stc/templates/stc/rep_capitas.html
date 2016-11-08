@@ -60,15 +60,18 @@
         </thead>
         <tbody>
           {% for i in reporte_capitas %}
-            <tr onclick="getConsulta(this)">
-              <td>{{ i.factura }}</td>
-              <td>{{ i.convenio.nombre }}</td>
-              <td>{{ i.fecha_radicacion|date:"Y-m-d" }}</td>
-              <td>{{ i.servicio.descripcion }}</td>
-              <td>{{ i.tiene_dev }}</td>
-              <td>{{ i.total_gl.saldo_glosa__sum|intcomma }}</td>
-              <td>{{ i.valor_factura|intcomma }}</td>
-            </tr>
+            {% if i.es_anu_rad %}
+            {% else %}
+              <tr onclick="getConsulta(this)">
+                <td>{{ i.factura }}</td>
+                <td>{{ i.convenio.nombre }}</td>
+                <td>{{ i.fecha_radicacion|date:"Y-m-d" }}</td>
+                <td>{{ i.servicio.descripcion }}</td>
+                <td>{{ i.tiene_dev }}</td>
+                <td>{{ i.total_gl.saldo_glosa__sum|intcomma }}</td>
+                <td>{{ i.valor_factura|intcomma }}</td>
+              </tr>
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>

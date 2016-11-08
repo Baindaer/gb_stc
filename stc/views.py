@@ -816,10 +816,10 @@ def dev_remision(request):
         if request.POST['submit'] == 'remitir':
             # Realizando filtro de consulta
             gestor = request.POST['gestor']
-            adjunto = request.FILES['adjunto']
-            print(adjunto.content_type)
-            print(adjunto.name)
-            print(adjunto.size)
+            try:
+                adjunto = request.FILES['adjunto']
+            except:
+                pass
             try:
                 gestor_id = Gestor.objects.get(nombre=gestor).id
             except:

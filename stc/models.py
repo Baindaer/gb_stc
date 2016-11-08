@@ -98,8 +98,17 @@ class Radicacion(models.Model):
         else:
             return "EVENTO"
 
+    def es_anu_rad(self):
+        if Devolucion.objects.filter(factura=self.factura).filter(
+                Q(estado="3") | Q(estado="5")):
+            return True
+        else:
+            return False
+
     def tiene_dev(self):
-        if Devolucion.objects.filter(factura=self.factura):
+        if Devolucion.objects.filter(
+                factura=self.factura).filter(
+                Q(estado="1") | Q(estado="2")):
             return "SI"
         else:
             return "NO"
