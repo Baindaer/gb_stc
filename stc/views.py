@@ -1229,6 +1229,7 @@ def gl_remision(request):
                     pass
                 email.attach_alternative(html_content, "text/html")
                 email.send()
+
                 for each in pendientes:
                     # Actualizando estados
                     mod = Glosa.objects.get(id=each.id)
