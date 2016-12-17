@@ -1,7 +1,6 @@
 # Importando modulos generales
 # -*- coding: utf-8 -*-
 import csv
-import sys
 import os
 import sqlite3
 import json
@@ -25,7 +24,6 @@ from django.db.models import Q
 # Importando modulos de aplicacion
 from .models import *
 
-sys.setdefaultencoding('utf8')
 
 
 def inicio(request):
