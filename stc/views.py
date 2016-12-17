@@ -25,7 +25,6 @@ from django.db.models import Q
 # Importando modulos de aplicacion
 from .models import *
 
-reload(sys)
 sys.setdefaultencoding('utf8')
 
 
