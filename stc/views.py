@@ -91,6 +91,7 @@ def rad_agregar(request):
     if request.method == 'POST':
         # Agregando registro de radicacion
         factura = request.POST['factura'].upper()
+        special_code = request.POST['special_code'].upper()
         empresa = request.POST['empresa']
         convenio = request.POST['convenio'].upper()
         fecha_radicacion = request.POST['fecha_radicacion']
@@ -135,6 +136,7 @@ def rad_agregar(request):
                 mes_servicio=mes_servicio,
                 fecha_registro=fecha_registro,
                 usuario_id=request.user.id,
+                special_code=special_code,
                 )
         registro.save()
         # Agregando datos a contexto
