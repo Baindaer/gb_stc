@@ -88,6 +88,7 @@ class Radicacion(models.Model):
     mes_servicio = models.CharField(max_length=7, null=True)
     usuario = models.ForeignKey(User)
     fecha_registro = models.DateTimeField(null=True)
+    special_code = models.CharField(max_length=12)
 
     def __str__(self):
         return self.factura
