@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Importando modulos generales
 # -*- coding: utf-8 -*-
 import csv
