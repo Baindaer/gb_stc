@@ -25,7 +25,6 @@ from django.db.models import Q
 from .models import *
 
 
-
 def inicio(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('stc:login'))
@@ -646,7 +645,8 @@ def exp_rad_general(request):
     # Asignando nombre de archivo
     response['Content-Disposition'] = 'attachment; filename="radicacion.csv"'
     # Consultando base de datos
-    data = Radicacion.objects.filter(fecha_radicacion__startswith='2016')
+    data = Radicacion.objects.filter(
+        Q(fecha_radicacion__startswith="2017"))
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
@@ -684,6 +684,8 @@ def exp_gl_general(request):
     response['Content-Disposition'] = 'attachment; filename="glosas.csv"'
     # Consultando base de datos
     data = Glosa.objects.all()
+    data = Glosa.objects.filter(
+        Q(fecha_glosa__startswith="2017"))
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
@@ -1230,7 +1232,6 @@ def gl_remision(request):
                     pass
                 email.attach_alternative(html_content, "text/html")
                 email.send()
-
                 for each in pendientes:
                     # Actualizando estados
                     mod = Glosa.objects.get(id=each.id)
