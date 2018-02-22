@@ -45,7 +45,7 @@ class Ejecutivo(models.Model):
 class Unidad(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     nombre = models.CharField(max_length=50)
-    empresa = models.ForeignKey(Empresa, null=True)
+    empresa = models.ForeignKey(Empresa, null=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.id
@@ -53,7 +53,7 @@ class Unidad(models.Model):
 
 class RefUnidad(models.Model):
     referencia = models.CharField(max_length=100, primary_key=True)
-    unidad = models.ForeignKey(Unidad)
+    unidad = models.ForeignKey(Unidad, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.referencia
@@ -63,7 +63,7 @@ class Convenio(models.Model):
     nit = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=100)
     estado = models.BooleanField(default=True)
-    ejecutivo = models.ForeignKey(Ejecutivo, null=True)
+    ejecutivo = models.ForeignKey(Ejecutivo, null=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.nombre
@@ -78,15 +78,15 @@ class Servicio(models.Model):
 
 class Radicacion(models.Model):
     factura = models.CharField(max_length=12, primary_key=True)
-    empresa = models.ForeignKey(Empresa)
-    unidad = models.ForeignKey(Unidad)
-    convenio = models.ForeignKey(Convenio)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    unidad = models.ForeignKey(Unidad, on_delete=models.DO_NOTHING)
+    convenio = models.ForeignKey(Convenio, on_delete=models.DO_NOTHING)
     fecha_radicacion = models.DateField()
     valor_factura = models.IntegerField()
     tipo_contrato = models.BooleanField(default=False)
-    servicio = models.ForeignKey(Servicio, null=True)
+    servicio = models.ForeignKey(Servicio, null=True, on_delete=models.DO_NOTHING)
     mes_servicio = models.CharField(max_length=7, null=True)
-    usuario = models.ForeignKey(User)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     fecha_registro = models.DateTimeField(null=True)
     special_code = models.CharField(max_length=12)
 
@@ -157,20 +157,20 @@ class Gestor(models.Model):
 
 class Devolucion(models.Model):
     factura = models.CharField(max_length=20)
-    empresa = models.ForeignKey(Empresa)
-    unidad = models.ForeignKey(Unidad)
-    convenio = models.ForeignKey(Convenio)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    unidad = models.ForeignKey(Unidad, on_delete=models.DO_NOTHING)
+    convenio = models.ForeignKey(Convenio, on_delete=models.DO_NOTHING)
     fecha_devolucion = models.DateField()
     valor_factura = models.IntegerField()
-    causal = models.ForeignKey(Causal)
+    causal = models.ForeignKey(Causal, on_delete=models.DO_NOTHING)
     detalle = models.CharField(max_length=512)
-    gestor = models.ForeignKey(Gestor)
+    gestor = models.ForeignKey(Gestor, on_delete=models.DO_NOTHING)
     fecha_remitido = models.DateField(null=True)
     fecha_registro = models.DateField(null=True)
     gestion = models.CharField(max_length=512)
     fecha_gestion = models.DateField(null=True)
-    estado = models.ForeignKey(EstadoDV)
-    usuario = models.ForeignKey(User)
+    estado = models.ForeignKey(EstadoDV, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     fisico = models.BooleanField(default=True)
 
     def __str__(self):
@@ -192,23 +192,23 @@ class EstadoGL(models.Model):
 
 class Glosa(models.Model):
     factura = models.CharField(max_length=20)
-    empresa = models.ForeignKey(Empresa)
-    unidad = models.ForeignKey(Unidad)
-    convenio = models.ForeignKey(Convenio)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    unidad = models.ForeignKey(Unidad, on_delete=models.DO_NOTHING)
+    convenio = models.ForeignKey(Convenio, on_delete=models.DO_NOTHING)
     fecha_glosa = models.DateField()
     valor_factura = models.IntegerField()
     valor_glosa = models.IntegerField()
     saldo_glosa = models.PositiveIntegerField()
-    causal = models.ForeignKey(Causal)
+    causal = models.ForeignKey(Causal, on_delete=models.DO_NOTHING)
     fecha_max_respuesta = models.DateField()
     detalle = models.CharField(max_length=250)
-    gestor = models.ForeignKey(Gestor)
+    gestor = models.ForeignKey(Gestor, on_delete=models.DO_NOTHING)
     fecha_remitido = models.DateField(null=True)
-    estado = models.ForeignKey(EstadoGL)
+    estado = models.ForeignKey(EstadoGL, on_delete=models.DO_NOTHING)
     fecha_ratificacion = models.DateField(null=True, blank=True)
     fecha_max_respuesta_rat = models.DateField(null=True, blank=True)
     fecha_registro = models.DateField(null=True)
-    usuario = models.ForeignKey(User)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.factura
@@ -233,9 +233,9 @@ class Respuesta(models.Model):
     fecha_respuesta = models.DateField()
     referencia = models.CharField(max_length=250, null=True)
     locked = models.BooleanField(default=False)
-    empresa = models.ForeignKey(Empresa)
-    convenio = models.ForeignKey(Convenio)
-    usuario = models.ForeignKey(User)
+    empresa = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    convenio = models.ForeignKey(Convenio, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return str(self.id)
@@ -253,7 +253,7 @@ class GlosaRespuesta(models.Model):
     respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
     gestion = models.CharField(max_length=512)
     aceptado_ips = models.IntegerField()
-    codigo_respuesta = models.ForeignKey(Causal)
+    codigo_respuesta = models.ForeignKey(Causal, on_delete=models.DO_NOTHING)
     fecha_registro = models.DateField(null=True)
 
     def __str__(self):
@@ -270,7 +270,7 @@ class GlosaRespRatif(models.Model):
     fecha_respuesta = models.DateField()
     gestion = models.CharField(max_length=512)
     aceptado_ips = models.IntegerField()
-    codigo_respuesta = models.ForeignKey(Causal)
+    codigo_respuesta = models.ForeignKey(Causal, on_delete=models.DO_NOTHING)
     referencia = models.CharField(max_length=250, null=True)
     fecha_registro = models.DateField(null=True)
 
@@ -285,4 +285,4 @@ class GlosaActualizacion(models.Model):
     fecha_actualizacion = models.DateField()
     aceptado_ips = models.IntegerField()
     fecha_registro = models.DateField(null=True)
-    usuario = models.ForeignKey(User)
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
