@@ -648,7 +648,7 @@ def exp_rad_general(request):
     # Asignando nombre de archivo
     response['Content-Disposition'] = 'attachment; filename="radicacion.csv"'
     # Consultando base de datos
-    data = Radicacion.objects.filter(fecha_radicacion__gt='2018-01-01')
+    data = Radicacion.objects.filter(fecha_radicacion__gt='2018-11-01')
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
@@ -687,7 +687,7 @@ def exp_gl_general(request):
     # Asignando nombre de archivo
     response['Content-Disposition'] = 'attachment; filename="glosas.csv"'
     # Consultando base de datos
-    data = Glosa.objects.filter(fecha_glosa__gt='2018-01-01')
+    data = Glosa.objects.filter(fecha_glosa__gt='2018-11-01')
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
