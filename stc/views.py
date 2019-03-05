@@ -648,7 +648,7 @@ def exp_rad_general(request):
     # Asignando nombre de archivo
     response['Content-Disposition'] = 'attachment; filename="radicacion.csv"'
     # Consultando base de datos
-    data = Radicacion.objects.filter(fecha_radicacion__startswith='2018')
+    data = Radicacion.objects.filter(fecha_radicacion__gt='2018-01-01')
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
@@ -661,6 +661,7 @@ def exp_rad_general(request):
         'Valor',
         'Fecha Radicacion',
         'Mes Servicio',
+        'Codigo espcial',
         ])
     for each in data:
         writer.writerow([
@@ -671,6 +672,7 @@ def exp_rad_general(request):
             each.valor_factura,
             each.fecha_radicacion,
             each.mes_servicio,
+            each.special_code,
             ])
     return response
 
@@ -685,7 +687,7 @@ def exp_gl_general(request):
     # Asignando nombre de archivo
     response['Content-Disposition'] = 'attachment; filename="glosas.csv"'
     # Consultando base de datos
-    data = Glosa.objects.filter(fecha_glosa__startswith='2018')
+    data = Glosa.objects.filter(fecha_glosa__gt='2018-01-01')
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
     writer = csv.writer(response, delimiter=';')
@@ -741,7 +743,7 @@ def exp_dev_general(request):
     data = Devolucion.objects.all()
     # data = Radicacion.objects.all()
     # Creando el archivo csv con el tipo de delimitador ; para excel
-    writer = csv.writer(response, delimiter=';')
+    writer = csv.writer(response, delimiter='|')
     # Escribiendo archivo, el proceso puede tardar varios segundos
     writer.writerow([
         'Id',
@@ -767,7 +769,7 @@ def exp_dev_general(request):
             each.factura,
             each.fecha_devolucion,
             each.valor_factura,
-            each.detalle,
+            each.detalle.replace("\n"," ").replace("\r\n"," "),
             each.fecha_remitido,
             each.causal_id,
             each.estado.descripcion,
